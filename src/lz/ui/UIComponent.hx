@@ -14,7 +14,7 @@ class UIComponent extends EventDispatcher
 	public var scale:Vector3D;
 	public function new() 
 	{
-		
+		super();
 	}
 	
 }

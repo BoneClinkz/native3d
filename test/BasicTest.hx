@@ -16,10 +16,10 @@ import lz.native3d.ctrls.FirstPersonCtrl;
 import lz.native3d.materials.PhongMaterial;
 import lz.native3d.materials.SkyboxMaterial;
 import lz.native3d.meshs.MeshUtils;
-import lz.native3d.parsers.ObjParser;
 import lz.net.LoaderBat;
 import openfl.Assets;
 #if flash
+import lz.native3d.parsers.ObjParser;
 import net.hires.debug.Stats;
 #else
 using OpenFLStage3D;
@@ -166,6 +166,7 @@ class BasicTest extends Sprite
 		new SkyboxMaterial(bv.instance3Ds[0],textureset.texture);
 	}
 	
+	#if flash
 	public function addObj():Void {
 		var parser:ObjParser = new ObjParser(null,"sponza.mtl","../assets/model/sponza_texture",bv.instance3Ds[0],light);
 		parser.addEventListener(Event.COMPLETE, obj_parser_complete);
@@ -180,6 +181,6 @@ class BasicTest extends Sprite
 		bv.instance3Ds[0].root.add(parser.node);
 		loading.text = "";
 	}
-	
+	#end
 	
 }
