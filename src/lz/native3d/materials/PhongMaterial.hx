@@ -22,7 +22,7 @@ class PhongMaterial extends MaterialBase
 {
 	private var shader:PhongShader;
 	private var lightNode:BasicLight3D;
-	private var diffuseTex:TextureBase;
+	public var diffuseTex:TextureBase;
 	private var shaderInstance:ShaderInstance;
 	public function new(i3d:Instance3D,lightNode:BasicLight3D,AmbientColor:Vector3D,DiffuseColor:Vector3D,SpecularColor:Vector3D,SpecularExponent:Float,diffuseTex:TextureBase) 
 	{
@@ -48,10 +48,7 @@ class PhongMaterial extends MaterialBase
 	}
 	
 	inline override public function draw(node:Node3D, pass:BasicPass3D):Void {
-		var c3d:Context3D = pass.i3d.c3d;
-		c3d.setDepthTest(true, passCompareMode);
-		c3d.setBlendFactors(sourceFactor, destinationFactor);
-		c3d.setProgram(progrom);
+		super.draw(node, pass);
 		var xyz:VertexBufferSet = node.drawAble.xyz;
 		c3d.setVertexBufferAt(0, xyz.vertexBuff, 0, xyz.format);
 		var norm:VertexBufferSet=null;
@@ -71,16 +68,18 @@ class PhongMaterial extends MaterialBase
 		pass.camera.perspectiveProjectionMatirx.copyRawDataTo(vertex, 16, true);
 		c3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 0, vertex);
 		c3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, fragment);
-		for (i in 0...shaderInstance.textures.length) {
-			c3d.setTextureAt(i, shaderInstance.textures[i]);
-		}
+		//for (i in 0...shaderInstance.textures.length) {
+		if(diffuseTex!=null)
+		c3d.setTextureAt(0, diffuseTex);
+		//}
 		c3d.drawTriangles(node.drawAble.indexBufferSet.indexBuff);
 		c3d.setVertexBufferAt(0,null, 0, xyz.format);
 		if(norm!=null)c3d.setVertexBufferAt(1, null, 0, norm.format);
 		if(uv!=null)c3d.setVertexBufferAt(2, null, 0, uv.format);
-		for (i in 0...shaderInstance.textures.length) {
+		/*for (i in 0...shaderInstance.textures.length) {
 			c3d.setTextureAt(i, null);
-		}
+		}*/
+		c3d.setTextureAt(0, null);
 	}
 	override public function init(node:Node3D):Void {
 		node.drawAble.xyz.init();

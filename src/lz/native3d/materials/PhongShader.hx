@@ -50,17 +50,14 @@ class PhongShader extends Shader
 		var hasDiffuseTex:Bool;
 		function fragment(){
 			var color:Float4 = AmbientColor;
-			if (hasDiffuseTex) {
-				if (DiffuseColor != null) {
-					color += DiffuseColor * DiffuseTex.get(UV,wrap)* max(0, dot(LightVec, SurfaceNormal));
-				}else {
-					color += DiffuseTex.get(UV,wrap)* max(0, dot(LightVec, SurfaceNormal));
-				}
-			}else if (DiffuseColor!=null) {
+			if (DiffuseColor!=null) {
 				color += DiffuseColor * max(0, dot(LightVec, SurfaceNormal));
 			}
 			if(SpecularColor!=null){
 				color += SpecularColor * pow(max(0, dot(ReflectedLightVec, ViewVec)), SpecularExponent);
+			}
+			if (hasDiffuseTex) {
+				color *= DiffuseTex.get(UV, wrap);
 			}
 			out =  color.xyzw;
 		}

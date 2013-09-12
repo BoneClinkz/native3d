@@ -30,5 +30,7 @@ import flash.Lib;
 		#if flash
 		addSky();
 		#end
+		
+		ctrl.position.z = -1300;
 	}
 }

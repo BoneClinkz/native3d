@@ -5,6 +5,7 @@ import flash.display3D.Context3DTextureFormat;
 import flash.display3D.textures.TextureBase;
 import flash.errors.Error;
 import flash.events.Event;
+import flash.geom.Vector3D;
 import flash.Lib;
 import flash.utils.ByteArray;
 import flash.utils.RegExp;
@@ -17,8 +18,7 @@ import lz.native3d.core.Instance3D;
 import lz.native3d.core.Node3D;
 import lz.native3d.core.TextureSet;
 import lz.native3d.core.VertexBufferSet;
-import lz.native3d.materials.ColorMaterial;
-import lz.native3d.materials.ImageMaterial;
+import lz.native3d.materials.PhongMaterial;
 import lz.native3d.meshs.MeshUtils;
 import lz.native3d.utils.Color;
 import lz.net.LoaderBat;
@@ -43,9 +43,11 @@ class ObjParser extends AbsParser
 	private var mit2Color:Map<String,String>;
 	public var textureUrl:String;
 	public var i3d:Instance3D;
-	public function new(data:Dynamic,mitName:String,textureUrl:String,i3d:Instance3D) 
+	public var light:BasicLight3D;
+	public function new(data:Dynamic,mitName:String,textureUrl:String,i3d:Instance3D,light:BasicLight3D) 
 	{
 		super(data);
+		this.light = light;
 		this.i3d = i3d;
 		this.mitName = mitName;
 		this.textureUrl = textureUrl;
@@ -162,7 +164,14 @@ class ObjParser extends AbsParser
 			drawable.uv = new VertexBufferSet(untyped(newvt.length/2), 2, newvt, 0,i3d);
 			MeshUtils.computeNorm(drawable);
 			node.node.drawAble = drawable;
-			node.node.material = new ImageMaterial(TextureSet.getTempTexture(i3d), 0x808080,0x808080, new BasicLight3D(),i3d);
+			node.node.material = 
+			new PhongMaterial(i3d, light,
+				new Vector3D(.2, .2, .2),//AmbientColor
+				new Vector3D(.5,.5,.5),//DiffuseColor
+				new Vector3D(.8,.8,.8),//SpecularColor
+				200,
+				TextureSet.getTempTexture(i3d)
+				);
 			this.node.add(node.node);
 		}
 		dispatchEvent(new Event(Event.COMPLETE));
@@ -186,7 +195,7 @@ class ObjParser extends AbsParser
 			}
 			var set:TextureSet = new TextureSet(i3d);
 			set.setBmd(image, Context3DTextureFormat.BGRA);
-			cast( mit2node.get(key).node.material, ImageMaterial).texture = set.texture;
+			 cast(mit2node.get(key).node.material, PhongMaterial).diffuseTex = set.texture;
 		}
 	}
 	

@@ -23,7 +23,7 @@ private class SkyShader extends Shader {
 			dir = wpos.xyz - cameraPos.xyz;
 		}
 		function fragment( tex:CubeTexture) {
-			out = tex.get(dir);
+			out = tex.get(dir,clamp);
 		}
 	};
 }

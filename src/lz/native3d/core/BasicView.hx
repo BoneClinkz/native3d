@@ -7,7 +7,9 @@ package lz.native3d.core ;
 	import flash.display3D.Context3D;
 	import flash.events.Event;
 	import flash.Vector;
+	#if !flash
 	using OpenFLStage3D;
+	#end
 	/**
 	 * ...
 	 * @author lizhi http://matrix3d.github.io/

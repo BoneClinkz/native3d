@@ -13,7 +13,7 @@ import lz.native3d.core.BasicLight3D;
 import lz.native3d.core.BasicView;
 import lz.native3d.core.DrawAble3D;
 import lz.native3d.core.Node3D;
-import lz.native3d.materials.ColorMaterial;
+import lz.native3d.materials.PhongMaterial;
 import lz.native3d.meshs.MeshUtils;
 
 /**
@@ -140,7 +140,14 @@ class MagicCube extends Sprite
 					node.z = (z - 1) * 2;
 					root3d.add(node);
 					node.drawAble = da;
-					node.material = new ColorMaterial(Std.random(0xffffff), 0x808080, light);
+					node.material = new PhongMaterial(bv.instance3Ds[0], light,
+									new Vector3D(.2, .2, .2),//AmbientColor
+									new Vector3D(Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5),//DiffuseColor
+									new Vector3D(.8,.8,.8),//SpecularColor
+									200,
+									null
+									//texture
+									);
 					cell[x][y][z] = node;
 				}
 			}

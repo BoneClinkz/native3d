@@ -17,7 +17,6 @@ import lz.native3d.core.Instance3D;
 import lz.native3d.core.Node3D;
 import lz.native3d.core.TextureSet;
 import lz.native3d.core.VertexBufferSet;
-import lz.native3d.materials.ColorMaterial;
 import lz.native3d.materials.SkinMaterial;
 import lz.native3d.meshs.MeshUtils;
 

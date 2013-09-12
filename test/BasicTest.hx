@@ -5,6 +5,8 @@ import flash.display3D.Context3DTextureFormat;
 import flash.events.Event;
 import flash.geom.Vector3D;
 import flash.Lib;
+import flash.text.TextField;
+import flash.text.TextFieldAutoSize;
 import lz.native3d.core.BasicLight3D;
 import lz.native3d.core.BasicView;
 import lz.native3d.core.DrawAble3D;
@@ -14,12 +16,14 @@ import lz.native3d.ctrls.FirstPersonCtrl;
 import lz.native3d.materials.PhongMaterial;
 import lz.native3d.materials.SkyboxMaterial;
 import lz.native3d.meshs.MeshUtils;
+import lz.native3d.parsers.ObjParser;
 import lz.net.LoaderBat;
 import openfl.Assets;
 #if flash
 import net.hires.debug.Stats;
-#end
+#else
 using OpenFLStage3D;
+#end
 /**
  * ...
  * @author lizhi
@@ -30,6 +34,8 @@ class BasicTest extends Sprite
 	private var light:BasicLight3D;
 	private var root3d:Node3D;
 	private var cubeDrawAble:DrawAble3D;
+	public var ctrl:FirstPersonCtrl;
+	public var loading:TextField;
 	public function new() 
 	{
 		super();
@@ -42,6 +48,11 @@ class BasicTest extends Sprite
 		addChild(bv);
 		#if flash
 		addChild(new Stats());
+		loading = new TextField();
+		loading.autoSize = TextFieldAutoSize.LEFT;
+		addChild(loading);
+		loading.x = 200;
+		loading.textColor = 0xff0000;
 		#end
 	}
 	
@@ -53,13 +64,12 @@ class BasicTest extends Sprite
 		bv.instance3Ds[0].c3d.setRenderCallback( enterFrame);
 		bv.instance3Ds[0].camera.frustumPlanes = null;
 		#end
+		ctrl = new FirstPersonCtrl(bv.stage, bv.instance3Ds[0].camera);
 		root3d = new Node3D();
 		bv.instance3Ds[0].root.add(root3d);
 		bv.instance3Ds[0].camera.z = -1300;
 		initLight();
 		initScene();
-		var ctrl = new FirstPersonCtrl(bv.stage, bv.instance3Ds[0].camera);
-		ctrl.position.z = -1300;
 		custom();
 	}
 	
@@ -105,15 +115,16 @@ class BasicTest extends Sprite
 		new Vector3D(Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5),//DiffuseColor
 		new Vector3D(.8,.8,.8),//SpecularColor
 		200,
-		null
-		//texture
+		//null
+	//	texture
+		TextureSet.getTempTexture(bv.instance3Ds[0])
 		);
 		return node;
 	}
 	
 	public function addSky():Void {
 		var loader:LoaderBat = new LoaderBat();
-		var skyurl = "assets/skybox/";
+		var skyurl = "../assets/skybox/";
 		loader.addImageLoader(skyurl+"px.jpg","px");
 		loader.addImageLoader(skyurl+"nx.jpg","nx");
 		loader.addImageLoader(skyurl+"py.jpg","py");
@@ -154,4 +165,21 @@ class BasicTest extends Sprite
 		skybox.material = 
 		new SkyboxMaterial(bv.instance3Ds[0],textureset.texture);
 	}
+	
+	public function addObj():Void {
+		var parser:ObjParser = new ObjParser(null,"sponza.mtl","../assets/model/sponza_texture",bv.instance3Ds[0],light);
+		parser.addEventListener(Event.COMPLETE, obj_parser_complete);
+		parser.fromUrlZip("../assets/model/sponza_obj.zip","sponza.obj");
+		bv.instance3Ds[0].camera.frustumPlanes = null;
+		loading.text = "loading......";
+	}
+	
+	private function obj_parser_complete(e:Event):Void 
+	{
+		var parser:ObjParser = untyped e.currentTarget;
+		bv.instance3Ds[0].root.add(parser.node);
+		loading.text = "";
+	}
+	
+	
 }
