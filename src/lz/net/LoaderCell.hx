@@ -61,8 +61,10 @@ class LoaderCell extends EventDispatcher
 	
 	public function close():Void {
 		var ed:EventDispatcher = null;
-		if (loader!=null) {
+		if (loader != null) {
+			#if flash
 			loader.close();
+			#end
 			ed = loader.contentLoaderInfo;
 		}else if (urlLoader!=null) {
 			ed = urlLoader;

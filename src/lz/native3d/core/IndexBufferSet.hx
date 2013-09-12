@@ -10,11 +10,11 @@ package lz.native3d.core ;
 	{
 		public var num:Int;
 		private var start:Int;
-		public var data:Vector<#if flash UInt #else Int #end>;
+		public var data:Vector<UInt>;
 		public var indexBuff:IndexBuffer3D;
 		public var i3d:Instance3D;
 		
-		public function new(num:Int,data:Vector<#if flash UInt #else Int #end>,start:Int,i3d:Instance3D) 
+		public function new(num:Int,data:Vector<UInt>,start:Int,i3d:Instance3D) 
 		{
 			this.start = start;
 			this.num = num;

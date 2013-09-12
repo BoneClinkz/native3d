@@ -4,9 +4,7 @@ package lz.native3d.core ;
 	import flash.display3D.textures.TextureBase;
 	import flash.geom.Vector3D;
 	import flash.Vector;
-	#if flash
 	import lz.native3d.materials.MaterialBase;
-	#end
 	/**
 	 * ...
 	 * @author lizhi http://matrix3d.github.io/
@@ -16,9 +14,7 @@ package lz.native3d.core ;
 		public var target:PassTarget;
 		public var cnodes:Vector<Node3D>;
 		public var camera:Camera3D;
-		#if flash
 		public var material:MaterialBase;
-		#end
 		public var i3d:Instance3D;
 		public function new(i3d:Instance3D) 
 		{
@@ -40,14 +36,8 @@ package lz.native3d.core ;
 		}
 		
 		inline public function doPass(node:Node3D):Void {
-			#if flash
 			var m = material;
-			#else 
-			var m = null;
-			#end
-			if (m == null) {
-				m = node.material;
-			}
+			if (m == null) m = node.material;
 			if (camera.frustumPlanes==null||node.frustumCulling == null || node.frustumCulling.culling(camera)) {
 				m.draw(node,this);
 			}

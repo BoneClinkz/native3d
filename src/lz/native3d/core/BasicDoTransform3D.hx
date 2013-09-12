@@ -15,7 +15,7 @@ import flash.Vector;
 		public function new() 
 		{
 			passNodes = new Vector<Node3D>();
-			rawData = new Vector<Float>(#if flash 16 #end);
+			rawData = new Vector<Float>(16);
 		}
 		
 		inline public function doTransform(nodes:Vector<Node3D>):Vector<Node3D> {
@@ -44,11 +44,7 @@ import flash.Vector;
 				parentMatrixChanged = true;
 			}
 			if (parentMatrixChanged) {
-				#if flash
 				node.worldMatrix.copyFrom(node.matrix);
-				#else
-				node.worldMatrix.rawData = node.matrix.rawData.copy();
-				#end
 				node.worldMatrix.append(node.parent.worldMatrix);
 				
 				#if flash
@@ -80,19 +76,11 @@ import flash.Vector;
 		inline public function doTransformCamera(camera:Camera3D):Void {
 			doTransformNode(camera, false);
 			if (camera.invertVersion != camera.worldVersion) {
-				#if flash
 				camera.invert.copyFrom(camera.worldMatrix);
-				#else
-				camera.invert.rawData = camera.worldMatrix.rawData.copy();
-				#end
 				
 				camera.invert.invert();
 				
-				#if flash
 				camera.perspectiveProjectionMatirx.copyFrom(camera.invert);
-				#else
-				camera.perspectiveProjectionMatirx.rawData = camera.invert.rawData.copy();
-				#end
 				
 				camera.perspectiveProjectionMatirx.append(camera.perspectiveProjection);
 				camera.invertVersion = camera.worldVersion;

@@ -58,15 +58,24 @@ package lz.native3d.core ;
 		public var material(get_material, set_material):MaterialBase;
 		
 		/**@getter,setter**/
-		#if swc @:extern #end public var x(get_x,set_x):Float;
-		#if swc @:extern #end public var y(get_y,set_y):Float;
-		#if swc @:extern #end public var z(get_z,set_z):Float;
-		 #if swc @:extern #end public var rotationX(get_rotationX,set_rotationX):Float;
-		#if swc @:extern #end public var rotationY(get_rotationY,set_rotationY):Float;
-		#if swc @:extern #end public var rotationZ(get_rotationZ,set_rotationZ):Float;
-		#if swc @:extern #end public var scaleX(get_scaleX,set_scaleX):Float;
-		#if swc @:extern #end public var scaleY(get_scaleY,set_scaleY):Float;
-		#if swc @:extern #end public var scaleZ(get_scaleZ,set_scaleZ):Float;
+		#if swc @:extern #end 
+		public var x(get_x,set_x):Float;
+		#if swc @:extern #end 
+		public var y(get_y,set_y):Float;
+		#if swc @:extern #end 
+		public var z(get_z,set_z):Float;
+		 #if swc @:extern #end 
+		 public var rotationX(get_rotationX,set_rotationX):Float;
+		#if swc @:extern #end 
+		public var rotationY(get_rotationY,set_rotationY):Float;
+		#if swc @:extern #end 
+		public var rotationZ(get_rotationZ,set_rotationZ):Float;
+		#if swc @:extern #end 
+		public var scaleX(get_scaleX,set_scaleX):Float;
+		#if swc @:extern #end 
+		public var scaleY(get_scaleY,set_scaleY):Float;
+		#if swc @:extern #end 
+		public var scaleZ(get_scaleZ,set_scaleZ):Float;
 		 public var frustumCulling:FrustumCulling;
 		 
 		 /**
@@ -83,7 +92,7 @@ package lz.native3d.core ;
 		id =++ID;
 		NODES.set(id, this);
 		var rgba = Color.toRGBA(id);
-		idVector = new Vector<Float>(#if flash 4 #end);
+		idVector = new Vector<Float>(4);
 		idVector[0] = rgba.x;
 		idVector[1] = rgba.y;
 		idVector[2] = rgba.z;

@@ -39,8 +39,8 @@ class ParticleExample extends Sprite
 		
 		pw = new ParticleWrapper(bv.instance3Ds[0]);
 		var d = 10;
-		for (i in 0...160) {
-			var p:Particle = new Particle(d * (Math.random() - .5), d * (Math.random() - .5), i, 1);
+		for (i in 0...16) {
+			var p:Particle = new Particle(d * (Math.random() - .5), d * (Math.random() - .5), i, 100);
 			p.color.x = Math.random()/2;
 			p.color.y = Math.random()/2;
 			p.color.z = Math.random()/2;
@@ -60,7 +60,7 @@ class ParticleExample extends Sprite
 		texture.setBmd(shadow, Context3DTextureFormat.BGRA, false, 0);
 		pw.material = new ParticleMaterial(texture.texture);
 		bv.instance3Ds[0].root.add(pw);
-		bv.instance3Ds[0].camera.z = -10;
+		bv.instance3Ds[0].camera.z = -1000;
 		addEventListener(Event.ENTER_FRAME, enterFrame);
 		addChild(new Stats());
 		
@@ -68,8 +68,8 @@ class ParticleExample extends Sprite
 	
 	private function enterFrame(e:Event):Void 
 	{
-		pw.particles[0].x = (mouseX/200-1)*5;
-		pw.particles[0].y = (1-mouseY/200)*5;
+		pw.particles[0].x = (mouseX/200-1)*500;
+		pw.particles[0].y = (1-mouseY/200)*500;
 		for (i in 1...pw.particles.length) {
 			var p = pw.particles[i];
 			p.x += (pw.particles[i - 1].x - p.x) * .3;

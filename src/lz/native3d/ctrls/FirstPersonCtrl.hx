@@ -24,7 +24,7 @@ class FirstPersonCtrl
 	
 	private var rotation:Vector3D;
 	private var lastRotation:Vector3D;
-	private var position:Vector3D;
+	public var position:Vector3D;
 	private var stage:Stage;
 	public function new(stage:Stage,node:Node3D) 
 	{

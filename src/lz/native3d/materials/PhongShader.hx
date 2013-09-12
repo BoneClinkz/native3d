@@ -7,7 +7,7 @@ import hxsl.Shader;
  */
 class PhongShader extends Shader
 {
-	var SRC = { 
+	static var SRC = { 
 		var input: {
 			gl_Vertex:Float3,
 			gl_Normal:Float3,

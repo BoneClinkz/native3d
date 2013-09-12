@@ -117,9 +117,11 @@ class PhongMaterial extends MaterialBase
 	private var DiffuseColorV:Vector<Float>;
 	private var SpecularColorV:Vector<Float>;
 	private var SpecularExponentV:Vector<Float>;
+	private var i3d:Instance3D;
 	public function new(i3d:Instance3D,lightNode:BasicLight3D,AmbientColor:Vector3D,DiffuseColor:Vector3D,SpecularColor:Vector3D,SpecularExponent:Float,diffuseTex:TextureBase) 
 	{
 		super();
+		this.i3d = i3d;
 		createProgram();
 		this.lightNode = lightNode;
 		LightPositionV = Vector.ofArray([0.0,0,0,0]);
@@ -151,12 +153,13 @@ class PhongMaterial extends MaterialBase
 		glslProgram.setFragmentUniformFromVector("specularExponent", SpecularExponentV );*/
 		
 		c3d.drawTriangles(node.drawAble.indexBufferSet.indexBuff);
+		glslProgram.detach();
 	}
 	private function createProgram ():Void {
 		 if (glslProgram!=null) {
 			 return;
 		 }
-        glslProgram = new GLSLProgram(Instance3D.getInstance().c3d);
+        glslProgram = new GLSLProgram(i3d.c3d);
         var vertexShaderSource =
        "
 	   attribute vec3 pos;

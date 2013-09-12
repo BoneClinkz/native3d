@@ -48,11 +48,7 @@ package lz.native3d.core;
 			
 			
 			parent = new Node3D();
-			#if flash
 			frustumPlanes = Vector.ofArray([new Vector3D(), new Vector3D(), new Vector3D(), new Vector3D(), new Vector3D(), new Vector3D()]);
-			#else
-			frustumPlanes = [new Vector3D(), new Vector3D(), new Vector3D(), new Vector3D(), new Vector3D(), new Vector3D()];
-			#end
 		}
 		public function perspectiveFieldOfViewLH(fieldOfViewY:Float, 
 												 aspectRatio:Float, 
@@ -64,7 +60,7 @@ package lz.native3d.core;
 			_fieldOfViewY = fieldOfViewY;
 			var yScale:Float = 1.0/Math.tan(fieldOfViewY/2.0);
 			var xScale:Float = yScale / aspectRatio; 
-			var vs:Vector<Float> = new Vector<Float>(#if flash 16 #end);
+			var vs:Vector<Float> = new Vector<Float>(16);
 			vs[0] = xScale;
 			vs[5] = yScale;
 			vs[10] = zFar / ( zFar-zNear);

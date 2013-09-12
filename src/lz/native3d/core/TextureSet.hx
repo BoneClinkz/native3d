@@ -90,7 +90,7 @@ package lz.native3d.core ;
 		}
 		
 		public function createCubeTextureBy6Bitmap( _bitmapDatas:Array<BitmapData>) : Void {
-			var _size:#if flash UInt #else Int #end = _bitmapDatas[0].width;
+			var _size:UInt = _bitmapDatas[0].width;
 			var context3D:Context3D = i3d.c3d;
 			var _resource:CubeTexture = context3D.createCubeTexture(_size, Context3DTextureFormat.BGRA, true);
 			

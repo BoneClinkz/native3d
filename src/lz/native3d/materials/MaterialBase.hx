@@ -1,4 +1,5 @@
 package lz.native3d.materials ;
+import flash.display3D.Context3D;
 import flash.display3D.Context3DBlendFactor;
 import flash.display3D.Context3DProgramType;
 import flash.display3D.Program3D;
@@ -14,10 +15,10 @@ import flash.display3D.Context3DCompareMode;
 	public var vertex:Vector<Float>;
 	public var fragment:Vector<Float>;
 	public var progrom:Program3D;
-	public var sourceFactor:Context3DBlendFactor;// = Context3DBlendFactor.ONE; 
-	public var destinationFactor:Context3DBlendFactor;// = Context3DBlendFactor.ZERO;
-	
-	public var passCompareMode:Context3DCompareMode;// = Context3DCompareMode.LESS;
+	public var sourceFactor:#if flash Context3DBlendFactor #else Int #end;// = Context3DBlendFactor.ONE; 
+	public var destinationFactor:#if flash Context3DBlendFactor #else Int #end;// = Context3DBlendFactor.ZERO;
+	public var passCompareMode:#if flash Context3DCompareMode #else Int #end;// = Context3DCompareMode.LESS;
+	public var c3d:Context3D;
 	public function new() 
 	{
 		#if flash
@@ -27,8 +28,11 @@ import flash.display3D.Context3DCompareMode;
 		#end
 	}
 	
-	public function draw(node:Node3D,pass:BasicPass3D):Void {
-		
+	public function draw(node:Node3D, pass:BasicPass3D):Void {
+		c3d = pass.i3d.c3d;
+		c3d.setDepthTest(true, passCompareMode);
+		c3d.setBlendFactors(sourceFactor, destinationFactor);
+		c3d.setProgram(progrom);
 	}
 	
 	public function init(node:Node3D):Void {

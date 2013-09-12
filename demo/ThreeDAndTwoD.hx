@@ -125,7 +125,7 @@ package ;
 			}
 		}
 		
-		public function enterFrameHandler(#if flash event : Event #end) : Void
+		public function enterFrameHandler(event : Event) : Void
 		{
 			//3d
 			if (i3d.c3d != null) {

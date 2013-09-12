@@ -109,7 +109,7 @@ package lz.native3d.meshs ;
 		
 		#if flash
 		public static function createTeaPot(i3d:Instance3D):DrawAble3D {
-			var teaPotIndexData:Array<#if flash UInt #else Int #end>=[
+			var teaPotIndexData:Array<UInt>=[
 				0,1,2,
 				2,3,0,
 				3,2,4,
@@ -1948,13 +1948,13 @@ package lz.native3d.meshs ;
 			// normal
 			//context3D.setVertexBufferAt( 4, vertexBuffer, 12, Context3DVertexBufferFormat.FLOAT_3 );
 			var drawable:DrawAble3D = new DrawAble3D();
-			var vin:Vector<Float> = new Vector<Float>(#if flash untyped(teaPotVertexData.length / 15 * 3) #end);
-			var uv:Vector<Float> = new Vector<Float>(#if flash untyped(teaPotVertexData.length / 15 * 2) #end);
-			var norm:Vector<Float> = new Vector<Float>(#if flash untyped(teaPotVertexData.length / 15 * 3) #end);
+			var vin:Vector<Float> = new Vector<Float>(untyped(teaPotVertexData.length / 15 * 3));
+			var uv:Vector<Float> = new Vector<Float>(untyped(teaPotVertexData.length / 15 * 2));
+			var norm:Vector<Float> = new Vector<Float>(untyped(teaPotVertexData.length / 15 * 3));
 			for (i in 0...untyped(teaPotVertexData.length/15)) {
-				var i3:#if flash UInt #else Int #end = i * 3;
-				var i2:#if flash UInt #else Int #end = i * 2;
-				var i15:#if flash UInt #else Int #end = i * 15;
+				var i3:Int = i * 3;
+				var i2:Int = i * 2;
+				var i15:Int = i * 15;
 				vin[i3] = teaPotVertexData[i15];
 				vin[i3+1] = teaPotVertexData[i15+1];
 				vin[i3+2] = teaPotVertexData[i15+2];
@@ -1964,9 +1964,9 @@ package lz.native3d.meshs ;
 				norm[i3+1] = teaPotVertexData[i15+10];
 				norm[i3+2] = teaPotVertexData[i15+11];
 			}
-			var indexs:Vector<#if flash UInt #else Int #end> = new Vector<#if flash UInt #else Int #end>(#if flash teaPotIndexData.length #end);
+			var indexs:Vector<UInt> = new Vector<UInt>(teaPotIndexData.length);
 			for (i in 0...untyped(teaPotIndexData.length/3)) {
-				var i3:#if flash UInt #else Int #end = i * 3;
+				var i3:Int=i*3;
 				indexs[i3] = teaPotIndexData[i3];
 				indexs[i3+1] = teaPotIndexData[i3+2];
 				indexs[i3+2] = teaPotIndexData[i3+1];
