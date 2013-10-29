@@ -17,7 +17,6 @@ import lz.native3d.core.Instance3D;
 import lz.native3d.core.Node3D;
 import lz.native3d.core.TextureSet;
 import lz.native3d.core.VertexBufferSet;
-import lz.native3d.materials.SkinMaterial;
 import lz.native3d.meshs.MeshUtils;
 
 /**
@@ -37,9 +36,11 @@ class ColladaParser extends AbsParser
 	public var sid2node:Map<String,Node3D>;
 	public var jointRoot:Node3D;
 	public var texture:TextureSet;
-	public function new(data:Dynamic) 
+	public var light:BasicLight3D;
+	public function new(data:Dynamic,light:BasicLight3D) 
 	{
 		super(data);
+		this.light = light;
 		texture = new TextureSet(Instance3D.getInstance());
 		
 	}
@@ -166,7 +167,7 @@ class ColladaParser extends AbsParser
 	private function buildAnimation():Void {
 		var areg = ~/(.+)\/(.+)\((\d+)\)\((\d+)\)/;
 		var areg2 = ~/(.+)\/(.+)/;
-		anms = new Animation();
+		anms = new Animation(light);
 		anms.jointRoot = jointRoot;
 		for (child in dae.elements()) {
 			if (child.nodeName == "library_animations") {

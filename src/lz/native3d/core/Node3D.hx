@@ -260,17 +260,17 @@ package lz.native3d.core ;
 			return _material;
 		}
 		
-		inline public function setPosition(x:Float, y:Float, z:Float):Void {
+		inline public function setPosition(x:Float=0, y:Float=0, z:Float=0):Void {
 			this.x = x;
 			this.y = y;
 			this.z = z;
 		}
-		inline public function setRotation(x:Float, y:Float, z:Float):Void {
+		inline public function setRotation(x:Float=0, y:Float=0, z:Float=0):Void {
 			rotationX = x;
 			rotationY = y;
 			rotationZ = z;
 		}
-		inline public function setScale(x:Float, y:Float, z:Float):Void {
+		inline public function setScale(x:Float=1, y:Float=1, z:Float=1):Void {
 			scaleX = x;
 			scaleY = y;
 			scaleZ = z;

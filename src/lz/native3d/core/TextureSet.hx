@@ -96,8 +96,8 @@ package lz.native3d.core ;
 			
 			for ( side in 0...6)
 			{
-				var mipmapId	: #if flash UInt #else Int #end			= 0;
-				var mySize		: #if flash UInt #else Int #end			= _size;
+				var mipmapId	: UInt			= 0;
+				var mySize		: UInt			= _size;
 				var bitmapData	: BitmapData	= _bitmapDatas[side];
 				
 				while (mySize >= 1)

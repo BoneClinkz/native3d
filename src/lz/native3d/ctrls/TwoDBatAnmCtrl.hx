@@ -38,17 +38,6 @@ class TwoDBatAnmCtrl
 			node3d.matrixVersion++;
 			node3d.twoDData.uvData = lastFrame.uv;
 		}
-		
-		
-		/*matrix.copyFrom(eframe.matrix);
-		matrix.scale(scale.x, scale.y);
-		matrix.translate(pos.x, pos.y);
-		if (display) {
-			display.graphics.clear();
-		}
-		graphics.beginBitmapFill(data.sheetImage, matrix, false,true);
-		graphics.drawRect(pos.x + eframe.offset.x * scale.x, pos.y + eframe.offset.y * scale.y, eframe.size.x * scale.x, eframe.size.y * scale.y);
-		graphics.endFill();*/
 	}
 	
 }

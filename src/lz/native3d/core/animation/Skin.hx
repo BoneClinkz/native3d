@@ -20,8 +20,8 @@ class Skin
 	public var vout:Vector<Float>;
 	public var bindShapeMatrix:Matrix3D;
 	public var invBindMatrixs:Vector<Matrix3D>;
-	public var vcount:Vector<#if flash UInt #else Int #end>;
-	public var v:Vector<#if flash UInt #else Int #end>;
+	public var vcount:Vector<UInt>;
+	public var v:Vector<UInt>;
 	public var weights:Vector<Float>;
 	public var node:Node3D;
 	
@@ -59,8 +59,8 @@ class Skin
 		vout.length = vin.length;
 		#end 
 		
-		var j:#if flash UInt #else Int #end = 0;
-		var len2:#if flash UInt #else Int #end;
+		var j:UInt = 0;
+		var len2:UInt;
 		var pos = new Vector3D();
 		for (i in 0...vcount.length) {
 			var ix:Int = i * 3;

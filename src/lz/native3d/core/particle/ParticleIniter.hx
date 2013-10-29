@@ -26,7 +26,7 @@ class ParticleIniter
 		var cdata = new Vector<Float>(4 * wrapper.particles.length * 4, true);
 		var odata = new Vector<Float>(2 * wrapper.particles.length * 4, true);
 		var uvdata = new Vector<Float>(2 * wrapper.particles.length * 4, true);
-		var iData = new Vector<#if flash UInt #else Int #end>(wrapper.particles.length * 6);
+		var iData = new Vector<UInt>(wrapper.particles.length * 6);
 		
 		for (i in 0...wrapper.particles.length) {
 			var p = wrapper.particles[i];

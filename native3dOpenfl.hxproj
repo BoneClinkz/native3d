@@ -18,16 +18,17 @@
   <classpaths>
     <class path="src" />
     <class path="test" />
+    <class path="demo" />
     <class path="libs" />
-    <class path="bin\flash\haxe" />
+    <class path="bin\windows\cpp\haxe" />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="tools=1&#xA;openfl_ver=1.0.8&#xA;openfl&#xA;display&#xA;web" />
+    <option directives="tools=1&#xA;openfl_ver=1.0.8&#xA;openfl&#xA;display&#xA;windows&#xA;desktop" />
     <option flashStrict="False" />
-    <option mainClass="ApplicationMain" />
+    <option mainClass="MagicCube" />
     <option enabledebug="True" />
-    <option additional="--no-output&#xA;-swf-version 11.6&#xA;#--remap nme:flash" />
+    <option additional="--no-output&#xA;--macro allowPackage(&quot;flash&quot;)" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>
@@ -40,6 +41,7 @@
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
     <compile path="test\TestOpenfl.hx" />
+    <compile path="demo\MagicCube.hx" />
   </compileTargets>
   <!-- Assets to embed into the output SWF -->
   <library>

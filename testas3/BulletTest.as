@@ -4,6 +4,7 @@ package
 	import flash.events.Event;
 	import flash.geom.Vector3D;
 	import lz.native3d.core.BasicLight3D;
+	import lz.native3d.core.BasicTest;
 	import lz.native3d.core.BasicView;
 	import lz.native3d.core.DrawAble3D;
 	import lz.native3d.core.Node3D;
@@ -31,11 +32,8 @@ package
 	 * @author lizhi http://matrix3d.github.io/
 	 */
 	[SWF(width = "400",height="400" )]
-	public class BulletTest extends Sprite
+	public class BulletTest extends BasicTest
 	{
-		private var bv:BasicView;
-		private var cubeDA:DrawAble3D;
-		private var light:BasicLight3D;
 		private var broadphase:btDbvtBroadphase;
 		private var defCollisionInfo:btDefaultCollisionConstructionInfo;
 		private var collisionConfig:btDefaultCollisionConfiguration;
@@ -47,42 +45,17 @@ package
 		private var bods:Vector.<btRigidBody>;
 		private var meshes:Vector.<Node3D>;
 		
-		
-		public function BulletTest():void 
-		{
-			if (stage) init();
-			else addEventListener(Event.ADDED_TO_STAGE, init);
-		}
-		
-		private function init(e:Event = null):void 
+		override public function initScene():void
 		{
 			CModule.rootSprite = this;
 			if (CModule.runningAsWorker()) {
 				return;
 			}
 			CModule.startAsync(this);
-			
-			removeEventListener(Event.ADDED_TO_STAGE, init);
-			bv = new BasicView();
-			addChild(bv);
-			bv.instance3Ds[0].addEventListener(Event.CONTEXT3D_CREATE, instance3Ds_context3dCreate);
 			addChild(new Stats);
-		}
-		
-		private function instance3Ds_context3dCreate(e:Event):void 
-		{
-			cubeDA = MeshUtils.createCube(1, bv.instance3Ds[0]);
-			light = new BasicLight3D;
-			bv.instance3Ds[0].root.add(light);
-			light.x = 100;
-			light.y = 50;
-			light.z = -100;
-			bv.instance3Ds[0].camera.z = -100;
-			bv.instance3Ds[0].camera.y = 30;
-			
-			//new FirstPersonCtrl(stage, bv.instance3Ds[0].camera);
 			createWorld();
-			addEventListener(Event.ENTER_FRAME, enterFrame);
+			ctrl.position.setTo(0, 30, -100);
+			addSky();
 		}
 		
 		private function createWorld():void
@@ -156,7 +129,7 @@ package
 			var rb:btRigidBody = btRigidBody.create(rbci.swigCPtr)
 			world.addRigidBody(rb.swigCPtr)
 
-			meshes.push(addCube(w,h,d, x, y, z));
+			meshes.push(addCube(null, x, y, z,0,0,0,w/2,h/2,d/2));
 
 			bods.push(rb)
 
@@ -171,7 +144,7 @@ package
 	      return vec.swigCPtr
 	    }
 		
-		private function enterFrame(e:Event):void 
+		override public function enterFrame(e:Event):void 
 		{
 			CModule.serviceUIRequests();	
 			var i:int
@@ -183,19 +156,6 @@ package
 	        	positionAndRotateMesh(meshes[i], bods[i])
 	        }
 			bv.instance3Ds[0].render();
-		}
-		private function addCube(w:Number,h:Number,d:Number, x:Number, y:Number, z:Number):Node3D {
-			var node:Node3D = new Node3D;
-			node.frustumCulling = null;
-			node.drawAble = cubeDA;
-			node.setScale(w/2, h/2, d/2);
-			node.set_material( new PhongMaterial(bv.instance3Ds[0], light,
-			new Vector3D(.2,.2,.2),
-			new Vector3D(Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5),
-			new Vector3D(.8,.8,.8),
-			200));
-			bv.instance3Ds[0].root.add(node);
-			return node;
 		}
 		
 	}

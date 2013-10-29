@@ -24,9 +24,9 @@
   <build>
     <option directives="" />
     <option flashStrict="False" />
-    <option mainClass="Sponza" />
+    <option mainClass="TeapotsExample" />
     <option enabledebug="True" />
-    <option additional="-lib format&#xA;-lib hxsl&#xA;-lib openfl-stage3d&#xA;-D shaderCompDebug" />
+    <option additional="-lib format&#xA;-lib hxsl&#xA;-lib openfl-stage3d" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>
@@ -39,7 +39,7 @@
     <compile path="test\TestAs3.hx" />
     <compile path="test\LineExample.hx" />
     <compile path="test\Test2.hx" />
-    <compile path="demo\Sponza.hx" />
+    <compile path="test\TeapotsExample.hx" />
   </compileTargets>
   <!-- Assets to embed into the output SWF -->
   <library>

@@ -37,6 +37,7 @@ class ObjParser extends AbsParser
 	private var len:Int;
 	private var v:Vector<Float>;
 	private var vt:Vector<Float>;
+	private var vn:Vector<Float>;
 	private var cnode:ObjNode;
 	private var mit2node:Map < String,ObjNode> ;
 	public var mitName:String;
@@ -70,12 +71,12 @@ class ObjParser extends AbsParser
 				}
 			}
 		}
-		
 		mit2node = new Map<String,ObjNode>();
 		var sdata:String = cast(data, ByteArray).toString();
 		adata = sdata.split("\r\n");
 		v = new Vector<Float>();
 		vt = new Vector<Float>();
+		vn = new Vector<Float>();
 		len = adata.length;
 		frameParser();
 		if(cline<len){
@@ -92,7 +93,6 @@ class ObjParser extends AbsParser
 		ctime = Timer.stamp();
 		while (cline<len) {
 			if ((Timer.stamp() - ctime) > maxTime) {
-				//trace("return");
 				return;
 			}
 			var line:String = adata[cline++];
@@ -101,31 +101,33 @@ class ObjParser extends AbsParser
 			if (type == "v") {
 				v.push(Std.parseFloat(trunk[1]));
 				v.push(Std.parseFloat(trunk[2]));
-				v.push(Std.parseFloat(trunk[3]));
+				v.push(-Std.parseFloat(trunk[3]));
 			}else if (type=="vt") {
 				vt.push(Std.parseFloat(trunk[1]));
 				vt.push(1-Std.parseFloat(trunk[2]));
+			}else if (type=="vn") {
+				//vn.push(Std.parseFloat(trunk[1]));
+				//vn.push(Std.parseFloat(trunk[2]));
+				//vn.push(-Std.parseFloat(trunk[3]));
 			}
 			else if (type == "f") {
 				var ps:Vector<UInt> = new Vector<UInt>();
 				var tps:Vector<UInt> = new Vector<UInt>();
+				var nps:Vector<UInt> = new Vector<UInt>();
 				for (i in 1...trunk.length) {
 					var ps2:Array<String> = trunk[i].split("/");
 					var ps20:Int = Std.parseInt(ps2[0]);
 					var ps21:Int = Std.parseInt(ps2[1]);
+					var ps22:Int = Std.parseInt(ps2[2]);
 					ps.push(ps20);
 					tps.push(ps21);
+					//nps.push(ps22);
 				}
 				polygon2triangle(ps, cnode.f);
 				polygon2triangle(tps, cnode.tf);
+				//polygon2triangle(nps, cnode.nf);
 			}else if (type == "g") {
-				/*cnode = new ObjNode();
-				cnode.node = new Node3D();
-				f = new Vector<UInt>();
-				cnode.f = f;
-				node.add(cnode.node);*/
 			}else if (type == "o") {
-				//trace("o");
 			}
 			if (type == "usemtl") {
 				if (!mit2node.exists(trunk[1])) {
@@ -133,6 +135,7 @@ class ObjParser extends AbsParser
 					cnode.mit = trunk;
 					cnode.f = new Vector<UInt>();
 					cnode.tf = new Vector<UInt>();
+					cnode.nf = new Vector<UInt>();
 					cnode.node = new Node3D();
 					mit2node.set(trunk[1], cnode);
 				}
@@ -143,16 +146,21 @@ class ObjParser extends AbsParser
 		for (node in mit2node) {
 			var newv:Vector<Float> = new Vector<Float>();
 			var newvt:Vector<Float> = new Vector<Float>();
+			var newnt:Vector<Float> = new Vector<Float>();
 			var index:Vector<UInt> = new Vector<UInt>();
 			for (i in 0...node.f.length) {
 				index.push(i);
 				var i3:Int = node.f[i] * 3-3;
 				var i2:Int = node.tf[i] * 2-2;
+				//var i1:Int = node.nf[i] * 3-3;
 				newv.push(v[i3++]);
 				newv.push(v[i3++]);
 				newv.push(v[i3]);
 				newvt.push(vt[i2++]);
 				newvt.push(vt[i2]);
+				//newnt.push(v[i1++]);
+				//newnt.push(v[i1++]);
+				//newnt.push(v[i1]);
 				if (newv.length/3>=65531) {
 					break;
 				}
@@ -162,6 +170,7 @@ class ObjParser extends AbsParser
 			drawable.indexBufferSet = new IndexBufferSet(index.length, index, 0,i3d);
 			drawable.xyz = new VertexBufferSet(untyped(newv.length/3), 3, newv, 0,i3d);
 			drawable.uv = new VertexBufferSet(untyped(newvt.length/2), 2, newvt, 0,i3d);
+			drawable.norm = new VertexBufferSet(untyped(newnt.length/3), 3, newnt, 0,i3d);
 			MeshUtils.computeNorm(drawable);
 			node.node.drawAble = drawable;
 			node.node.material = 
@@ -211,6 +220,7 @@ class ObjNode {
 	public var mit:Array<String>;
 	public var f:Vector<UInt>;
 	public var tf:Vector<UInt>;
+	public var nf:Vector<UInt>;
 	public var node:Node3D;
 	public function new():Void {
 		

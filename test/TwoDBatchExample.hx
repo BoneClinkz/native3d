@@ -40,17 +40,7 @@ class TwoDBatchExample extends Sprite
 		loader.addEventListener(Event.COMPLETE, loader_complete);
 		loader.addImageLoader("../assets/sheet/explode/sheet.png");
 		loader.addUrlLoader("../assets/sheet/explode/sheet.xml");
-		/*loader.addImageLoader("../assets/sheet/light/sheet.png");
-		loader.addUrlLoader("../assets/sheet/light/sheet.xml");
-		center = new Point(85,212);
-		/*loader.addImageLoader("../assets/sheet/smoke/sheet.png");
-		loader.addUrlLoader("../assets/sheet/smoke/sheet.xml");
-		center = new Point(265,194);*/
-		/*loader.addImageLoader("../assets/sheet/gril/sheet.png");
-		loader.addUrlLoader("../assets/sheet/gril/sheet.xml");
-		center = new Point(40,40);*/
 		loader.start();
-		
 	}
 	
 	private function loader_complete(e:Event):Void 
@@ -75,7 +65,7 @@ class TwoDBatchExample extends Sprite
 	private function context3dCreate(e:Event):Void 
 	{
 		node = new Node3D();
-		var drawable:DrawAble3D = MeshUtils.createPlane(10, bv.instance3Ds[0]);
+		var drawable:DrawAble3D = new DrawAble3D();
 		node.drawAble = drawable;
 		var textureset:TextureSet = new TextureSet(bv.instance3Ds[0]);
 		textureset.setBmd(bmd,Context3DTextureFormat.BGRA);
@@ -83,38 +73,27 @@ class TwoDBatchExample extends Sprite
 		bv.instance3Ds[0].root.add(node);
 		var td:TDSpriteData= TDSpriteData.create1(bmd, xml, center);
 		
-		var c:Int = 1000;
+		var c:Int = 10;
 		while (c-->0) {
 			var player:Node3D = new Node3D();
-			//player.x = stage.stageWidth/2;
-			//player.y = stage.stageHeight/2;
 			player.x =  stage.stageWidth * (Math.random());
 			player.y =  stage.stageHeight * (Math.random());
+			player.scaleX = 1;
 			node.add(player);
 			var twoDNode:Node3D = new Node3D();
 			player.add(twoDNode);
 			var twoD:TwoDData = new TwoDData();
 			twoD.anmCtrl = new TwoDBatAnmCtrl();
-			//twoD.anmCtrl.frameScript = randomPos;
-			twoD.anmCtrl.speed = .2/*+Math.random()*.1*/;
+			twoD.anmCtrl.speed = .2;
 			twoD.anmCtrl.data = td;
 			twoD.anmCtrl.node3d = twoDNode;
 			twoDNode.twoDData = twoD;
 		}
-		
 		addEventListener(Event.ENTER_FRAME, enterFrame);
-	}
-	
-	private function randomPos(ctrl:TwoDBatAnmCtrl):Void {
-		ctrl.node3d.parent.x= stage.stageWidth*(Math.random());
-		ctrl.node3d.parent.y= stage.stageHeight*(Math.random());
 	}
 	
 	private function enterFrame(e:Event):Void 
 	{
-		/*for (c in node.children) {
-			c.rotationZ ++;
-		}*/
 		for (i3d in bv.instance3Ds) {
 			i3d.render();
 		}

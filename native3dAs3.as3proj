@@ -12,11 +12,11 @@
     <movie minorVersion="5" />
     <movie platform="Flash Player" />
     <movie background="#FFFFFF" />
-    <movie preferredSDK="AIR 3.8.0;3.8.0;" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
     <class path="testas3" />
+    <class path="as3" />
   </classpaths>
   <!-- Build options -->
   <build>
@@ -56,6 +56,7 @@
     <element path="lib\native3dHaxe.swc" />
     <element path="lib\Bullet.swc" />
     <element path="lib\glsl2agal.swc" />
+    <element path="lib\MinimalComps_0_9_10.swc" />
   </libraryPaths>
   <!-- External Libraries -->
   <externalLibraryPaths>

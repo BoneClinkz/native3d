@@ -9,7 +9,7 @@ class ByteArraySet
 {
 	public var numRegisters : Int=0;
 	public var data : ByteArray; 
-	public var byteArrayOffset : #if flash UInt #else Int #end = 0;
+	public var byteArrayOffset : UInt = 0;
 	public function new() 
 	{
 		

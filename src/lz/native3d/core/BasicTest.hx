@@ -1,4 +1,4 @@
-package ;
+package lz.native3d.core;
 import flash.display.BitmapData;
 import flash.display.Sprite;
 import flash.display3D.Context3DTextureFormat;
@@ -16,12 +16,15 @@ import lz.native3d.ctrls.FirstPersonCtrl;
 import lz.native3d.materials.PhongMaterial;
 import lz.native3d.materials.SkyboxMaterial;
 import lz.native3d.meshs.MeshUtils;
+import lz.native3d.parsers.ColladaParser;
 import lz.net.LoaderBat;
-import openfl.Assets;
 #if flash
 import lz.native3d.parsers.ObjParser;
+#if !swc
 import net.hires.debug.Stats;
+#end
 #else
+import openfl.Assets;
 using OpenFLStage3D;
 #end
 /**
@@ -30,9 +33,9 @@ using OpenFLStage3D;
  */
 class BasicTest extends Sprite
 {
-	private var bv:BasicView;
+	public var bv:BasicView;
 	private var light:BasicLight3D;
-	private var root3d:Node3D;
+	public var root3d:Node3D;
 	private var cubeDrawAble:DrawAble3D;
 	public var ctrl:FirstPersonCtrl;
 	public var loading:TextField;
@@ -43,11 +46,14 @@ class BasicTest extends Sprite
 	}
 	
 	public function init():Void {
-		bv = new BasicView(400, 400, true);
+		//bv = new BasicView(150, 150, false);
+		bv = new BasicView(500, 500, true);
 		bv.instance3Ds[0].addEventListener(Event.CONTEXT3D_CREATE, context3dCreate);
 		addChild(bv);
 		#if flash
+		#if !swc
 		addChild(new Stats());
+		#end
 		loading = new TextField();
 		loading.autoSize = TextFieldAutoSize.LEFT;
 		addChild(loading);
@@ -77,7 +83,7 @@ class BasicTest extends Sprite
 		
 	}
 	
-	private function enterFrame(e:Event):Void 
+	public function enterFrame(e:Event):Void 
 	{
 		root3d.rotationY += .2;
 		root3d.rotationZ += .22;
@@ -115,9 +121,9 @@ class BasicTest extends Sprite
 		new Vector3D(Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5),//DiffuseColor
 		new Vector3D(.8,.8,.8),//SpecularColor
 		200,
-		//null
+		null
 	//	texture
-		TextureSet.getTempTexture(bv.instance3Ds[0])
+		//TextureSet.getTempTexture(bv.instance3Ds[0])
 		);
 		return node;
 	}
@@ -180,6 +186,27 @@ class BasicTest extends Sprite
 		var parser:ObjParser = untyped e.currentTarget;
 		bv.instance3Ds[0].root.add(parser.node);
 		loading.text = "";
+	}
+	
+	public function addDae():Void {
+		var parser = new ColladaParser(null,light);
+		parser.addEventListener(Event.COMPLETE, dae_parser_complete);
+		parser.fromUrlZip("../assets/model/astroBoy_walk_Max.zip", "astroBoy_walk_Max.xml","boy_10.jpg");
+	}
+	
+	private function dae_parser_complete(e:Event):Void 
+	{
+		var parser = untyped e.currentTarget;
+		var c:Int = 10;
+		for (x in 0...c ) {
+			for(y in 0...c){
+				var clone:Node3D = parser.node.clone();
+				clone.frustumCulling = null;
+				var d:Int = 60;
+				clone.setPosition(d * (x/c-.5), d * (y/c - .5), 0);
+				root3d.add(clone);
+			}
+		}
 	}
 	#end
 	

@@ -1,6 +1,7 @@
 package lz.native3d.core.animation;
 import flash.display3D.Context3DVertexBufferFormat;
 import flash.geom.Matrix3D;
+import flash.geom.Vector3D;
 import flash.utils.ByteArray;
 import flash.utils.Endian;
 import flash.Vector;
@@ -11,7 +12,7 @@ import lz.native3d.core.IndexBufferSet;
 import lz.native3d.core.Instance3D;
 import lz.native3d.core.Node3D;
 import lz.native3d.core.VertexBufferSet;
-import lz.native3d.materials.SkinMaterial;
+import lz.native3d.materials.PhongMaterial;
 import lz.native3d.meshs.MeshUtils;
 
 /**
@@ -25,8 +26,10 @@ class Animation
 	public var maxTime:Float = 0;
 	public var numFrame:Int = 0;
 	public var frame:Int = 0;
-	public function new() 
+	public var light:BasicLight3D;
+	public function new(light:BasicLight3D) 
 	{
+		this.light = light;
 		parts = new Vector<AnimationPart>();
 	}
 	
@@ -148,7 +151,7 @@ class Animation
 				var indexs = daeIndexs[a];
 				var uvsi = daeUVIndexs[a];
 				var skinDrawAble = new SkinDrawAble();
-				var newIndexs = new Vector<#if flash UInt #else Int #end>(indexs.length);
+				var newIndexs = new Vector<UInt>(indexs.length);
 				var i2newi = new Map<Int,Int>();
 				var vs = skin.daeXyz;
 				var uvs = skin.daeUV;
@@ -232,7 +235,6 @@ class Animation
 				skinDrawAble.uv = new VertexBufferSet(Std.int(newUVs.length/2), 2, newUVs, 0,Instance3D.getInstance());
 				skinDrawAble.indexBufferSet = new IndexBufferSet(newIndexs.length, newIndexs, 0,Instance3D.getInstance());
 				MeshUtils.computeNorm(skinDrawAble);
-				skinDrawAble.material = new SkinMaterial(skin, Std.random(0xffffff), Std.random(0xffffff), new BasicLight3D());
 				skinDrawAble.xyz.init();
 				skinDrawAble.uv.init();
 				skinDrawAble.norm.init();
@@ -241,7 +243,16 @@ class Animation
 				skinDrawAble.matrixBuff.init();
 				skin.node.drawAble = new DrawAble3D();
 				skin.node.drawAble.radius = MeshUtils.computeRadius(vs);
-				skin.node.material=new SkinMaterial(skin, Std.random(0xffffff), Std.random(0xffffff), new BasicLight3D());
+				//skin.node.material=new SkinMaterial(skin, Std.random(0xffffff), Std.random(0xffffff), new BasicLight3D());
+				skin.node.material = new PhongMaterial(Instance3D.getInstance(),
+										light,
+										new Vector3D(.2, .2, .2),//AmbientColor
+										new Vector3D(Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5),//DiffuseColor
+										new Vector3D(.8,.8,.8),//SpecularColor
+										200,
+										skin.texture.texture,
+										skin
+										);
 			}
 		}
 		

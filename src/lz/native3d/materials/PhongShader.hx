@@ -11,7 +11,9 @@ class PhongShader extends Shader
 		var input: {
 			gl_Vertex:Float3,
 			gl_Normal:Float3,
-			gl_UV:Float2,
+			weight:Float3,
+			matrixIndex:Float4,
+			gl_UV:Float2
 		}
 		
 		var LightVec:Float3;
@@ -24,18 +26,52 @@ class PhongShader extends Shader
 		//gl_NormalMatrix:M44,
 		var gl_ProjectionMatrix:M44;
 		var LightPosition:Float3;
-		function vertex(
-		){
+		var anmMats:Float4<117>;
+		//var anmMats:Array<Float4>;
+		var hasAnm:Bool;
+		function vertex() {
+			var wpos:Float4 = input.gl_Vertex.xyzw;
+			if(hasAnm!=null){
+				var t = input.matrixIndex.x;
+				wpos.x = dp4(input.gl_Vertex.xyzw, anmMats[t]);
+				t+=1;
+				wpos.y = dp4(input.gl_Vertex.xyzw, anmMats[t]);
+				t +=1;
+				wpos.z = dp4(input.gl_Vertex.xyzw, anmMats[t]);
+				wpos.w = input.gl_Vertex.w;
+				var wpos2 = wpos*input.weight.x;
+				
+				t = input.matrixIndex.y;
+				wpos.x = dp4(input.gl_Vertex.xyzw, anmMats[t]);
+				t +=1;
+				wpos.y = dp4(input.gl_Vertex.xyzw, anmMats[t]);
+				t +=1;
+				wpos.z = dp4(input.gl_Vertex.xyzw, anmMats[t]) ;
+				wpos.w = input.gl_Vertex.w;
+				wpos2 += wpos * input.weight.y;
+				
+				t = input.matrixIndex.z;
+				wpos.x = dp4(input.gl_Vertex.xyzw, anmMats[t]);
+				t +=1;
+				wpos.y = dp4(input.gl_Vertex.xyzw, anmMats[t]);
+				t +=1;
+				wpos.z = dp4(input.gl_Vertex.xyzw, anmMats[t]) ;
+				wpos.w = input.gl_Vertex.w;
+				wpos2 += wpos * input.weight.z;
+				
+				wpos = wpos2;
+			}
+			
 			if(DiffuseColor!=null||SpecularColor!=null){
 				var eyespacePos   = (input.gl_Vertex*gl_ModelViewMatrix).xyz;
-				var surfaceNormal      = normalize(input.gl_Normal * gl_ModelViewMatrix/*gl_NormalMatrix*/);
+				var surfaceNormal      = normalize(input.gl_Normal * gl_ModelViewMatrix);
 				SurfaceNormal = surfaceNormal;
 				var lightVec           = normalize(LightPosition - eyespacePos);
 				LightVec = lightVec;
 				ViewVec            = normalize( -eyespacePos);
 				ReflectedLightVec  = normalize(2* dot(lightVec, surfaceNormal)* surfaceNormal-lightVec);
 			}
-			out = input.gl_Vertex.xyzw * gl_ModelViewMatrix * gl_ProjectionMatrix;
+			out = wpos * gl_ModelViewMatrix * gl_ProjectionMatrix;
 			if (hasDiffuseTex) {
 				UV = input.gl_UV;
 			}

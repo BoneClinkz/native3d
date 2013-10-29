@@ -65,7 +65,7 @@ class ShadowMaterial extends MaterialBase
 	public var texture:TextureBase;
 	private var lightNode:BasicLight3D;
 	private var lightPass:BasicPass3D;
-	public function new(texture:TextureBase,diffuse:#if flash UInt #else Int #end,ambient:#if flash UInt #else Int #end,lightNode:BasicLight3D,lightPass:BasicPass3D) 
+	public function new(texture:TextureBase,diffuse:UInt,ambient:#if flash UInt #else Int #end,lightNode:BasicLight3D,lightPass:BasicPass3D) 
 	{
 		super();
 		this.lightNode = lightNode;

@@ -2072,7 +2072,7 @@ package lz.native3d.meshs ;
 			for (i in 0...untyped(drawable.xyz.data.length/3)) {
 				normVs.push(new Vector<Vector3D>());
 			}
-			var norm:Vector<Float> = new Vector<Float>(#if flash drawable.xyz.data.length #end);
+			var norm:Vector<Float> = new Vector<Float>(drawable.xyz.data.length);
 			var vin:Vector<Float> = drawable.xyz.data;
 			var i:Int = 0;
 			var len:Int =Std.int(drawable.indexBufferSet.data.length/3)*3;

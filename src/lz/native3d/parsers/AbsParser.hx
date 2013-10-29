@@ -113,8 +113,8 @@ class AbsParser extends EventDispatcher
 	public function polygon2triangle(ps:Vector<UInt>,vs:Vector<UInt>):Void {
 		for (i in 1...ps.length-1) {
 			vs.push(ps[0]);
-			vs.push(ps[i+1]);
 			vs.push(ps[i]);
+			vs.push(ps[i+1]);
 		}
 	}
 	

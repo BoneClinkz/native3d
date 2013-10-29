@@ -1,5 +1,8 @@
 package ;
+import flash.events.Event;
 import flash.Lib;
+import lz.native3d.core.BasicTest;
+import lz.native3d.core.Node3D;
 
 
  class TeapotsExample extends BasicTest
@@ -16,8 +19,8 @@ import flash.Lib;
 	override public function initScene() : Void
 	{
 		var w = 5;
-		var h = 5;
-		var d = 5;
+		var h = w;
+		var d = w;
 		var scale = 30;
 		var gap = 100;
 		for (x in 0...w) {
@@ -29,8 +32,7 @@ import flash.Lib;
 		}
 		#if flash
 		addSky();
-		#end
-		
+		#end	
 		ctrl.position.z = -1300;
 	}
 }

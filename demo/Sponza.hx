@@ -1,6 +1,6 @@
 package ;
-import flash.display.Sprite;
 import flash.Lib;
+import lz.native3d.core.BasicTest;
 
 /**
  * ...
