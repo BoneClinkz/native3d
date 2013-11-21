@@ -19,10 +19,10 @@ class FirstPersonCtrl
 	private var keys:Map<Int,Bool>;
 	private var helpMatrix:Matrix3D;
 	private var helpV:Vector3D;
-	private var speed:Float = 3;
+	public var speed:Float = 3;
 	private var lastPos:Point;
 	
-	private var rotation:Vector3D;
+	public var rotation:Vector3D;
 	private var lastRotation:Vector3D;
 	public var position:Vector3D;
 	private var stage:Stage;
@@ -58,6 +58,9 @@ class FirstPersonCtrl
 		stage.addEventListener(MouseEvent.MOUSE_MOVE, stage_mouseMove);
 		lastPos = new Point(e.localX, e.localY);
 		lastRotation = rotation.clone();
+	}
+	public function stop():Void {
+		stage.removeEventListener(Event.ENTER_FRAME, stage_enterFrame);
 	}
 	
 	private function stage_enterFrame(e:Event):Void 

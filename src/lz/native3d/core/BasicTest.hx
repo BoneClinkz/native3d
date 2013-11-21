@@ -94,9 +94,7 @@ class BasicTest extends Sprite
 		light = new BasicLight3D();
 		bv.instance3Ds[0].root.add(light);
 		bv.instance3Ds[0].lights.push(light);
-		light.x = 100;
-		light.y = 50;
-		light.z = -200;
+		light.setPosition( -100,100);
 	}
 	
 	public function initScene():Void {
@@ -203,7 +201,8 @@ class BasicTest extends Sprite
 				var clone:Node3D = parser.node.clone();
 				clone.frustumCulling = null;
 				var d:Int = 60;
-				clone.setPosition(d * (x/c-.5), d * (y/c - .5), 0);
+				clone.setPosition(d * (x / c - .5), 0 , d * (y / c - .5));
+				clone.setRotation(-90);
 				root3d.add(clone);
 			}
 		}

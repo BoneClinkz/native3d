@@ -144,7 +144,7 @@ class PhongMaterial extends MaterialBase
 			if(shader.DiffuseColor!=null||shader.SpecularColor!=null)
 			node.drawAble.norm.init();
 			if(diffuseTex!=null)
-			node.drawAble.uv.init();
+			if(node.drawAble.uv!=null)node.drawAble.uv.init();
 			node.drawAble.indexBufferSet.init();
 		}
 	}

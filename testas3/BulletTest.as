@@ -2,6 +2,7 @@ package
 {
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	import lz.native3d.core.BasicLight3D;
 	import lz.native3d.core.BasicTest;
@@ -44,7 +45,8 @@ package
 
 		private var bods:Vector.<btRigidBody>;
 		private var meshes:Vector.<Node3D>;
-		
+		private var helpTrans:btTransform;
+		private var helpM44:Vector.<Number> = new Vector.<Number>(16);
 		override public function initScene():void
 		{
 			CModule.rootSprite = this;
@@ -54,18 +56,22 @@ package
 			CModule.startAsync(this);
 			addChild(new Stats);
 			createWorld();
-			ctrl.position.setTo(0, 30, -100);
+			ctrl.position.setTo(-93, -14, -17);
+			ctrl.rotation.setTo(-31, 78,0);
 			addSky();
 		}
 		
 		private function createWorld():void
 		{
-			bods = new Vector.<btRigidBody>()
-			meshes = new Vector.<Node3D>()
+			helpTrans = btTransform.create();
+			helpM44[15] = 1;
+			
+			bods = new Vector.<btRigidBody>();
+			meshes = new Vector.<Node3D>();
 
 			var maxNumOutstandingTasks:int = 2;
 
-			defCollisionInfo = btDefaultCollisionConstructionInfo.create()
+			defCollisionInfo = btDefaultCollisionConstructionInfo.create();
 			//defCollisionInfo.m_defaultMaxPersistentManifoldPoolSize = 32768;
 			defCollisionInfo.m_defaultMaxPersistentManifoldPoolSize = 1024;
 			collisionConfig = btDefaultCollisionConfiguration.create(defCollisionInfo.swigCPtr)
@@ -73,10 +79,10 @@ package
 			dispatcher = btCollisionDispatcher.create(collisionConfig.swigCPtr)
 			solver = btSequentialImpulseConstraintSolver.create()
 
-			broadphase =  btDbvtBroadphase.create(0)
+			broadphase =  btDbvtBroadphase.create(0);
 			world = btDiscreteDynamicsWorld.create(dispatcher.swigCPtr, broadphase.swigCPtr, solver.swigCPtr, collisionConfig.swigCPtr)
-			world.setGravity(vector(0, -20, 0))
-
+			world.setGravity(vector(0, -20, 0));
+			
 			//world.getDispatchInfo().m_enableSPU = true;
 
 			// Create some massless (static) cubes
@@ -91,13 +97,13 @@ package
 			var s:Number = 4.0;
 			
 			var boxShape:btBoxShape = btBoxShape.create(vector(w , w, w));
-			for(var i:int=0; i<400; i++) {
+			for(var i:int=0; i<200; i++) {
 				//spawnCube(((i%numCols)) * 10  - 30, 10.0 + ((i/numCols) * s), 0, 10, w*2, w*2, w*2)
 				spawnRigidBody(
 					boxShape,
 					w*2,w*2,w*2,
 					10,
-					((i%numCols)) * 10  - 30, 10.0 + ((i/numCols) * s), 0
+					0, 10.0 + (i/numCols) * s, (i%numCols) * 10  - 30
 				)
 			}
 		}
@@ -130,7 +136,7 @@ package
 			world.addRigidBody(rb.swigCPtr)
 
 			meshes.push(addCube(null, x, y, z,0,0,0,w/2,h/2,d/2));
-
+			
 			bods.push(rb)
 
 			return rb
@@ -146,16 +152,37 @@ package
 		
 		override public function enterFrame(e:Event):void 
 		{
-			CModule.serviceUIRequests();	
-			var i:int
-
+			CModule.serviceUIRequests();
+			var i:int;
 			for(i=0; i<1; i++)
 				world.stepSimulation(1/60.0, 0, 0)
 
 	        for (i = 0; i < meshes.length; i++) {
-	        	positionAndRotateMesh(meshes[i], bods[i])
+	        	//positionAndRotateMesh(meshes[i], bods[i])
+	        	positionAndRotateMesh2(meshes[i], bods[i])
 	        }
-			bv.instance3Ds[0].render();
+			bv.instance3Ds[0].render();	
+			//trace(ctrl.position,ctrl.rotation);
+		}
+		
+		private function positionAndRotateMesh2(node:Node3D, body:btRigidBody):void {
+			helpTrans.swigCPtr = body.getWorldTransform();
+			var m44:int = helpTrans.getBasis();
+			helpM44[0] = CModule.readDouble(m44);
+			helpM44[1] = CModule.readDouble(m44 + 32);//4
+			helpM44[2] = CModule.readDouble(m44 + 64);//8
+			helpM44[4] = CModule.readDouble(m44 + 8);//1
+			helpM44[5] = CModule.readDouble(m44 + 40);//5
+			helpM44[6] = CModule.readDouble(m44 + 72);//9
+			helpM44[8] = CModule.readDouble(m44 + 16);//2
+			helpM44[9] = CModule.readDouble(m44 + 48);//6
+			helpM44[10] = CModule.readDouble(m44 + 80);//10
+			helpM44[12] = CModule.readDouble(m44 + 96);//12
+			helpM44[13] = CModule.readDouble(m44 + 104);//13
+			helpM44[14] = CModule.readDouble(m44 + 112);//14
+			node.matrix.copyRawDataFrom(helpM44);
+			node.matrix.prependScale(node.scale.x, node.scale.y, node.scale.z);
+			node.matrixVersion++;
 		}
 		
 	}

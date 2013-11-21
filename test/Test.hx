@@ -1,6 +1,7 @@
 package ;
 import flash.display.Sprite;
 import flash.events.Event;
+import flash.geom.Vector3D;
 import flash.Lib;
 import flash.utils.ByteArray;
 import haxe.io.Bytes;
@@ -11,8 +12,7 @@ import haxe.zip.Reader;
 import lz.native3d.core.BasicLight3D;
 import lz.native3d.core.BasicView;
 import lz.native3d.core.Node3D;
-import lz.native3d.materials.ColorMaterial;
-import lz.native3d.materials.SkinMaterial;
+import lz.native3d.materials.PhongMaterial;
 import lz.native3d.parsers.AbsParser;
 import lz.native3d.parsers.BSP30Parser;
 import lz.native3d.parsers.ColladaParser;
@@ -31,6 +31,18 @@ class Test extends Sprite
 	public function new() 
 	{
 		super();
+		
+		var obj:Dynamic = [];
+		untyped obj.push(3);
+		untyped obj.push(.3);
+		untyped obj.a = 1;
+		untyped obj.b = "a";
+		for (c in Reflect.fields(obj)) {
+			trace(untyped obj[c]);
+		}
+		
+		
+		return;
 		bv = new BasicView(400, 400, false);
 		addChild(bv);
 		bv.instance3Ds[0].addEventListener(Event.CONTEXT3D_CREATE, bv_context3dCreate);
@@ -52,7 +64,7 @@ class Test extends Sprite
 	{
 		node = new Node3D();
 		node.drawAble = parser.drawAble;
-		node.material = new ColorMaterial(Std.random(0xffffff), Std.random(0xffffff), new BasicLight3D());
+		node.material = new PhongMaterial(bv.instance3Ds[0], new BasicLight3D(), new Vector3D(), new Vector3D(), new Vector3D());// new ColorMaterial(Std.random(0xffffff), Std.random(0xffffff), new BasicLight3D());
 		bv.instance3Ds[0].root.add(node);
 	}
 	

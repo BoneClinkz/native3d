@@ -1,23 +1,20 @@
 package ;
 import flash.display.BitmapData;
 import flash.display.Sprite;
-import flash.display.StageAlign;
-import flash.display.StageScaleMode;
 import flash.display3D.Context3DTextureFormat;
 import flash.display3D.Context3DTriangleFace;
 import flash.events.Event;
 import flash.geom.Point;
 import flash.Lib;
+import flash.Vector.Vector;
+import lz.native2d.Image2D;
+import lz.native2d.Layer2D;
+import lz.native2d.MovieClip2D;
 import lz.native3d.core.BasicView;
 import lz.native3d.core.Camera3D;
-import lz.native3d.core.DrawAble3D;
-import lz.native3d.core.Node3D;
 import lz.native3d.core.TextureSet;
 import lz.native3d.core.twoDAnimation.TDSpriteData;
-import lz.native3d.core.TwoDData;
 import lz.native3d.ctrls.TwoDBatAnmCtrl;
-import lz.native3d.materials.TwoDBatchMaterial;
-import lz.native3d.meshs.MeshUtils;
 import lz.net.LoaderBat;
 import net.hires.debug.Stats;
 
@@ -28,10 +25,11 @@ import net.hires.debug.Stats;
 class TwoDBatchExample extends Sprite
 {
 	var bv:BasicView;
-	var node:Node3D;
 	var bmd:BitmapData;
 	var xml:Xml;
 	var center:Point;
+	var image:Image2D;
+	var mcs:Array<MovieClip2D>;
 	public function new() 
 	{
 		super();
@@ -64,36 +62,41 @@ class TwoDBatchExample extends Sprite
 	
 	private function context3dCreate(e:Event):Void 
 	{
-		node = new Node3D();
-		var drawable:DrawAble3D = new DrawAble3D();
-		node.drawAble = drawable;
 		var textureset:TextureSet = new TextureSet(bv.instance3Ds[0]);
+		
 		textureset.setBmd(bmd,Context3DTextureFormat.BGRA);
-		node.material = new TwoDBatchMaterial(textureset.texture,bv.instance3Ds[0]);
-		bv.instance3Ds[0].root.add(node);
-		var td:TDSpriteData= TDSpriteData.create1(bmd, xml, center);
+		var layer:Layer2D = new Layer2D(true, textureset.texture, bv.instance3Ds[0]);
+		bv.instance3Ds[0].root.add(layer);
+		var td:TDSpriteData = TDSpriteData.create1(bmd, xml, center);
+		image = new Image2D(null, new Point(bmd.width, bmd.height));
+		layer.add(image);
+		image.setPosition(200, 200);
 		
 		var c:Int = 10;
+		mcs = []; 
 		while (c-->0) {
-			var player:Node3D = new Node3D();
+			var player:MovieClip2D = new MovieClip2D(textureset.texture, td);
 			player.x =  stage.stageWidth * (Math.random());
 			player.y =  stage.stageHeight * (Math.random());
-			player.scaleX = 1;
-			node.add(player);
-			var twoDNode:Node3D = new Node3D();
-			player.add(twoDNode);
-			var twoD:TwoDData = new TwoDData();
-			twoD.anmCtrl = new TwoDBatAnmCtrl();
-			twoD.anmCtrl.speed = .2;
-			twoD.anmCtrl.data = td;
-			twoD.anmCtrl.node3d = twoDNode;
-			twoDNode.twoDData = twoD;
+			layer.add(player);
+			mcs.push(player);
 		}
 		addEventListener(Event.ENTER_FRAME, enterFrame);
 	}
 	
 	private function enterFrame(e:Event):Void 
 	{
+		image.x = mouseX;
+		image.y = mouseY;
+		image.rotationZ++;
+		for (mc in mcs) {
+			var anm:TwoDBatAnmCtrl = mc.twoD.anmCtrl;
+			if (Std.int(anm.frame % anm.data.totalFrame) == (anm.data.totalFrame-1)) {
+				anm.frame++;
+				mc.x =  stage.stageWidth * (Math.random());
+				mc.y =  stage.stageHeight * (Math.random());
+			}
+		}
 		for (i3d in bv.instance3Ds) {
 			i3d.render();
 		}

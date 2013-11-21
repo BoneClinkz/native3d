@@ -21,6 +21,7 @@ package lz.native3d.core ;
 		public var lights:Vector<BasicLight3D>;
 		public var width:Int=400;
 		public var height:Int = 400;
+		public var  antiAlias:Int = 0;
 		#if flash
 		public var culling:Context3DTriangleFace;
 		#else
@@ -67,7 +68,7 @@ package lz.native3d.core ;
 			this.width = width;
 			this.height = height;
 			if (c3d!=null) {
-				c3d.configureBackBuffer(width, height, 0);
+				c3d.configureBackBuffer(width, height, antiAlias);
 				
 				for (i in 0...passs.length) {
 					var pass:BasicPass3D = passs[i];

@@ -15,7 +15,6 @@ class TwoDBatAnmCtrl
 	public var data:TDSpriteData;
 	public var frame:Float ;
 	public var speed:Float = 1;
-	public var frameScript:Function;
 	public var node3d:Node3D;
 	
 	private var lastFrame:TDFrame;
@@ -26,9 +25,6 @@ class TwoDBatAnmCtrl
 		var b = new TDSpriteData();
 	}
 	public function next():Void {
-		if (frameScript!=null) {
-			frameScript(this);
-		}
 		frame += speed;
 		var eframe:TDFrame = data.frames[Std.int(frame) % data.totalFrame];
 		if (eframe != lastFrame) {
