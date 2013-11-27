@@ -24,7 +24,8 @@
   <build>
     <option directives="" />
     <option flashStrict="False" />
-    <option mainClass="TwoDBatchExample" />
+    <option noInlineOnDebug="False" />
+    <option mainClass="TwoDFromSwfExample" />
     <option enabledebug="True" />
     <option additional="-lib format&#xA;-lib hxsl&#xA;-lib openfl-stage3d" />
   </build>
@@ -40,7 +41,7 @@
     <compile path="test\LineExample.hx" />
     <compile path="test\Test2.hx" />
     <compile path="test\TestBlender.hx" />
-    <compile path="test\TwoDBatchExample.hx" />
+    <compile path="test\TwoDFromSwfExample.hx" />
   </compileTargets>
   <!-- Assets to embed into the output SWF -->
   <library>

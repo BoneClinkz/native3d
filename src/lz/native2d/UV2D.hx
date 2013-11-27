@@ -18,4 +18,8 @@ class UV2D
 		this.bottom = bottom;
 	}
 	
+	public static function fromXYWH(x:Int,y:Int,w:Int,h:Int,imageW:Int,imageH:Int):UV2D {
+		return new UV2D(x / imageW, (x + w) / imageW, y / imageH, (y + h) / imageH);
+	}
+	
 }

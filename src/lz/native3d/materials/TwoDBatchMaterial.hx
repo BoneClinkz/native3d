@@ -27,6 +27,7 @@ class TwoDBatchMaterial extends MaterialBase
 	private var uvBuff:VertexBufferSet;
 	private var indexBuff:IndexBufferSet;
 	private var changed:Bool = true;
+	public var gchanged:Bool = false;
 	private var nodes:Vector<Node3D>;
 	private var lastLen:Int = 0;
 	public var stepLen:Int = 50;
@@ -83,7 +84,7 @@ class TwoDBatchMaterial extends MaterialBase
 				uvBuff.vertexBuff = uvBuff.i3d.c3d.createVertexBuffer(uvBuff.num, 2);
 			}
 			var indexLen:Int = 6 * needLen;
-			if (indexBuff.data.length!=indexLen) {
+			if (indexBuff.data.length<indexLen) {
 				indexBuff.num = indexLen;
 				var lastIlen:Int = indexBuff.data.length;
 				indexBuff.data.length = indexLen;
@@ -104,7 +105,7 @@ class TwoDBatchMaterial extends MaterialBase
 			}
 			lastLen = nodes.length;
 		}
-		if (changed) {
+		if (gchanged||changed) {
 			needUploadPos  = true;
 			needUploadUV = true;
 			for (i in 0...nodes.length) {
@@ -138,7 +139,6 @@ class TwoDBatchMaterial extends MaterialBase
 		}
 		changed = false;
 		//draw
-		//return;
 		c3d.setDepthTest(true, passCompareMode);
 		c3d.setBlendFactors(sourceFactor, destinationFactor);
 		c3d.setProgram(progrom);
