@@ -68,7 +68,7 @@ class TwoDBatchMaterial extends MaterialBase
 		if (nodes.length==0) {
 			return;
 		}
-		if (nodes.length!=lastLen) {
+		if (nodes.length>lastLen) {
 			changed = true;
 			var needLen:Int = Math.ceil(nodes.length / stepLen) * stepLen;
 			var needLenX12:Int = 12 * needLen;
@@ -84,25 +84,23 @@ class TwoDBatchMaterial extends MaterialBase
 				uvBuff.vertexBuff = uvBuff.i3d.c3d.createVertexBuffer(uvBuff.num, 2);
 			}
 			var indexLen:Int = 6 * needLen;
-			if (indexBuff.data.length<indexLen) {
-				indexBuff.num = indexLen;
-				var lastIlen:Int = indexBuff.data.length;
-				indexBuff.data.length = indexLen;
-				indexBuff.indexBuff = indexBuff.i3d.c3d.createIndexBuffer(indexLen);
-				for (i in Math.ceil(lastIlen/6)...needLen) {
-					var ni:Int = i * 4;
-					var n6:Int = i * 6;
-					//3 0
-					//2 1
-					indexBuff.data[n6]=ni;
-					indexBuff.data[n6+1]=ni + 1;
-					indexBuff.data[n6+2]=ni + 2;
-					indexBuff.data[n6+3] = ni + 1;
-					indexBuff.data[n6+4]=ni + 3;
-					indexBuff.data[n6+5]=ni + 2;
-				}
-				indexBuff.upload();
+			indexBuff.num = indexLen;
+			var lastIlen:Int = indexBuff.data.length;
+			indexBuff.data.length = indexLen;
+			indexBuff.indexBuff = indexBuff.i3d.c3d.createIndexBuffer(indexLen);
+			for (i in Math.ceil(lastIlen/6)...needLen) {
+				var ni:Int = i * 4;
+				var n6:Int = i * 6;
+				//3 0
+				//2 1
+				indexBuff.data[n6]=ni;
+				indexBuff.data[n6+1]=ni + 1;
+				indexBuff.data[n6+2]=ni + 2;
+				indexBuff.data[n6+3] = ni + 1;
+				indexBuff.data[n6+4]=ni + 3;
+				indexBuff.data[n6+5]=ni + 2;
 			}
+			indexBuff.upload();
 			lastLen = nodes.length;
 		}
 		if (gchanged||changed) {

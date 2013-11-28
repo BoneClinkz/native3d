@@ -25,10 +25,10 @@ set IOS_DEV_SIGNING_OPTIONS=-storetype pkcs12 -keystore "%IOS_DEV_CERT_FILE%" -s
 set IOS_DIST_SIGNING_OPTIONS=-storetype pkcs12 -keystore "%IOS_DIST_CERT_FILE%" -provisioning-profile %IOS_PROVISION%
 
 :: Application descriptor
-set APP_XML=application.xml
+set APP_XML=airapp.xml
 
 :: Files to package
-set APP_DIR=bin
+set APP_DIR=bin\2dbat
 set FILE_OR_DIR=-C %APP_DIR% .
 
 :: Your application ID (must match <id> of Application descriptor)

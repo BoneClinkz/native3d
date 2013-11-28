@@ -151,7 +151,6 @@ package lz.native3d.core ;
 		
 		#if swc @:setter(y) #end inline private function set_y(value:Float):Float 
 		{
-			
 			compsVersion++;
 			return position.y = value;
 		}
@@ -312,6 +311,15 @@ package lz.native3d.core ;
 				}
 			}
 			return node;
+		}
+		
+		public function getChildByName(name:String):Node3D {
+			for (c in children) {
+				if (c.name==name) {
+					return c;
+				}
+			}
+			return null;
 		}
 		
 	}

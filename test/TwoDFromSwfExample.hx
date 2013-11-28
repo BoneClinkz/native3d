@@ -42,14 +42,16 @@ class TwoDFromSwfExample extends Sprite
 	var objs:Dynamic;
 	var sheet:Dynamic;
 	var mcs:Array<SwfMovieClip2D>;
+	var tankmc:SwfMovieClip2D;
+	var turret:Node2D;
+	var tank:Node2D;
 	public function new() 
 	{
 		super();
 		mcs = new Array<SwfMovieClip2D>();
-		//var loader:LoaderCell = LoaderCell.createBytesLoader("../assets/swfsheet/tank.zip", null);
-		var loader:LoaderCell = LoaderCell.createBytesLoader("../assets/swfsheet/mouse.zip", null);
+		var loader:LoaderCell = LoaderCell.createBytesLoader("../assets/swfsheet/tank.zip", null);
+		//var loader:LoaderCell = LoaderCell.createBytesLoader("../assets/swfsheet/mouse.zip", null);
 		loader.addEventListener(Event.COMPLETE, loader_complete);
-		loader.start();
 		loader.start();
 	}
 	
@@ -99,17 +101,18 @@ class TwoDFromSwfExample extends Sprite
 		var layer:Layer2D = new Layer2D(true, textureset.texture, bv.instance3Ds[0]);
 		cast(layer.material , TwoDBatchMaterial).gchanged = true;
 		bv.instance3Ds[0].root.add(layer);
-		var i:Int = 0;
-		var c:Int = 4;
-		while(c-->0)
-		for (n in Reflect.fields(objs)) {
-			var player:Node2D = doobj(Reflect.field(objs, n));
-			player.setPosition(100 * (i%10 + 1), (i/10+1)*100);
-			i++;
-			player.compsVersion = 6;
-			layer.add(player);
-		}
+		tank = getNode("tank_1201");
+		tankmc =untyped tank.children[0].getSwfChildByName("mc");
+		tankmc.gotoAndStop(0);
+		untyped tankmc.getSwfChildByName("tracks").gotoAndStop(0);
+		turret = tankmc.getSwfChildByName("turret");
+		layer.add(tank);
+		tank.setPosition(300, 300);
 		addEventListener(Event.ENTER_FRAME, enterFrame);
+	}
+	
+	public function getNode(name:String):Node2D {
+		return doobj(Reflect.field(objs, name));
 	}
 	
 	private function doobj(obj:Dynamic):Node2D {
@@ -121,16 +124,21 @@ class TwoDFromSwfExample extends Sprite
 													0, 0, 1, 0,
 													m[4], m[5], 0, 1,
 													]));
+		var name = Reflect.field(obj, "n");
 													
 		if (type == 1) {
 			var uv = Reflect.field(sheet, Reflect.field(obj,"id"));
-			var image = new Image2D(null,null,UV2D.fromXYWH(uv[0],uv[1],uv[2],uv[3],bmd.width,bmd.height));
+			var image = new Image2D(null, null, UV2D.fromXYWH(uv[0], uv[1], uv[2], uv[3], bmd.width, bmd.height));
+			if (name != null) {
+				image.name = name;
+			}
 			var matrix2:Matrix3D = new Matrix3D();
 			matrix2.appendTranslation(.5,-.5,0);
 			matrix2.appendScale(uv[2], -uv[3], 1);
 			matrix2.append(matrix);
 			image.matrix = matrix2;
 			image.matrixVersion = 5;
+			image.decompose();
 			return image;
 		}else if (type == 2) {
 			//trace("sprite");
@@ -140,7 +148,11 @@ class TwoDFromSwfExample extends Sprite
 				sprite.add(doobj(child));
 			}
 			sprite.matrix = matrix;
-			sprite.matrixVersion=5;
+			sprite.matrixVersion = 5;
+			sprite.decompose();
+			if (name!=null) {
+				sprite.name = name;
+			}
 			return sprite;
 		}else if (type==3) {
 			//trace("timeline");
@@ -154,17 +166,15 @@ class TwoDFromSwfExample extends Sprite
 					timeline.tags.push(null);
 				}
 			}
-			var f:Array<Array<Dynamic>> = Reflect.field(obj, "f");
-			//timeline.frames = f;
-			for (frame in f) {
-				var sframe:Array<Array<Int>> = new Array<Array<Int>>();
-				timeline.frames.push(sframe);
-				for (im in frame) {
-					sframe.push([Reflect.field(im,"i"),Reflect.field(im,"mi")]);
-				}
-			}
+			var f:Array<Array<Array<Int>>> = Reflect.field(obj, "f");
+			timeline.frames = f;
 			timeline.matrix = matrix;
-			timeline.matrixVersion+=5;
+			timeline.matrixVersion += 5;
+			
+			timeline.decompose();
+			if (name!=null) {
+				timeline.name = name;
+			}
 			return timeline;
 		}
 		return null;
@@ -172,22 +182,9 @@ class TwoDFromSwfExample extends Sprite
 	
 	private function enterFrame(e:Event):Void 
 	{
+		turret.rotationZ=Math.atan2(mouseX-tank.x,-mouseY+tank.y)*180/Math.PI;
 		for (timeline in mcs) {
-			timeline.children.length = 0;
-			var cframe = timeline.frame % timeline.frames.length;
-			for (obj in timeline.frames[cframe]) {
-				var dis = timeline.tags[obj[0]];
-				var tdis = timeline.tags[obj[1]];
-				if (dis!=null) {
-					if (obj[1]>0) {
-						//dis.matrix.copyFrom(tdis.matrix);
-						dis.matrix=tdis.matrix;
-						dis.matrixVersion++;
-					}
-					timeline.add(dis);
-				}
-			}
-			timeline.frame++;
+			timeline.update();
 		}
 		for (i3d in bv.instance3Ds) {
 			i3d.render();
