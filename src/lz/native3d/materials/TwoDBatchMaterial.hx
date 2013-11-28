@@ -8,6 +8,7 @@ import flash.display3D.textures.TextureBase;
 import flash.display3D.VertexBuffer3D;
 import flash.geom.Matrix3D;
 import flash.Vector;
+import lz.native2d.SwfMovieClip2D;
 import lz.native3d.core.BasicPass3D;
 import lz.native3d.core.IndexBufferSet;
 import lz.native3d.core.Instance3D;
@@ -177,7 +178,9 @@ class TwoDBatchMaterial extends MaterialBase
 				}
 				this.nodes.push(node);
 			}
-			
+			if (Std.is(node, SwfMovieClip2D)) {
+				cast(node, SwfMovieClip2D).update();
+			}
 		}
 	}
 	

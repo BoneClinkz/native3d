@@ -84,7 +84,6 @@ package lz.native3d.core ;
 		 public var radius:Float = 0;
 		 
 		 public var twoDData:TwoDData;
-		
 		public function new() 
 	{
 		frame =  Std.random(100000);
