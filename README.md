@@ -17,6 +17,8 @@ Examples
 2. [sponza](http://matrix3d.github.io/as3/2013/09/12/sponza-3d)
 
 3. [skeleton](http://matrix3d.github.io/as3/2013/10/12/skeleton-3d)
+	
+4. [tank2d](http://matrix3d.github.io/as3/2013/11/28/tank-2d/)
 
 
 ``` as
