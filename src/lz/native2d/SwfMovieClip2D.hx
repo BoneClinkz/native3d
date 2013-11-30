@@ -1,4 +1,5 @@
 package lz.native2d;
+import flash.events.Event;
 
 /**
  * ...
@@ -6,6 +7,7 @@ package lz.native2d;
  */
 class SwfMovieClip2D extends Node2D
 {
+	public var cframe:Int;
 	public var tags:Array<Node2D>;
 	public var frames:Array<Array<Array<Int>>>;
 	public var frameChanged:Bool = true;
@@ -40,7 +42,7 @@ class SwfMovieClip2D extends Node2D
 	public function update():Void {
 		if(frameChanged){
 			children.length = 0;
-			var cframe = frame % frames.length;
+			cframe = frame % frames.length;
 			for (obj in frames[cframe]) {
 				var dis = tags[obj[0]];
 				var tdis = tags[obj[1]];

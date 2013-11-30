@@ -1,5 +1,6 @@
 package lz.native3d.core ;
 
+	import flash.events.EventDispatcher;
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	import flash.Lib;
@@ -13,8 +14,9 @@ package lz.native3d.core ;
 	 * ...
 	 * @author lizhi http://matrix3d.github.io/
 	 */
-	 class Node3D 
+	 class Node3D
 	{
+		public var userData:Dynamic;
 		public static inline var NODE_TYPE:String = "NODE";
 		public static inline var JOINT_TYPE:String = "JOINT";
 		public var name:String;
@@ -86,7 +88,7 @@ package lz.native3d.core ;
 		 public var twoDData:TwoDData;
 		public function new() 
 	{
-		frame =  Std.random(100000);
+		frame =  0;// Std.random(100000);
 		//super();
 		id =++ID;
 		NODES.set(id, this);

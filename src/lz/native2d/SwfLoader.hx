@@ -3,6 +3,7 @@ import flash.display.BitmapData;
 import flash.events.Event;
 import flash.events.EventDispatcher;
 import flash.geom.Matrix3D;
+import flash.geom.Rectangle;
 import flash.utils.ByteArray;
 import flash.utils.JSON;
 import flash.Vector;
@@ -19,8 +20,8 @@ class SwfLoader extends EventDispatcher
 {
 	var loader:LoaderCell;
 	public var bmd:BitmapData;
-	var objs:Dynamic;
-	var sheet:Dynamic;
+	public var objs:Dynamic;
+	public var sheet:Dynamic;
 	public function new(url:String) 
 	{
 		super();
@@ -75,7 +76,13 @@ class SwfLoader extends EventDispatcher
 													m[4], m[5], 0, 1,
 													]));
 		var name = Reflect.field(obj, "n");
-													
+		
+		var b = Reflect.field(obj, "b");
+		var bounds = null;
+		if (b!=null) {
+			bounds = new Rectangle(b[0], b[1], b[2], b[3]);
+		}
+		
 		if (type == 1) {
 			var uv = Reflect.field(sheet, Reflect.field(obj,"id"));
 			var image = new Image2D(null, null, UV2D.fromXYWH(uv[0], uv[1], uv[2], uv[3], bmd.width, bmd.height));
@@ -91,7 +98,8 @@ class SwfLoader extends EventDispatcher
 			image.decompose();
 			return image;
 		}else if (type == 2) {
-			var sprite= new Node2D();
+			var sprite = new Node2D();
+			sprite.bounds = bounds;
 			var childs:Array<Dynamic> = Reflect.field(obj, "c");
 			for (child in childs) {
 				sprite.add(doobj(child));

@@ -7,8 +7,13 @@ import flash.events.Event;
 import flash.events.KeyboardEvent;
 import flash.events.MouseEvent;
 import flash.geom.Point;
+import flash.geom.Rectangle;
+import flash.geom.Vector3D;
 import flash.Lib;
 import flash.ui.Keyboard;
+import flash.utils.JSON;
+import lz.collision.Box;
+import lz.collision.World;
 import lz.native2d.Image2D;
 import lz.native2d.Layer2D;
 import lz.native2d.Node2D;
@@ -32,6 +37,7 @@ class TwoDFromSwfExample extends Sprite
 	var turret:SwfMovieClip2D;
 	var tracks:SwfMovieClip2D;
 	var tank:Node2D;
+	var tankbox:Box;
 	var loader:SwfLoader;
 	var maploader:LoaderCell;
 	var layer:Layer2D;
@@ -44,12 +50,25 @@ class TwoDFromSwfExample extends Sprite
 	var lastgdy:Float=0;
 	var maplayer:Layer2D;
 	var mapb:BitmapData;
+	var mapboundloader:LoaderCell;
+	var boundobj:Dynamic;
+	var bound:SwfMovieClip2D;
+	var boundWrapper:Sprite;
+	var bullets:Array<Node2D>;
+	var effectmcs:Array<SwfMovieClip2D>;
+	var world:World;
 	public function new() 
 	{
 		super();
+		bullets = [];
+		effectmcs = [];
 		loader = new SwfLoader("../assets/swfsheet/tank.zip");
 		loader.addEventListener(Event.COMPLETE, loader_complete);
 		loader.start();
+		boundWrapper = new Sprite();
+		addChild(boundWrapper);
+		
+		world=new World();
 	}
 	
 	private function loader_complete(e:Event):Void 
@@ -73,15 +92,28 @@ class TwoDFromSwfExample extends Sprite
 		tank = loader.getNode("tank_1201");
 		tankmc =untyped tank.getSwfChildByName("mc");
 		tankmc.gotoAndStop(0);
-		turret =untyped tankmc.getSwfChildByName("turret");
+		turret = untyped tankmc.getSwfChildByName("turret");
+		turret.gotoAndStop(0);
 		tracks =untyped tankmc.getSwfChildByName("tracks");
 		tracks.gotoAndStop(0);
 		layer.add(tank);
 		tank.setPosition(500, 500);
 		
+		mapboundloader = LoaderCell.createUrlLoader("../assets/map/objs.json", null);
+		mapboundloader.addEventListener(Event.COMPLETE, mapboundloader_complete);
+		mapboundloader.start();
+	}
+	
+	private function mapboundloader_complete(e:Event):Void 
+	{
+		boundobj = JSON.parse(mapboundloader.getText());
 		maploader = LoaderCell.createImageLoader("../assets/map/6201.jpg", null);
 		maploader.addEventListener(Event.COMPLETE, maploader_complete);
 		maploader.start();
+		
+		var boundloader:SwfLoader = new SwfLoader(null);
+		boundloader.objs = boundobj;
+		bound = untyped boundloader.getNode("bounds_mc");
 	}
 	
 	private function maploader_complete(e:Event):Void 
@@ -97,10 +129,56 @@ class TwoDFromSwfExample extends Sprite
 		map.y = mapb.height / 2;
 		maplayer.add(map);
 		
+		tankbox = new Box(0, 0, 20, 20, 0, 0, Box.DYNAMIC_TYPE);
+		world.add(tankbox);
+		if (bound != null) {
+			var flag:Bool = true;
+			for (swf in bound.tags) {
+				if(swf!=null){
+					var n2d = untyped swf.tags[0].tags[0].bounds;
+					var name =untyped swf.tags[0].name;
+					var rect = new Rectangle(swf.x + n2d.x * swf.scaleX, swf.y + n2d.y * swf.scaleY, n2d.width * swf.scaleX, n2d.height * swf.scaleY);
+					var box = new Box(rect.x + rect.width / 2, rect.y + rect.height / 2, rect.width / 2, rect.height / 2);
+					if (name=="t1") {//只和坦克碰撞
+						box.categoryBits = 1;
+					}else {
+						box.categoryBits = 3;//和坦克和子弹碰撞
+					}
+					world.add(box);
+				}
+			}
+		}
+		world.resetStaticGrid();
+		
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, stage_keyDown);
 		stage.addEventListener(KeyboardEvent.KEY_UP, stage_keyUp);
-		//stage.addEventListener(MouseEvent.MOUSE_DOWN, stage_click);
+		stage.addEventListener(MouseEvent.MOUSE_DOWN, stage_click);
 		addEventListener(Event.ENTER_FRAME, enterFrame);
+	}
+	
+	private function stage_click(e:MouseEvent):Void 
+	{
+		var bullet = loader.getNode("bullet_mc");
+		
+		var s1:Node2D = turret.getSwfChildByName("s1");
+		var sp1:Vector3D = new Vector3D();
+		sp1= s1.worldMatrix.transformVector(sp1);
+		var p1:Node2D=turret.getSwfChildByName("p1");
+		var pp1:Vector3D = new Vector3D();
+		pp1= p1.worldMatrix.transformVector(pp1);
+		
+		bullet.x = sp1.x-layer.x;
+		bullet.y = sp1.y - layer.y;
+		bullet.rotationZ = Math.atan2(pp1.y - sp1.y, pp1.x - sp1.x) * 180 / Math.PI;
+		layer.add(bullet);
+		bullets.push(bullet);
+		
+		var box = new Box(bullet.x, bullet.y, 5, 5, 0, 0, Box.DYNAMIC_TYPE, bullet);
+		box.maskBits = 2;
+		bullet.userData = box;
+		world.add(box);
+		
+		turret.gotoAndPlay(0);
 	}
 	
 	private function stage_keyDown(e:KeyboardEvent):Void 
@@ -149,8 +227,6 @@ class TwoDFromSwfExample extends Sprite
 			vx = speed;
 		}
 		
-		tank.x += vx;
-		tank.y += vy;
 		var dx = mouseX - tank.x - layer.x;
 		var dy = mouseY - tank.y - layer.y;
 		turret.rotationZ = Math.atan2(dy,dx) * 180 / Math.PI + 90;
@@ -161,8 +237,8 @@ class TwoDFromSwfExample extends Sprite
 		var ease =  .05;
 		lastgdx = lastgdx + (gdx - lastgdx) * ease;
 		lastgdy = lastgdy + (gdy - lastgdy) * ease;
-		layer.x=maplayer.x  = Math.max(-mapb.width+stage.stageWidth,Math.min(0,stage.stageWidth / 2 - tank.x-lastgdx));
-		layer.y=maplayer.y  = Math.max(-mapb.height+stage.stageHeight,Math.min(0,stage.stageHeight / 2-tank.y-lastgdy));
+		boundWrapper.x= layer.x=maplayer.x  = Math.max(-mapb.width+stage.stageWidth,Math.min(0,stage.stageWidth / 2 - tank.x-lastgdx));
+		boundWrapper.y= layer.y=maplayer.y  = Math.max(-mapb.height+stage.stageHeight,Math.min(0,stage.stageHeight / 2-tank.y-lastgdy));
 			
 		
 		if (Math.abs(vx) >= 0.01 || Math.abs(vy) >= 0.01) {
@@ -175,6 +251,67 @@ class TwoDFromSwfExample extends Sprite
 		}
 		for (i3d in bv.instance3Ds) {
 			i3d.render();
+		}
+		
+		tankbox.x = tank.x;
+		tankbox.y = tank.y;
+		tankbox.vx = vx;
+		tankbox.vy = vy;
+		
+		
+		var i = bullets.length - 1;
+		var con = mapb.rect;
+		while (true) {
+			if (i<0) {
+				break;
+			}
+			var bullet = bullets[i];
+			var speed = 15;
+			var bvx = Math.cos(bullet.rotationZ * Math.PI / 180) * speed;
+			var bvy = Math.sin(bullet.rotationZ * Math.PI / 180) * speed;
+			bullet.x += bvx;
+			bullet.y += bvy;
+			var bbox = cast( bullet.userData,Box);
+			bbox.x = bullet.x;
+			bbox.y = bullet.y;
+			if (!con.containsPoint(new Point(bullet.x,bullet.y))||bbox.collidablePairs.length>0) {
+				layer.remove(bullet);
+				bullets.splice(i, 1);
+				world.remove(bbox);
+				
+				if (bbox.collidablePairs.length > 0) {
+					var emc = cast(loader.getNode("mm_fla.Timeline_33"), SwfMovieClip2D);
+					emc.x = bullet.x;
+					emc.y = bullet.y;
+					layer.add(emc);
+					effectmcs.push(emc);
+				}
+			}
+			i--;
+		}
+		
+		world.hittest();
+		var flag = false;
+		for (pair in tankbox.collidablePairs) {
+			var cbox = pair.getCollisionBox(tankbox);
+			if (cbox.type == Box.STATIC_TYPE) {
+				flag = true;
+				break;
+			}
+		}
+		if (!flag) {
+			tank.x += vx;
+			tank.y += vy;
+		}
+		
+		if (turret.frame>=turret.frames.length) {
+			turret.gotoAndStop(0);
+		}
+		
+		for (emc in effectmcs) {
+			if (emc.frame>=emc.frames.length) {
+				layer.remove(emc);
+			}
 		}
 	}
 	
