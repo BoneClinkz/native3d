@@ -1,5 +1,6 @@
 package lz.collision;
 import flash.events.EventDispatcher;
+import flash.geom.Point;
 
 /**
  * ...
@@ -13,10 +14,13 @@ class World extends EventDispatcher
 	public var boxs:Array<Box>;
 	public var dynamicGrid:Map < Int, Array<Box> > ;
 	public var staticGrid:Map < Int, Array<Box> > ;
+	public var ray:Raycast;
 	public function new() 
 	{
 		super();
 		boxs = [];
+		ray = new Raycast();
+		ray.world = this;
 	}
 	
 	public function add(box:Box):Void {
@@ -82,18 +86,20 @@ class World extends EventDispatcher
 				var ba = bs[a];
 				for (b in a+1...bs.length) {
 					var bb = bs[b];
-					var pid=0;
-					if (ba.id<bb.id) {
-						pid = ba.id * 10000 + bb.id;
-					}else {
-						pid = bb.id * 10000 + ba.id;
-					}
-					if ((!pairMap.exists(pid))&&(ba!=bb)&&((ba.categoryBits&bb.maskBits)!=0)&&((bb.categoryBits&ba.maskBits)!=0)&&ba.aabb.intersects(bb.aabb)) {
-						var pair = new CollidablePair(ba, bb);
-						collidablePairs.push(pair);
-						pairMap.set(pid, true);
-						ba.collidablePairs.push(pair);
-						bb.collidablePairs.push(pair);
+					if((ba!=bb)&&((ba.categoryBits&bb.maskBits)!=0)&&((bb.categoryBits&ba.maskBits)!=0)){
+						var pid=0;
+						if (ba.id<bb.id) {
+							pid = ba.id * 10000 + bb.id;
+						}else {
+							pid = bb.id * 10000 + ba.id;
+						}
+						if ((!pairMap.exists(pid))&&ba.aabb.intersects(bb.aabb)) {
+							var pair = new CollidablePair(ba, bb);
+							collidablePairs.push(pair);
+							pairMap.set(pid, true);
+							ba.collidablePairs.push(pair);
+							bb.collidablePairs.push(pair);
+						}
 					}
 				}
 			}
@@ -104,4 +110,6 @@ class World extends EventDispatcher
 			}
 		}
 	}
+	
+	
 }

@@ -57,6 +57,11 @@ class TwoDFromSwfExample extends Sprite
 	var bullets:Array<Node2D>;
 	var effectmcs:Array<SwfMovieClip2D>;
 	var world:World;
+	
+	var t1bit:Int = 1;
+	var t2bit:Int = 2;
+	var tankbit:Int = 4;
+	var bulletbit:Int = 8;
 	public function new() 
 	{
 		super();
@@ -130,6 +135,8 @@ class TwoDFromSwfExample extends Sprite
 		maplayer.add(map);
 		
 		tankbox = new Box(0, 0, 20, 20, 0, 0, Box.DYNAMIC_TYPE);
+		tankbox.categoryBits = tankbit;
+		tankbox.maskBits = t1bit + t2bit+bulletbit;//坦克和所有墙子弹进行碰撞检测
 		world.add(tankbox);
 		if (bound != null) {
 			var flag:Bool = true;
@@ -140,9 +147,11 @@ class TwoDFromSwfExample extends Sprite
 					var rect = new Rectangle(swf.x + n2d.x * swf.scaleX, swf.y + n2d.y * swf.scaleY, n2d.width * swf.scaleX, n2d.height * swf.scaleY);
 					var box = new Box(rect.x + rect.width / 2, rect.y + rect.height / 2, rect.width / 2, rect.height / 2);
 					if (name=="t1") {//只和坦克碰撞
-						box.categoryBits = 1;
+						box.categoryBits = t1bit;
+						box.maskBits = tankbit;
 					}else {
-						box.categoryBits = 3;//和坦克和子弹碰撞
+						box.categoryBits = t2bit;//和坦克和子弹碰撞
+						box.maskBits = tankbit + bulletbit;
 					}
 					world.add(box);
 				}
@@ -158,6 +167,9 @@ class TwoDFromSwfExample extends Sprite
 	
 	private function stage_click(e:MouseEvent):Void 
 	{
+		//var c:Int = 1000;
+		//while(c-->0){
+		
 		var bullet = loader.getNode("bullet_mc");
 		
 		var s1:Node2D = turret.getSwfChildByName("s1");
@@ -166,18 +178,19 @@ class TwoDFromSwfExample extends Sprite
 		var p1:Node2D=turret.getSwfChildByName("p1");
 		var pp1:Vector3D = new Vector3D();
 		pp1= p1.worldMatrix.transformVector(pp1);
-		
 		bullet.x = sp1.x-layer.x;
 		bullet.y = sp1.y - layer.y;
 		bullet.rotationZ = Math.atan2(pp1.y - sp1.y, pp1.x - sp1.x) * 180 / Math.PI;
+		//bullet.rotationZ = Math.random() * 360;
 		layer.add(bullet);
 		bullets.push(bullet);
 		
 		var box = new Box(bullet.x, bullet.y, 5, 5, 0, 0, Box.DYNAMIC_TYPE, bullet);
-		box.maskBits = 2;
+		box.categoryBits = bulletbit;
+		box.maskBits = t2bit+tankbit;
 		bullet.userData = box;
 		world.add(box);
-		
+		//}
 		turret.gotoAndPlay(0);
 	}
 	
@@ -239,7 +252,6 @@ class TwoDFromSwfExample extends Sprite
 		lastgdy = lastgdy + (gdy - lastgdy) * ease;
 		boundWrapper.x= layer.x=maplayer.x  = Math.max(-mapb.width+stage.stageWidth,Math.min(0,stage.stageWidth / 2 - tank.x-lastgdx));
 		boundWrapper.y= layer.y=maplayer.y  = Math.max(-mapb.height+stage.stageHeight,Math.min(0,stage.stageHeight / 2-tank.y-lastgdy));
-			
 		
 		if (Math.abs(vx) >= 0.01 || Math.abs(vy) >= 0.01) {
 			tracks.play();
@@ -289,7 +301,8 @@ class TwoDFromSwfExample extends Sprite
 			}
 			i--;
 		}
-		
+		var c = 1;
+		while(c-->0)
 		world.hittest();
 		var flag = false;
 		for (pair in tankbox.collidablePairs) {
@@ -312,6 +325,17 @@ class TwoDFromSwfExample extends Sprite
 			if (emc.frame>=emc.frames.length) {
 				layer.remove(emc);
 			}
+		}
+		
+		boundWrapper.graphics.clear();
+		boundWrapper.graphics.lineStyle(0, 0xff0000);
+		boundWrapper.graphics.moveTo(tank.x, tank.y);
+		var x1 = tank.x + 1000 * Math.cos((turret.rotationZ-90)*Math.PI/180);
+		var y1 = tank.y + 1000 * Math.sin((turret.rotationZ-90) * Math.PI / 180);
+		boundWrapper.graphics.lineTo(x1, y1);
+		world.ray.raycast(tank.x, tank.y, x1, y1);
+		for (box in world.ray.castboxs) {
+			boundWrapper.graphics.drawRect(box.aabb.left, box.aabb.top, box.aabb.width, box.aabb.height);
 		}
 	}
 	
