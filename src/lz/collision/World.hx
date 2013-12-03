@@ -86,7 +86,7 @@ class World extends EventDispatcher
 				var ba = bs[a];
 				for (b in a+1...bs.length) {
 					var bb = bs[b];
-					if((ba!=bb)&&((ba.categoryBits&bb.maskBits)!=0)&&((bb.categoryBits&ba.maskBits)!=0)){
+					if((ba!=bb)&&ba.maskAble(bb)){
 						var pid=0;
 						if (ba.id<bb.id) {
 							pid = ba.id * 10000 + bb.id;

@@ -21,6 +21,7 @@ import lz.native2d.SwfLoader;
 import lz.native2d.SwfMovieClip2D;
 import lz.native3d.core.BasicView;
 import lz.native3d.core.Camera3D;
+import lz.native3d.core.Node3D;
 import lz.native3d.core.TextureSet;
 import lz.native3d.materials.TwoDBatchMaterial;
 import lz.net.LoaderCell;
@@ -33,11 +34,6 @@ import net.hires.debug.Stats;
 class TwoDFromSwfExample extends Sprite
 {
 	var bv:BasicView;
-	var tankmc:SwfMovieClip2D;
-	var turret:SwfMovieClip2D;
-	var tracks:SwfMovieClip2D;
-	var tank:Node2D;
-	var tankbox:Box;
 	var loader:SwfLoader;
 	var maploader:LoaderCell;
 	var layer:Layer2D;
@@ -46,34 +42,36 @@ class TwoDFromSwfExample extends Sprite
 	private var isDown:Bool = false;
 	private var isLeft:Bool = false;
 	private var isRight:Bool = false;
-	var lastgdx:Float=0;
-	var lastgdy:Float=0;
 	var maplayer:Layer2D;
 	var mapb:BitmapData;
 	var mapboundloader:LoaderCell;
 	var boundobj:Dynamic;
 	var bound:SwfMovieClip2D;
 	var boundWrapper:Sprite;
-	var bullets:Array<Node2D>;
+	var bullets:Array<Bullet>;
+	var tanks:Array<Tank>;
+	var tankais:Array<TankAI>;
 	var effectmcs:Array<SwfMovieClip2D>;
 	var world:World;
 	
-	var t1bit:Int = 1;
-	var t2bit:Int = 2;
-	var tankbit:Int = 4;
-	var bulletbit:Int = 8;
+	var rayFilterBox:Box;
 	public function new() 
 	{
 		super();
 		bullets = [];
 		effectmcs = [];
+		tankais = [];
+		tanks = [];
 		loader = new SwfLoader("../assets/swfsheet/tank.zip");
 		loader.addEventListener(Event.COMPLETE, loader_complete);
 		loader.start();
 		boundWrapper = new Sprite();
 		addChild(boundWrapper);
 		
-		world=new World();
+		world = new World();
+		rayFilterBox = new Box(0, 0, 0, 0);
+		rayFilterBox.categoryBits = GameObject.bulletbit;
+		rayFilterBox.maskBits = GameObject.t2bit+GameObject.tankbit;
 	}
 	
 	private function loader_complete(e:Event):Void 
@@ -94,15 +92,6 @@ class TwoDFromSwfExample extends Sprite
 		layer = new Layer2D(true, textureset.texture, bv.instance3Ds[0]);
 		cast(layer.material , TwoDBatchMaterial).gchanged = true;
 		bv.instance3Ds[0].root.add(layer);
-		tank = loader.getNode("tank_1201");
-		tankmc =untyped tank.getSwfChildByName("mc");
-		tankmc.gotoAndStop(0);
-		turret = untyped tankmc.getSwfChildByName("turret");
-		turret.gotoAndStop(0);
-		tracks =untyped tankmc.getSwfChildByName("tracks");
-		tracks.gotoAndStop(0);
-		layer.add(tank);
-		tank.setPosition(500, 500);
 		
 		mapboundloader = LoaderCell.createUrlLoader("../assets/map/objs.json", null);
 		mapboundloader.addEventListener(Event.COMPLETE, mapboundloader_complete);
@@ -134,10 +123,24 @@ class TwoDFromSwfExample extends Sprite
 		map.y = mapb.height / 2;
 		maplayer.add(map);
 		
-		tankbox = new Box(0, 0, 20, 20, 0, 0, Box.DYNAMIC_TYPE);
-		tankbox.categoryBits = tankbit;
-		tankbox.maskBits = t1bit + t2bit+bulletbit;//坦克和所有墙子弹进行碰撞检测
-		world.add(tankbox);
+		var tank = Tank.create(loader);
+		layer.add(tank.mc);
+		tank.mc.setPosition(500, 500);
+		world.add(tank.box);
+		tanks.push(tank);
+		
+		var c:Int = 10;
+		while (c-->0) {
+			var tank = Tank.create(loader);
+			layer.add(tank.mc);
+			tank.mc.setPosition(600+200*Math.random(), 500+200*Math.random());
+			world.add(tank.box);
+			tanks.push(tank);
+			var ai = new TankAI();
+			ai.tank = tank;
+			tankais.push(ai);
+		}
+		
 		if (bound != null) {
 			var flag:Bool = true;
 			for (swf in bound.tags) {
@@ -147,11 +150,11 @@ class TwoDFromSwfExample extends Sprite
 					var rect = new Rectangle(swf.x + n2d.x * swf.scaleX, swf.y + n2d.y * swf.scaleY, n2d.width * swf.scaleX, n2d.height * swf.scaleY);
 					var box = new Box(rect.x + rect.width / 2, rect.y + rect.height / 2, rect.width / 2, rect.height / 2);
 					if (name=="t1") {//只和坦克碰撞
-						box.categoryBits = t1bit;
-						box.maskBits = tankbit;
+						box.categoryBits = GameObject.t1bit;
+						box.maskBits = GameObject.tankbit;
 					}else {
-						box.categoryBits = t2bit;//和坦克和子弹碰撞
-						box.maskBits = tankbit + bulletbit;
+						box.categoryBits = GameObject.t2bit;//和坦克和子弹碰撞
+						box.maskBits = GameObject.tankbit + GameObject.bulletbit;
 					}
 					world.add(box);
 				}
@@ -167,31 +170,7 @@ class TwoDFromSwfExample extends Sprite
 	
 	private function stage_click(e:MouseEvent):Void 
 	{
-		//var c:Int = 1000;
-		//while(c-->0){
-		
-		var bullet = loader.getNode("bullet_mc");
-		
-		var s1:Node2D = turret.getSwfChildByName("s1");
-		var sp1:Vector3D = new Vector3D();
-		sp1= s1.worldMatrix.transformVector(sp1);
-		var p1:Node2D=turret.getSwfChildByName("p1");
-		var pp1:Vector3D = new Vector3D();
-		pp1= p1.worldMatrix.transformVector(pp1);
-		bullet.x = sp1.x-layer.x;
-		bullet.y = sp1.y - layer.y;
-		bullet.rotationZ = Math.atan2(pp1.y - sp1.y, pp1.x - sp1.x) * 180 / Math.PI;
-		//bullet.rotationZ = Math.random() * 360;
-		layer.add(bullet);
-		bullets.push(bullet);
-		
-		var box = new Box(bullet.x, bullet.y, 5, 5, 0, 0, Box.DYNAMIC_TYPE, bullet);
-		box.categoryBits = bulletbit;
-		box.maskBits = t2bit+tankbit;
-		bullet.userData = box;
-		world.add(box);
-		//}
-		turret.gotoAndPlay(0);
+		var bullet = tanks[0].shoot(loader, layer, bullets,world);
 	}
 	
 	private function stage_keyDown(e:KeyboardEvent):Void 
@@ -226,50 +205,39 @@ class TwoDFromSwfExample extends Sprite
 	
 	private function enterFrame(e:Event):Void 
 	{
-		var vx  = .0;
-		var vy  = .0;
-		var speed = 2.;
+		var tank:Tank = tanks[0];
+		tank.vx  = .0;
+		tank.vy  = .0;
 		if (isUp) {
-			vy = -speed;
+			tank.vy = -tank.speed;
 		}else if (isDown) {
-			vy = speed;
+			tank.vy = tank.speed;
 		}
 		if (isLeft) {
-			vx = -speed;
+			tank.vx = -tank.speed;
 		}else if (isRight) {
-			vx = speed;
+			tank.vx = tank.speed;
 		}
 		
-		var dx = mouseX - tank.x - layer.x;
-		var dy = mouseY - tank.y - layer.y;
-		turret.rotationZ = Math.atan2(dy,dx) * 180 / Math.PI + 90;
+		var dx = mouseX - tank.mc.x - layer.x;
+		var dy = mouseY - tank.mc.y - layer.y;
+		tank.turret.rotationZ = Math.atan2(dy,dx) * 180 / Math.PI + 90;
 		
-		var gs =  .3;
-		var gdx = dx * gs;
-		var gdy = dy * gs;
-		var ease =  .05;
-		lastgdx = lastgdx + (gdx - lastgdx) * ease;
-		lastgdy = lastgdy + (gdy - lastgdy) * ease;
-		boundWrapper.x= layer.x=maplayer.x  = Math.max(-mapb.width+stage.stageWidth,Math.min(0,stage.stageWidth / 2 - tank.x-lastgdx));
-		boundWrapper.y= layer.y=maplayer.y  = Math.max(-mapb.height+stage.stageHeight,Math.min(0,stage.stageHeight / 2-tank.y-lastgdy));
-		
-		if (Math.abs(vx) >= 0.01 || Math.abs(vy) >= 0.01) {
-			tracks.play();
-			var len = Math.sqrt(vx * vx+ vy * vy);
-			var a = getA(tracks.rotationZ,Math.atan2(vy,vx)*180/Math.PI+90);
-			tracks.rotationZ += (a - tracks.rotationZ) * len / 30;
-		}else {
-			tracks.stop();
+		for (ai in tankais) {
+			ai.doAI(loader, layer, bullets, world);
 		}
+		
+		boundWrapper.x= layer.x=maplayer.x  = Math.max(-mapb.width+stage.stageWidth,Math.min(0,stage.stageWidth / 2 - tank.mc.x));
+		boundWrapper.y= layer.y=maplayer.y  = Math.max(-mapb.height+stage.stageHeight,Math.min(0,stage.stageHeight / 2-tank.mc.y));
+		
+		layer.children.sort(function(n1:Node3D, n2:Node3D):Int { return n1.y > n2.y?1: -1; } );
 		for (i3d in bv.instance3Ds) {
 			i3d.render();
 		}
-		
-		tankbox.x = tank.x;
-		tankbox.y = tank.y;
-		tankbox.vx = vx;
-		tankbox.vy = vy;
-		
+		for (tank in tanks) {
+			tank.updateTracks();
+			tank.updateBox();
+		}
 		
 		var i = bullets.length - 1;
 		var con = mapb.rect;
@@ -279,46 +247,27 @@ class TwoDFromSwfExample extends Sprite
 			}
 			var bullet = bullets[i];
 			var speed = 15;
-			var bvx = Math.cos(bullet.rotationZ * Math.PI / 180) * speed;
-			var bvy = Math.sin(bullet.rotationZ * Math.PI / 180) * speed;
-			bullet.x += bvx;
-			bullet.y += bvy;
-			var bbox = cast( bullet.userData,Box);
-			bbox.x = bullet.x;
-			bbox.y = bullet.y;
-			if (!con.containsPoint(new Point(bullet.x,bullet.y))||bbox.collidablePairs.length>0) {
-				layer.remove(bullet);
+			bullet.advance();
+			var bbox = bullet.box;
+			bullet.updateBox();
+			if (!con.containsPoint(new Point(bullet.mc.x,bullet.mc.y))||bbox.collidablePairs.length>0) {
+				layer.remove(bullet.mc);
 				bullets.splice(i, 1);
 				world.remove(bbox);
 				
 				if (bbox.collidablePairs.length > 0) {
 					var emc = cast(loader.getNode("mm_fla.Timeline_33"), SwfMovieClip2D);
-					emc.x = bullet.x;
-					emc.y = bullet.y;
+					emc.x = bullet.mc.x;
+					emc.y = bullet.mc.y;
 					layer.add(emc);
 					effectmcs.push(emc);
 				}
 			}
 			i--;
 		}
-		var c = 1;
-		while(c-->0)
 		world.hittest();
-		var flag = false;
-		for (pair in tankbox.collidablePairs) {
-			var cbox = pair.getCollisionBox(tankbox);
-			if (cbox.type == Box.STATIC_TYPE) {
-				flag = true;
-				break;
-			}
-		}
-		if (!flag) {
-			tank.x += vx;
-			tank.y += vy;
-		}
-		
-		if (turret.frame>=turret.frames.length) {
-			turret.gotoAndStop(0);
+		for(tank in tanks){
+			tank.updateTurret();
 		}
 		
 		for (emc in effectmcs) {
@@ -329,13 +278,128 @@ class TwoDFromSwfExample extends Sprite
 		
 		boundWrapper.graphics.clear();
 		boundWrapper.graphics.lineStyle(0, 0xff0000);
-		boundWrapper.graphics.moveTo(tank.x, tank.y);
-		var x1 = tank.x + 1000 * Math.cos((turret.rotationZ-90)*Math.PI/180);
-		var y1 = tank.y + 1000 * Math.sin((turret.rotationZ-90) * Math.PI / 180);
+		boundWrapper.graphics.moveTo(tank.mc.x, tank.mc.y);
+		var x1 = tank.mc.x + 1000 * Math.cos((tank.turret.rotationZ-90)*Math.PI/180);
+		var y1 = tank.mc.y + 1000 * Math.sin((tank.turret.rotationZ-90) * Math.PI / 180);
 		boundWrapper.graphics.lineTo(x1, y1);
-		world.ray.raycast(tank.x, tank.y, x1, y1);
+		world.ray.raycast(tank.mc.x, tank.mc.y, x1, y1,rayFilterBox);
 		for (box in world.ray.castboxs) {
 			boundWrapper.graphics.drawRect(box.aabb.left, box.aabb.top, box.aabb.width, box.aabb.height);
+		}
+	}
+	
+	public static function main():Void {
+		Lib.current.addChild(new TwoDFromSwfExample());
+	}
+}
+
+class GameObject {
+	static public var t1bit:Int = 1;
+	static public var t2bit:Int = 2;
+	static public var tankbit:Int = 4;
+	static public var bulletbit:Int = 8;
+	
+	public var hp:Int;
+	public var attack:Int;
+	public var speed:Float=0;
+	public var vx:Float=0;
+	public var vy:Float=0;
+	public var team:Int;
+	public var box:Box;
+	public var mc:SwfMovieClip2D;
+	public function new() { }
+	
+	public function updateBox():Void {
+		box.x = mc.x;
+		box.y = mc.y;
+		box.vx = vx;
+		box.vy = vy;
+	}
+	
+	public function advance():Void {
+		mc.x += vx;
+		mc.y += vy;
+	}
+}
+
+class Bullet extends GameObject {
+	public function new() {
+		super();
+		speed = 10;
+	}
+	public static function create(loader:SwfLoader):Bullet {
+		var bullet = new Bullet();
+		bullet.mc = untyped loader.getNode("bullet_mc");
+		var box = new Box(0, 0, 5, 5, 0, 0, Box.DYNAMIC_TYPE, bullet);
+		box.categoryBits = GameObject.bulletbit;
+		box.maskBits = GameObject.t2bit + GameObject.tankbit;
+		bullet.box = box;
+		return bullet;
+	}
+	
+	public function updateSpeed():Void {
+		vx = Math.cos(mc.rotationZ * Math.PI / 180) * speed;
+		vy = Math.sin(mc.rotationZ * Math.PI / 180) * speed;
+	}
+}
+class Tank extends GameObject {
+	public var tankmc:SwfMovieClip2D;
+	public var turret:SwfMovieClip2D;
+	public var tracks:SwfMovieClip2D;
+	var s1:Node2D;
+	var p1:Node2D;
+	public var hitFlag:Bool;
+	public function new() {
+		super();
+		speed = 2;
+	}
+	public static function create(loader:SwfLoader):Tank {
+		var tank = new Tank();
+		tank.mc= untyped loader.getNode("tank_1201");
+		tank.tankmc =untyped tank.mc.getSwfChildByName("mc");
+		tank.tankmc.gotoAndStop(0);
+		tank.turret = untyped tank.tankmc.getSwfChildByName("turret");
+		tank.turret.gotoAndStop(0);
+		tank.tracks =untyped tank.tankmc.getSwfChildByName("tracks");
+		tank.tracks.gotoAndStop(0);
+		
+		tank.s1 = tank.turret.getSwfChildByName("s1");
+		tank.p1=tank.turret.getSwfChildByName("p1");
+		tank.box = new Box(0, 0, 30, 30, 0, 0, Box.DYNAMIC_TYPE);
+		tank.box.categoryBits = GameObject.tankbit;
+		tank.box.maskBits = GameObject.t1bit + GameObject.t2bit+GameObject.bulletbit;//坦克和所有墙子弹进行碰撞检测
+		return tank;
+	}
+	
+	public function shoot(loader:SwfLoader, layer:Layer2D, bullets:Array<Bullet>, world:World):Bullet 
+	{
+		var sp1:Vector3D = new Vector3D();
+		sp1= s1.worldMatrix.transformVector(sp1);
+		var pp1:Vector3D = new Vector3D();
+		pp1 = p1.worldMatrix.transformVector(pp1);
+		var bullet = Bullet.create(loader);
+		bullet.mc.x = sp1.x - layer.x;
+		bullet.mc.y = sp1.y - layer.y;
+		bullet.mc.rotationZ = Math.atan2(pp1.y - sp1.y, pp1.x - sp1.x) * 180 / Math.PI;
+		bullet.updateBox();
+		bullet.updateSpeed();
+		turret.gotoAndPlay(0);
+		
+		layer.add(bullet.mc);
+		bullets.push(bullet);
+		world.add(bullet.box);
+		return bullet;
+	}
+	
+	public function updateTracks() 
+	{
+		if (Math.abs(vx) >= 0.01 || Math.abs(vy) >= 0.01) {
+			tracks.play();
+			var len = Math.sqrt(vx * vx+ vy * vy);
+			var a = getA(tracks.rotationZ,Math.atan2(vy,vx)*180/Math.PI+90);
+			tracks.rotationZ += (a - tracks.rotationZ) * len / 30;
+		}else {
+			tracks.stop();
 		}
 	}
 	
@@ -350,8 +414,54 @@ class TwoDFromSwfExample extends Sprite
 		return a;
 	}
 	
-	public static function main():Void {
-		Lib.current.addChild(new TwoDFromSwfExample());
+	public function updateTurret() 
+	{
+		hitFlag = false;
+		for (pair in box.collidablePairs) {
+			var cbox = pair.getCollisionBox(box);
+			if (cbox.type == Box.STATIC_TYPE) {
+				hitFlag = true;
+				break;
+			}
+		}
+		if (!hitFlag) {
+			advance();
+		}
+		if (turret.frame>=turret.frames.length) {
+			turret.gotoAndStop(0);
+		}
 	}
-	
+}
+class Wall extends GameObject {
+	public function new() {
+		super();
+	}
+}
+
+class TankAI {
+	public var tank:Tank;
+	public var moveCount:Int = 0;
+	public var rotationCount:Int = 0;
+	public var rotationSpeed:Float = 0;
+	public function new() {
+		
+	}
+	public function doAI(loader:SwfLoader, layer:Layer2D, bullets:Array<Bullet>, world:World):Void {
+		if (moveCount<0||tank.hitFlag) {
+			moveCount = Std.random(60) + 60;
+			var a = Math.random() * 2 * Math.PI;
+			tank.vx = tank.speed * Math.sin(a);
+			tank.vy = tank.speed * Math.cos(a);
+		}
+		if (rotationCount<0) {
+			rotationCount = Std.random(60) + 60;
+			rotationSpeed = (Math.random() - .5) * 5;
+		}
+		tank.turret.rotationZ += rotationSpeed;
+		if (Math.random()<.01) {
+			tank.shoot(loader, layer,bullets,world);
+		}
+		moveCount--;
+		rotationCount--;
+	}
 }

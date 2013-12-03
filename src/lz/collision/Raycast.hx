@@ -24,6 +24,7 @@ class Raycast
 	var x1:Float;
 	var y1:Float;
 	var idmap:Map<Int,Bool>;
+	var filter:Box;
 	public var world:World;
 	public var castboxs:Array<Box>;
 	public function new() 
@@ -31,7 +32,8 @@ class Raycast
 		
 	}
 	
-	public function raycast(x0:Float, y0:Float, x1:Float, y1:Float):Void {
+	public function raycast(x0:Float, y0:Float, x1:Float, y1:Float,filter:Box=null):Void {
+		this.filter = filter;
 		castboxs = [];
 		idmap = new Map<Int,Bool>();
 		this.y1 = y1;
@@ -113,21 +115,25 @@ class Raycast
 			for (box in bs) {
 				if (!idmap.exists(box.id)) {
 					idmap.set(box.id, true);
-					if (flag) {//dx>dy ndy=dy/dx
-						var cdx0 = box.aabb.left-x0;
-						var cdx1 = box.aabb.right - x0;
-						var cy0 = y0 + cdx0 * ndy;
-						var cy1 = y0 + cdx1 * ndy;
-						if (!((cy0<box.aabb.top&&cy1<box.aabb.top)||(cy0>box.aabb.bottom&&cy1>box.aabb.bottom))) {
-							castboxs.push(box);
-						}
-					}else {
-						var cdy0 = box.aabb.top-y0;
-						var cdy1 = box.aabb.bottom - y0;
-						var cx0 = x0 + cdy0 * ndy;
-						var cx1 = x0 + cdy1 * ndy;
-						if (!((cx0<box.aabb.left&&cx1<box.aabb.left)||(cx0>box.aabb.right&&cx1>box.aabb.right))) {
-							castboxs.push(box);
+					if(filter==null||filter.maskAble(box)){
+						if(!((x0<box.aabb.left&&x1<box.aabb.left)||(x0>box.aabb.right&&x1>box.aabb.right))&&!((y0<box.aabb.top&&y1<box.aabb.top)||(y0>box.aabb.bottom&&y1>box.aabb.bottom))){
+							if (flag) {//dx>dy ndy=dy/dx
+								var cdx0 = box.aabb.left-x0;
+								var cdx1 = box.aabb.right - x0;
+								var cy0 = y0 + cdx0 * ndy;
+								var cy1 = y0 + cdx1 * ndy;
+								if (!((cy0<box.aabb.top&&cy1<box.aabb.top)||(cy0>box.aabb.bottom&&cy1>box.aabb.bottom))) {
+									castboxs.push(box);
+								}
+							}else {
+								var cdy0 = box.aabb.top-y0;
+								var cdy1 = box.aabb.bottom - y0;
+								var cx0 = x0 + cdy0 * ndy;
+								var cx1 = x0 + cdy1 * ndy;
+								if (!((cx0<box.aabb.left&&cx1<box.aabb.left)||(cx0>box.aabb.right&&cx1>box.aabb.right))) {
+									castboxs.push(box);
+								}
+							}
 						}
 					}
 				}

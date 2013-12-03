@@ -40,4 +40,7 @@ class Box
 		id = ID++;
 	}
 	
+	public function maskAble(b:Box):Bool {
+		return ((b.categoryBits & maskBits) != 0) && ((categoryBits & b.maskBits) != 0);
+	}
 }
