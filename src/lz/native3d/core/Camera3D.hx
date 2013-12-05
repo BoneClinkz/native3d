@@ -37,7 +37,7 @@ package lz.native3d.core;
 			add(new Node3D());
 			
 			cscale = new Vector3D(1,-1,1);
-			cpos = new Vector3D(-1,1,0);
+			cpos = new Vector3D(-1,1,.999999);
 			if (is2d) {
 				_zNear = 0;
 				orthoLH(width, height, _zNear, _zFar,cscale,cpos);

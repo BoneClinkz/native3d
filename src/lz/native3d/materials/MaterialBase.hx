@@ -2,6 +2,7 @@ package lz.native3d.materials ;
 import flash.display3D.Context3D;
 import flash.display3D.Context3DBlendFactor;
 import flash.display3D.Context3DProgramType;
+import flash.display3D.Context3DTriangleFace;
 import flash.display3D.Program3D;
 import flash.Vector;
 import lz.native3d.core.BasicPass3D;
@@ -18,6 +19,7 @@ import flash.display3D.Context3DCompareMode;
 	public var sourceFactor:#if flash Context3DBlendFactor #else Int #end;// = Context3DBlendFactor.ONE; 
 	public var destinationFactor:#if flash Context3DBlendFactor #else Int #end;// = Context3DBlendFactor.ZERO;
 	public var passCompareMode:#if flash Context3DCompareMode #else Int #end;// = Context3DCompareMode.LESS;
+	public var culling:#if flash Context3DTriangleFace #else Int #end;// = Context3DCompareMode.LESS;
 	public var c3d:Context3D;
 	public function new() 
 	{
@@ -25,6 +27,7 @@ import flash.display3D.Context3DCompareMode;
 		sourceFactor = Context3DBlendFactor.ONE;
 		destinationFactor = Context3DBlendFactor.ZERO;
 		passCompareMode = Context3DCompareMode.LESS;
+		culling = Context3DTriangleFace.FRONT;
 		#end
 	}
 	

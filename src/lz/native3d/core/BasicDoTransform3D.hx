@@ -19,11 +19,7 @@ import flash.Vector;
 		}
 		
 		inline public function doTransform(nodes:Vector<Node3D>):Vector<Node3D> {
-			#if flash
-			passNodes.length = 0;
-			#else
 			passNodes = new Vector<Node3D>();
-			#end
 			doTransformNodes(nodes,false);
 			return passNodes;
 		}

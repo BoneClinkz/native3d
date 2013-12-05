@@ -71,4 +71,18 @@ class SwfMovieClip2D extends Node2D
 		return null;
 	}
 	
+	override public function setMouseEnable(value:Bool,depth:Bool):Void 
+	{
+		_mouseEnable = value;
+		if (depth) {
+			for (node in children) {
+				node.setMouseEnable(value, depth);
+			}
+			for (node in tags) {
+				if(node!=null)
+				node.setMouseEnable(value, depth);
+			}
+		}
+	}
+	
 }

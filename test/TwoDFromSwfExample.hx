@@ -19,11 +19,15 @@ import lz.native2d.Layer2D;
 import lz.native2d.Node2D;
 import lz.native2d.SwfLoader;
 import lz.native2d.SwfMovieClip2D;
+import lz.native3d.core.BasicLight3D;
+import lz.native3d.core.BasicPass3D;
 import lz.native3d.core.BasicView;
 import lz.native3d.core.Camera3D;
 import lz.native3d.core.Node3D;
 import lz.native3d.core.TextureSet;
+import lz.native3d.materials.PhongMaterial;
 import lz.native3d.materials.TwoDBatchMaterial;
+import lz.native3d.meshs.MeshUtils;
 import lz.net.LoaderCell;
 import net.hires.debug.Stats;
 
@@ -55,6 +59,7 @@ class TwoDFromSwfExample extends Sprite
 	var world:World;
 	
 	var rayFilterBox:Box;
+	var cube3d:Node3D;
 	public function new() 
 	{
 		super();
@@ -79,23 +84,52 @@ class TwoDFromSwfExample extends Sprite
 		bv = new BasicView(200, 200,true);
 		bv.instance3Ds[0].camera = new Camera3D(200, 200, bv.instance3Ds[0],true);
 		bv.instance3Ds[0].camera.frustumPlanes = null;
-		bv.instance3Ds[0].culling = Context3DTriangleFace.NONE;
 		addChild(bv);
 		bv.instance3Ds[0].addEventListener(Event.CONTEXT3D_CREATE, context3dCreate);
 		addChild(new Stats());
 	}
 	
 	private function context3dCreate(e:Event):Void 
-	{
+	{	
 		var textureset:TextureSet = new TextureSet(bv.instance3Ds[0]);
 		textureset.setBmd(loader.bmd,Context3DTextureFormat.BGRA);
 		layer = new Layer2D(true, textureset.texture, bv.instance3Ds[0]);
 		cast(layer.material , TwoDBatchMaterial).gchanged = true;
-		bv.instance3Ds[0].root.add(layer);
 		
 		mapboundloader = LoaderCell.createUrlLoader("../assets/map/objs.json", null);
 		mapboundloader.addEventListener(Event.COMPLETE, mapboundloader_complete);
 		mapboundloader.start();
+		
+		//init3d
+		bv.instance3Ds[0].passs[0].present = false;
+		var pass:BasicPass3D = new BasicPass3D(bv.instance3Ds[0]);
+		pass.rootIndex = 1;
+		pass.clear = false;
+		pass.camera = new Camera3D(100, 100, bv.instance3Ds[0]);
+		pass.camera.z = -1000;
+		var root3d:Node3D = new Node3D();
+		bv.instance3Ds[0].roots.push(root3d);
+		bv.instance3Ds[0].passs.push(pass);
+		
+		var	cubeDrawAble=MeshUtils.createCube(1,bv.instance3Ds[0]);
+		var node:Node3D = new Node3D();
+		node.setPosition(0, 200, 0);
+		node.setRotation(0, 0, 0);
+		node.setScale(30, 30, 30);
+		node.drawAble = cubeDrawAble;
+		root3d.add(node);
+		var light = new BasicLight3D();
+		root3d.add(light);
+		bv.instance3Ds[0].lights.push(light);
+		light.setPosition( -100,100,-1000);
+		node.material = new PhongMaterial(bv.instance3Ds[0], light,
+		new Vector3D(.2, .2, .2),//AmbientColor
+		new Vector3D(Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5),//DiffuseColor
+		new Vector3D(.8,.8,.8),//SpecularColor
+		200,
+		null
+		);
+		cube3d = node;
 	}
 	
 	private function mapboundloader_complete(e:Event):Void 
@@ -231,9 +265,14 @@ class TwoDFromSwfExample extends Sprite
 		boundWrapper.y= layer.y=maplayer.y  = Math.max(-mapb.height+stage.stageHeight,Math.min(0,stage.stageHeight / 2-tank.mc.y));
 		
 		layer.children.sort(function(n1:Node3D, n2:Node3D):Int { return n1.y > n2.y?1: -1; } );
+		if(cube3d!=null){
+		cube3d.rotationX++;
+		cube3d.rotationY++; }
+		TwoDBatchMaterial.mouse2d.clear();
 		for (i3d in bv.instance3Ds) {
 			i3d.render();
 		}
+		TwoDBatchMaterial.mouse2d.doMouse(mouseX, mouseY);
 		for (tank in tanks) {
 			tank.updateTracks();
 			tank.updateBox();
@@ -362,13 +401,23 @@ class Tank extends GameObject {
 		tank.turret.gotoAndStop(0);
 		tank.tracks =untyped tank.tankmc.getSwfChildByName("tracks");
 		tank.tracks.gotoAndStop(0);
-		
 		tank.s1 = tank.turret.getSwfChildByName("s1");
 		tank.p1=tank.turret.getSwfChildByName("p1");
 		tank.box = new Box(0, 0, 30, 30, 0, 0, Box.DYNAMIC_TYPE);
 		tank.box.categoryBits = GameObject.tankbit;
-		tank.box.maskBits = GameObject.t1bit + GameObject.t2bit+GameObject.bulletbit;//坦克和所有墙子弹进行碰撞检测
+		tank.box.maskBits = GameObject.t1bit + GameObject.t2bit + GameObject.bulletbit;//坦克和所有墙子弹进行碰撞检测
+		
+		//测试 坦克鼠标事件
+		tank.mc.setMouseEnable(true, true);
+		tank.mc.addEventListener(MouseEvent.CLICK, mouseevent);
+		tank.mc.addEventListener(MouseEvent.MOUSE_DOWN, mouseevent);
+		tank.mc.addEventListener(MouseEvent.MOUSE_UP, mouseevent);
 		return tank;
+	}
+	
+	static private function mouseevent(e:MouseEvent):Void 
+	{
+		trace(e.type);
 	}
 	
 	public function shoot(loader:SwfLoader, layer:Layer2D, bullets:Array<Bullet>, world:World):Bullet 

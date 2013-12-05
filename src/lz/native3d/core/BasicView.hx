@@ -6,6 +6,7 @@ package lz.native3d.core ;
 	import flash.display.StageScaleMode;
 	import flash.display3D.Context3D;
 	import flash.events.Event;
+	import flash.events.MouseEvent;
 	import flash.Vector;
 	#if !flash
 	using OpenFLStage3D;
@@ -47,7 +48,6 @@ package lz.native3d.core ;
 				stage3d.addEventListener(Event.CONTEXT3D_CREATE, stage3Ds_context3dCreate);
 				stage3d.requestContext3D();
 			}
-			
 			this.autoSize = autoSize;
 		}
 		

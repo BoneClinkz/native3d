@@ -14,9 +14,10 @@ package lz.native3d.core ;
 	 * ...
 	 * @author lizhi http://matrix3d.github.io/
 	 */
-	 class Node3D
+	 class Node3D extends EventDispatcher
 	{
 		public var userData:Dynamic;
+		private var _mouseEnable:Bool = false;
 		public static inline var NODE_TYPE:String = "NODE";
 		public static inline var JOINT_TYPE:String = "JOINT";
 		public var name:String;
@@ -78,6 +79,22 @@ package lz.native3d.core ;
 		public var scaleY(get_scaleY,set_scaleY):Float;
 		#if swc @:extern #end 
 		public var scaleZ(get_scaleZ,set_scaleZ):Float;
+		
+		public function getMouseEnable():Bool 
+		{
+			return _mouseEnable;
+		}
+		
+		public function setMouseEnable(value:Bool,depth:Bool):Void 
+		{
+			_mouseEnable = value;
+			if (depth) {
+				for (node in children) {
+					node.setMouseEnable(value, depth);
+				}
+			}
+		}
+		
 		 public var frustumCulling:FrustumCulling;
 		 
 		 /**
@@ -88,6 +105,7 @@ package lz.native3d.core ;
 		 public var twoDData:TwoDData;
 		public function new() 
 	{
+		super();
 		frame =  0;// Std.random(100000);
 		//super();
 		id =++ID;
@@ -216,7 +234,6 @@ package lz.native3d.core ;
 		
 		#if swc @:setter(scaleX) #end inline private function set_scaleX(value:Float):Float 
 		{
-			
 			compsVersion++;
 			return scale.x = value;
 		}
@@ -323,5 +340,8 @@ package lz.native3d.core ;
 			return null;
 		}
 		
+		public function hittest(mousePos:Vector3D):Bool {
+			return false;
+		}
 	}
 

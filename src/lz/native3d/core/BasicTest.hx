@@ -120,8 +120,6 @@ class BasicTest extends Sprite
 		new Vector3D(.8,.8,.8),//SpecularColor
 		200,
 		null
-	//	texture
-		//TextureSet.getTempTexture(bv.instance3Ds[0])
 		);
 		return node;
 	}

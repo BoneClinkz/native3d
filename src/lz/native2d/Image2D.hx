@@ -1,7 +1,9 @@
 package lz.native2d;
 import flash.display3D.textures.TextureBase;
+import flash.geom.Matrix3D;
 import flash.geom.Point;
 import flash.geom.Rectangle;
+import flash.geom.Vector3D;
 import flash.Vector;
 import lz.native3d.core.TwoDData;
 
@@ -11,6 +13,8 @@ import lz.native3d.core.TwoDData;
  */
 class Image2D extends Node2D
 {
+	public static var helpHittestMatrix3d:Matrix3D = new Matrix3D();
+	
 	public var texture:TextureBase;
 	public var uv:UV2D;
 	public function new(texture:TextureBase,size:Point=null,uv:UV2D=null) 
@@ -31,6 +35,12 @@ class Image2D extends Node2D
 			uv.left, uv.bottom, uv.right, uv.bottom, uv.left, uv.top, uv.right, uv.top
 			]);
 		}
+	}
+	override public function hittest(mousePos:Vector3D):Bool {
+		helpHittestMatrix3d.copyFrom(worldMatrix);
+		helpHittestMatrix3d.invert();
+		var pos = helpHittestMatrix3d.transformVector(mousePos);
+		return pos.x>=-.5&&pos.x<=.5&&pos.y>=-.5&&pos.y<=.5;
 	}
 	
 }

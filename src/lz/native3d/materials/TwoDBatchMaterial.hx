@@ -3,11 +3,16 @@ import flash.display3D.Context3D;
 import flash.display3D.Context3DBlendFactor;
 import flash.display3D.Context3DCompareMode;
 import flash.display3D.Context3DProgramType;
+import flash.display3D.Context3DTriangleFace;
 import flash.display3D.textures.Texture;
 import flash.display3D.textures.TextureBase;
 import flash.display3D.VertexBuffer3D;
 import flash.geom.Matrix3D;
+import flash.geom.Vector3D;
+import flash.Lib;
 import flash.Vector;
+import lz.native2d.Image2D;
+import lz.native2d.Mouse2D;
 import lz.native2d.SwfMovieClip2D;
 import lz.native3d.core.BasicPass3D;
 import lz.native3d.core.IndexBufferSet;
@@ -38,13 +43,14 @@ class TwoDBatchMaterial extends MaterialBase
 	public var planeOut:Vector<Float>;
 	private var texture:TextureBase;
 	private static var shader:IShader = new IShader();
+	public static var mouse2d:Mouse2D = new Mouse2D();
 	public function new(texture:TextureBase,i3d:Instance3D) 
 	{
 		super();
 		passCompareMode = Context3DCompareMode.ALWAYS;
 		sourceFactor = Context3DBlendFactor.ONE;
 		destinationFactor = Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
-		//passCompareMode = Context3DCompareMode.NEVER;
+		culling = Context3DTriangleFace.NONE;
 		this.texture = texture;
 		if (shader.i == null) {
 			shader.create(Instance3D.getInstance().c3d);
@@ -150,6 +156,7 @@ class TwoDBatchMaterial extends MaterialBase
 		c3d.setVertexBufferAt(1, null, 0, uvBuff.format);
 		c3d.setTextureAt(0, null);
 		
+		mouse2d.nodes = mouse2d.nodes.concat(nodes);
 	}
 	
 	inline private function setPosData(node:Node3D, i:Int):Void {
