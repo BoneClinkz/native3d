@@ -19,6 +19,7 @@ import lz.native2d.Layer2D;
 import lz.native2d.Node2D;
 import lz.native2d.SwfLoader;
 import lz.native2d.SwfMovieClip2D;
+import lz.native2d.ui.Button;
 import lz.native3d.core.BasicLight3D;
 import lz.native3d.core.BasicPass3D;
 import lz.native3d.core.BasicView;
@@ -60,6 +61,7 @@ class TwoDFromSwfExample extends Sprite
 	
 	var rayFilterBox:Box;
 	var cube3d:Node3D;
+	var uiloader:SwfLoader;
 	public function new() 
 	{
 		super();
@@ -200,6 +202,27 @@ class TwoDFromSwfExample extends Sprite
 		stage.addEventListener(KeyboardEvent.KEY_UP, stage_keyUp);
 		stage.addEventListener(MouseEvent.MOUSE_DOWN, stage_click);
 		addEventListener(Event.ENTER_FRAME, enterFrame);
+		
+		
+		uiloader = new SwfLoader("../assets/swfsheet/ui.zip");
+		uiloader.addEventListener(Event.COMPLETE, ui_loader_complete);
+		uiloader.start();
+	}
+	
+	private function ui_loader_complete(e:Event):Void 
+	{
+		var textureset:TextureSet = new TextureSet(bv.instance3Ds[0]);
+		textureset.setBmd(uiloader.bmd,Context3DTextureFormat.BGRA);
+		var uilayer = new Layer2D(true, textureset.texture, bv.instance3Ds[0]);
+		uilayer.x = 200;
+		cast(uilayer.material , TwoDBatchMaterial).gchanged = true;
+		bv.instance3Ds[0].root.add(uilayer);
+		var ui = cast(uiloader.getNode("ui_mc"),SwfMovieClip2D);
+		uilayer.add(ui);
+		uilayer.setMouseEnable(true, true);
+		new Button(untyped ui.getSwfChildByName("btn_1"));
+		new Button(untyped ui.getSwfChildByName("btn_2"));
+		new Button(untyped ui.getSwfChildByName("btn_3"));
 	}
 	
 	private function stage_click(e:MouseEvent):Void 
@@ -407,17 +430,7 @@ class Tank extends GameObject {
 		tank.box.categoryBits = GameObject.tankbit;
 		tank.box.maskBits = GameObject.t1bit + GameObject.t2bit + GameObject.bulletbit;//坦克和所有墙子弹进行碰撞检测
 		
-		//测试 坦克鼠标事件
-		tank.mc.setMouseEnable(true, true);
-		tank.mc.addEventListener(MouseEvent.CLICK, mouseevent);
-		tank.mc.addEventListener(MouseEvent.MOUSE_DOWN, mouseevent);
-		tank.mc.addEventListener(MouseEvent.MOUSE_UP, mouseevent);
 		return tank;
-	}
-	
-	static private function mouseevent(e:MouseEvent):Void 
-	{
-		trace(e.type);
 	}
 	
 	public function shoot(loader:SwfLoader, layer:Layer2D, bullets:Array<Bullet>, world:World):Bullet 

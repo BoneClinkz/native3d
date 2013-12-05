@@ -64,7 +64,7 @@ class SwfMovieClip2D extends Node2D
 	
 	public function getSwfChildByName(name:String):Node2D {
 		for (c in tags) {
-			if (c.name==name) {
+			if (c!=null&&c.name==name) {
 				return c;
 			}
 		}
