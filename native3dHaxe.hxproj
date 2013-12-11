@@ -27,7 +27,7 @@
     <option noInlineOnDebug="False" />
     <option mainClass="TwoDFromSwfExample" />
     <option enabledebug="True" />
-    <option additional="-lib format&#xA;-lib hxsl&#xA;-lib openfl-stage3d" />
+    <option additional="-lib format&#xA;-lib hxsl&#xA;-lib openfl-stage3d&#xA;" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>
@@ -41,6 +41,7 @@
     <compile path="test\LineExample.hx" />
     <compile path="test\Test2.hx" />
     <compile path="test\TestBlender.hx" />
+    <compile path="test\Test3.hx" />
     <compile path="test\TwoDFromSwfExample.hx" />
   </compileTargets>
   <!-- Assets to embed into the output SWF -->

@@ -11,7 +11,7 @@ import lz.native3d.core.animation.AnimationPart;
 import lz.native3d.core.animation.Channel;
 import lz.native3d.core.animation.Skin;
 import lz.native3d.core.BasicLight3D;
-import lz.native3d.core.DrawAble3D;
+import lz.native3d.core.Drawable3D;
 import lz.native3d.core.IndexBufferSet;
 import lz.native3d.core.Instance3D;
 import lz.native3d.core.Node3D;

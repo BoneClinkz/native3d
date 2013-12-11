@@ -63,7 +63,7 @@ class Test extends Sprite
 	private function parser_complete(e:Event):Void 
 	{
 		node = new Node3D();
-		node.drawAble = parser.drawAble;
+		node.drawable = parser.drawable;
 		node.material = new PhongMaterial(bv.instance3Ds[0], new BasicLight3D(), new Vector3D(), new Vector3D(), new Vector3D());// new ColorMaterial(Std.random(0xffffff), Std.random(0xffffff), new BasicLight3D());
 		bv.instance3Ds[0].root.add(node);
 	}

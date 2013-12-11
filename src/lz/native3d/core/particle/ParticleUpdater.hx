@@ -13,9 +13,9 @@ class ParticleUpdater
 	}
 	
 	public function update(pw:ParticleWrapper):Void {
-		var xyz = pw.drawAble.xyz.data;
-		var color = pw.drawAble.color.data;
-		var scale = pw.drawAble.scale.data;
+		var xyz = pw.drawable.xyz.data;
+		var color = pw.drawable.color.data;
+		var scale = pw.drawable.scale.data;
 		for (p in pw.particles) {
 			var x = p.x;
 			var y = p.y;
@@ -33,9 +33,9 @@ class ParticleUpdater
 				color[i4+3] = p.color.w;
 			}
 		}
-		pw.drawAble.xyz.upload();
-		pw.drawAble.scale.upload();
-		pw.drawAble.color.upload();
+		pw.drawable.xyz.upload();
+		pw.drawable.scale.upload();
+		pw.drawable.color.upload();
 	}
 	
 }

@@ -12,7 +12,7 @@ import flash.utils.RegExp;
 import flash.Vector;
 import haxe.Timer;
 import lz.native3d.core.BasicLight3D;
-import lz.native3d.core.DrawAble3D;
+import lz.native3d.core.Drawable3D;
 import lz.native3d.core.IndexBufferSet;
 import lz.native3d.core.Instance3D;
 import lz.native3d.core.Node3D;
@@ -166,13 +166,13 @@ class ObjParser extends AbsParser
 				}
 			}
 			
-			var drawable:DrawAble3D = new DrawAble3D();
+			var drawable:Drawable3D = new Drawable3D();
 			drawable.indexBufferSet = new IndexBufferSet(index.length, index, 0,i3d);
 			drawable.xyz = new VertexBufferSet(untyped(newv.length/3), 3, newv, 0,i3d);
 			drawable.uv = new VertexBufferSet(untyped(newvt.length/2), 2, newvt, 0,i3d);
 			drawable.norm = new VertexBufferSet(untyped(newnt.length/3), 3, newnt, 0,i3d);
 			MeshUtils.computeNorm(drawable);
-			node.node.drawAble = drawable;
+			node.node.drawable = drawable;
 			node.node.material = 
 			new PhongMaterial(i3d, light,
 				new Vector3D(.2, .2, .2),//AmbientColor

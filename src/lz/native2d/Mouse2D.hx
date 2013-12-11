@@ -15,6 +15,7 @@ class Mouse2D
 	public var mousePos:Vector3D;
 	public var lastMouseNodes:Vector<Node3D>;
 	public var mouseNodes:Vector<Node3D>;
+	public var changed:Bool = false;
 	public function new() 
 	{
 		mousePos = new Vector3D();
@@ -36,6 +37,7 @@ class Mouse2D
 	
 	public function clear():Void {
 		nodes.length = 0;
+		changed = true;
 	}
 	
 	public function doMouse(mouseX:Float,mouseY:Float):Void {
@@ -69,5 +71,6 @@ class Mouse2D
 				node.dispatchEvent(event);
 			}
 		}
+		changed = false;
 	}
 }

@@ -4,7 +4,7 @@ package lz.native3d.core ;
 	 * ...
 	 * @author lizhi http://matrix3d.github.io/
 	 */
-	class DrawAble3D 
+	class Drawable3D 
 	{
 		
 		public var indexBufferSet:IndexBufferSet;

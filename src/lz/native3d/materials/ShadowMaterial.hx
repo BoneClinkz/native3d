@@ -91,11 +91,11 @@ class ShadowMaterial extends MaterialBase
 			Instance3D.getInstance().c3d.setDepthTest(true, passCompareMode);
 			c3d.setBlendFactors(sourceFactor, destinationFactor);
 			c3d.setProgram(progrom);
-			var xyz:VertexBufferSet = node.drawAble.xyz;
+			var xyz:VertexBufferSet = node.drawable.xyz;
 			c3d.setVertexBufferAt(0, xyz.vertexBuff, 0, xyz.format);
-			var norm:VertexBufferSet = node.drawAble.norm;
+			var norm:VertexBufferSet = node.drawable.norm;
 			c3d.setVertexBufferAt(2, norm.vertexBuff, 0, norm.format);
-			var uv:VertexBufferSet = node.drawAble.uv;
+			var uv:VertexBufferSet = node.drawable.uv;
 			c3d.setVertexBufferAt(1, uv.vertexBuff, 0, uv.format);
 			c3d.setTextureAt(0, texture);
 			c3d.setTextureAt(1, lightPass.target.texture);
@@ -107,7 +107,7 @@ class ShadowMaterial extends MaterialBase
 			vertex[2] = lightNode.worldRawData[14];
 			c3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 12, vertex);
 			c3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, fragment);
-			c3d.drawTriangles(node.drawAble.indexBufferSet.indexBuff);
+			c3d.drawTriangles(node.drawable.indexBufferSet.indexBuff);
 			c3d.setVertexBufferAt(0,null, 0, xyz.format);
 			c3d.setVertexBufferAt(1, null, 0, uv.format);
 			c3d.setVertexBufferAt(2, null, 0, uv.format);
@@ -115,9 +115,9 @@ class ShadowMaterial extends MaterialBase
 			c3d.setTextureAt(1, null);
 		}
 		override public function init(node:Node3D):Void {
-			node.drawAble.xyz.init();
-			node.drawAble.uv.init();
-			node.drawAble.norm.init();
-			node.drawAble.indexBufferSet.init();
+			node.drawable.xyz.init();
+			node.drawable.uv.init();
+			node.drawable.norm.init();
+			node.drawable.indexBufferSet.init();
 		}
 }

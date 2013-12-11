@@ -47,7 +47,7 @@ class PickExample extends Sprite
 		bv.instance3Ds[0].camera.z = -100;
 		
 		node = new Node3D();
-		node.drawAble = MeshUtils.createTeaPot(bv.instance3Ds[0]);
+		node.drawable = MeshUtils.createTeaPot(bv.instance3Ds[0]);
 		var light:BasicLight3D = new BasicLight3D();
 		light.z = -1000;
 		bv.instance3Ds[0].root.add(light);

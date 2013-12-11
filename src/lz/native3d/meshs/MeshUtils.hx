@@ -7,7 +7,7 @@ package lz.native3d.meshs ;
 	import flash.Vector;
 	import lz.native3d.core.Instance3D;
 	//import lz.native3d.ns.native3d;
-	import lz.native3d.core.DrawAble3D;
+	import lz.native3d.core.Drawable3D;
 	import lz.native3d.core.IndexBufferSet;
 	import lz.native3d.core.Node3D;
 	import lz.native3d.core.VertexBufferSet;
@@ -23,9 +23,9 @@ package lz.native3d.meshs ;
 		{
 			
 		}
-		public static function createCube(r:Float,i3d:Instance3D,back:Bool=false):DrawAble3D
+		public static function createCube(r:Float,i3d:Instance3D,back:Bool=false):Drawable3D
 		{
-			var drawable:DrawAble3D = new DrawAble3D();
+			var drawable:Drawable3D = new Drawable3D();
 			var vin:Vector<Float> = Vector.ofArray( [
 			// top
 				r, r, r,  -r, r, -r,  r, r, -r, 
@@ -91,9 +91,9 @@ package lz.native3d.meshs ;
 			return drawable;
 		}
 		
-		public static function createPlane(r:Float,i3d:Instance3D):DrawAble3D
+		public static function createPlane(r:Float,i3d:Instance3D):Drawable3D
 		{
-			var drawable:DrawAble3D = new DrawAble3D();
+			var drawable:Drawable3D = new Drawable3D();
 			var vin:Vector<Float> = #if flash Vector.ofArray( #end [-r, -r, 0, r, -r, 0, -r, r, 0, r, r, 0] #if flash ) #end ;
 			var uv:Vector<Float> = #if flash Vector.ofArray( #end [0.0, 1, 1, 1, 0, 0, 1, 0] #if flash ) #end ;
 			var arr:Array<#if flash UInt #else Int #end>=[
@@ -108,7 +108,7 @@ package lz.native3d.meshs ;
 		}
 		
 		#if flash
-		public static function createTeaPot(i3d:Instance3D):DrawAble3D {
+		public static function createTeaPot(i3d:Instance3D):Drawable3D {
 			var teaPotIndexData:Array<UInt>=[
 				0,1,2,
 				2,3,0,
@@ -1947,7 +1947,7 @@ package lz.native3d.meshs ;
 			//context3D.setVertexBufferAt( 3, vertexBuffer,  8, Context3DVertexBufferFormat.FLOAT_3 );
 			// normal
 			//context3D.setVertexBufferAt( 4, vertexBuffer, 12, Context3DVertexBufferFormat.FLOAT_3 );
-			var drawable:DrawAble3D = new DrawAble3D();
+			var drawable:Drawable3D = new Drawable3D();
 			var vin:Vector<Float> = new Vector<Float>(untyped(teaPotVertexData.length / 15 * 3));
 			var uv:Vector<Float> = new Vector<Float>(untyped(teaPotVertexData.length / 15 * 2));
 			var norm:Vector<Float> = new Vector<Float>(untyped(teaPotVertexData.length / 15 * 3));
@@ -1982,8 +1982,8 @@ package lz.native3d.meshs ;
 		}
 		#end
 		
-		public static function marge(nodes:Vector<Node3D>):DrawAble3D {
-			var drawable:DrawAble3D = new DrawAble3D();
+		public static function marge(nodes:Vector<Node3D>):Drawable3D {
+			var drawable:Drawable3D = new Drawable3D();
 			/*var vin:Vector<Float> = new Vector<Float>();
 			var uv:Vector<Float> = new Vector<Float>();
 			var indexs:Vector<#if flash UInt #else Int #end> = new Vector<#if flash UInt #else Int #end>();
@@ -1991,22 +1991,22 @@ package lz.native3d.meshs ;
 			
 			var data:Vector<Float>;
 			for each(var node:Node3D in nodes) {
-				if(data==null||data.length!=node.drawAble.xyz.data.length)
-				data = new Vector<Float>(node.drawAble.xyz.data.length);
-				node.worldMatrix.transformVectors(node.drawAble.xyz.data,data);
+				if(data==null||data.length!=node.drawable.xyz.data.length)
+				data = new Vector<Float>(node.drawable.xyz.data.length);
+				node.worldMatrix.transformVectors(node.drawable.xyz.data,data);
 				for each(var n:Float in data) {
 					vin.push(n);
 				}
-				if (node.drawAble.uv) {
-					for each(n in node.drawAble.uv.data) {
+				if (node.drawable.uv) {
+					for each(n in node.drawable.uv.data) {
 						uv.push(n);
 					}
 				}
 				
-				for each(var i:#if flash UInt #else Int #end in node.drawAble.indexBufferSet.data) {
+				for each(var i:#if flash UInt #else Int #end in node.drawable.indexBufferSet.data) {
 					indexs.push(i+iadd);
 				}
-				iadd += node.drawAble.xyz.data.length / 3;
+				iadd += node.drawable.xyz.data.length / 3;
 			}
 			drawable.xyz = new VertexBufferSet(vin.length / 3, 3, vin, 0,"float3");
 			drawable.uv = new VertexBufferSet(uv.length / 2, 2, uv, 0,"float2");
@@ -2030,7 +2030,7 @@ package lz.native3d.meshs ;
 			}
 			return Math.sqrt(mr);
 		}
-		public static function computeEdge(drawable:DrawAble3D):Void
+		public static function computeEdge(drawable:Drawable3D):Void
 		{
 			var v = new Vector<Float>(#if flash drawable.xyz.num*2 #end);
 			var last:Float = 0;
@@ -2066,7 +2066,7 @@ package lz.native3d.meshs ;
 			}
 			drawable.edge = new VertexBufferSet(drawable.xyz.num, 2,v, 0,drawable.xyz.i3d);
 		}
-		public static function computeNorm(drawable:DrawAble3D):Void
+		public static function computeNorm(drawable:Drawable3D):Void
 		{
 			var normVs:Vector<Vector<Vector3D>> = new Vector<Vector<Vector3D>>();
 			for (i in 0...untyped(drawable.xyz.data.length/3)) {

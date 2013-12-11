@@ -118,7 +118,7 @@ class TwoDFromSwfExample extends Sprite
 		node.setPosition(0, 200, 0);
 		node.setRotation(0, 0, 0);
 		node.setScale(30, 30, 30);
-		node.drawAble = cubeDrawAble;
+		node.drawable = cubeDrawAble;
 		root3d.add(node);
 		var light = new BasicLight3D();
 		root3d.add(light);

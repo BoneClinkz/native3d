@@ -51,17 +51,17 @@ class IDMaterial extends MaterialBase
 			Instance3D.getInstance().c3d.setDepthTest(true, passCompareMode);
 			c3d.setBlendFactors(sourceFactor, destinationFactor);
 			c3d.setProgram(progrom);
-			var xyz:VertexBufferSet = node.drawAble.xyz;
+			var xyz:VertexBufferSet = node.drawable.xyz;
 			c3d.setVertexBufferAt(0, xyz.vertexBuff, 0, xyz.format);
 			c3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, node.worldMatrix, true);
 			c3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 4, pass.camera.perspectiveProjectionMatirx, true);
 			//c3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 8, vertex);
 			c3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, node.idVector);
-			c3d.drawTriangles(node.drawAble.indexBufferSet.indexBuff);
+			c3d.drawTriangles(node.drawable.indexBufferSet.indexBuff);
 			c3d.setVertexBufferAt(0,null, 0, xyz.format);
 		}
 		override public function init(node:Node3D):Void {
-			node.drawAble.xyz.init();
-			node.drawAble.indexBufferSet.init();
+			node.drawable.xyz.init();
+			node.drawable.indexBufferSet.init();
 		}
 }

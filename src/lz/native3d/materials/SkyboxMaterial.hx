@@ -51,7 +51,7 @@ class SkyboxMaterial extends MaterialBase
 	}
 	inline override public function draw(node:Node3D, pass:BasicPass3D):Void {
 		super.draw(node, pass);
-		var xyz:VertexBufferSet = node.drawAble.xyz;
+		var xyz:VertexBufferSet = node.drawable.xyz;
 		c3d.setVertexBufferAt(0, xyz.vertexBuff, 0, xyz.format);
 		c3d.setTextureAt(0, texture);
 		c3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, node.worldMatrix, true);
@@ -60,13 +60,13 @@ class SkyboxMaterial extends MaterialBase
 		vertex[1] = pass.camera.worldRawData[13];
 		vertex[2] = pass.camera.worldRawData[14];
 		c3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 8, vertex);
-		c3d.drawTriangles(node.drawAble.indexBufferSet.indexBuff);
+		c3d.drawTriangles(node.drawable.indexBufferSet.indexBuff);
 		c3d.setVertexBufferAt(0,null, 0, xyz.format);
 		c3d.setTextureAt(0, null);
 	}
 	override public function init(node:Node3D):Void {
-		node.drawAble.xyz.init();
-		node.drawAble.indexBufferSet.init();
+		node.drawable.xyz.init();
+		node.drawable.indexBufferSet.init();
 	}
 }
 #else
@@ -106,14 +106,14 @@ class SkyboxMaterial extends MaterialBase
 		glslProgram.attach();
 		glslProgram.setVertexUniformFromMatrix("mpos", node.worldMatrix, true);
 		glslProgram.setVertexUniformFromMatrix("mproj", pass.camera.perspectiveProjectionMatirx, true);
-		glslProgram.setVertexBufferAt("pos", node.drawAble.xyz.vertexBuff, 0, flash.display3D.Context3DVertexBufferFormat.FLOAT_3);
+		glslProgram.setVertexBufferAt("pos", node.drawable.xyz.vertexBuff, 0, flash.display3D.Context3DVertexBufferFormat.FLOAT_3);
 		vertex[0] = pass.camera.worldRawData[12];
 		vertex[1] = pass.camera.worldRawData[13];
 		vertex[2] = pass.camera.worldRawData[14];
 		c3d.setGLSLProgramConstantsFromVector3("cameraPos", vertex);
 		//glslProgram.setTextureAt("samplerCube",texture);
 		c3d.setGLSLCubeTextureAt("samplerCube", texture, 0);
-		c3d.drawTriangles(node.drawAble.indexBufferSet.indexBuff);
+		c3d.drawTriangles(node.drawable.indexBufferSet.indexBuff);
 		glslProgram.detach();
 	}
 	
@@ -153,8 +153,8 @@ class SkyboxMaterial extends MaterialBase
     }
 	
 	override public function init(node:Node3D):Void {
-		node.drawAble.xyz.init();
-		node.drawAble.indexBufferSet.init();
+		node.drawable.xyz.init();
+		node.drawable.indexBufferSet.init();
 	}
 }
 #end

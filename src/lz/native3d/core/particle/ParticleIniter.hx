@@ -1,7 +1,7 @@
 package lz.native3d.core.particle;
 import flash.display3D.Context3DVertexBufferFormat;
 import flash.Vector;
-import lz.native3d.core.DrawAble3D;
+import lz.native3d.core.Drawable3D;
 import lz.native3d.core.IndexBufferSet;
 import lz.native3d.core.Instance3D;
 import lz.native3d.core.VertexBufferSet;
@@ -20,7 +20,7 @@ class ParticleIniter
 	}
 	
 	public function init(wrapper:ParticleWrapper):Void {
-		wrapper.drawAble = new DrawAble3D();
+		wrapper.drawable = new Drawable3D();
 		var data = new Vector<Float>(3 * wrapper.particles.length * 4, true);
 		var sdata = new Vector<Float>(wrapper.particles.length * 4, true);
 		var cdata = new Vector<Float>(4 * wrapper.particles.length * 4, true);
@@ -60,12 +60,12 @@ class ParticleIniter
 			iData[i * 6+5] = i * 4+3;
 		}
 		
-		wrapper.drawAble.xyz = new VertexBufferSet(wrapper.particles.length*4, 3, data, 0,i3d);
-		wrapper.drawAble.offset = new VertexBufferSet(wrapper.particles.length*4, 2, odata, 0,i3d);
-		wrapper.drawAble.uv = new VertexBufferSet(wrapper.particles.length*4, 2, uvdata, 0,i3d);
-		wrapper.drawAble.scale = new VertexBufferSet(wrapper.particles.length*4, 1, sdata, 0,i3d);
-		wrapper.drawAble.color = new VertexBufferSet(wrapper.particles.length*4, 4, cdata, 0,i3d);
-		wrapper.drawAble.indexBufferSet = new IndexBufferSet(iData.length, iData, 0,i3d);
+		wrapper.drawable.xyz = new VertexBufferSet(wrapper.particles.length*4, 3, data, 0,i3d);
+		wrapper.drawable.offset = new VertexBufferSet(wrapper.particles.length*4, 2, odata, 0,i3d);
+		wrapper.drawable.uv = new VertexBufferSet(wrapper.particles.length*4, 2, uvdata, 0,i3d);
+		wrapper.drawable.scale = new VertexBufferSet(wrapper.particles.length*4, 1, sdata, 0,i3d);
+		wrapper.drawable.color = new VertexBufferSet(wrapper.particles.length*4, 4, cdata, 0,i3d);
+		wrapper.drawable.indexBufferSet = new IndexBufferSet(iData.length, iData, 0,i3d);
 	}
 	
 }

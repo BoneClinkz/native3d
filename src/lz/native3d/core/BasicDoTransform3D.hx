@@ -58,7 +58,7 @@ import flash.Vector;
 				node.matrixVersion = node.worldVersion;
 				
 			}
-			if (node.drawAble != null) {
+			if (node.drawable != null) {
 				passNodes.push(node);
 			}
 			

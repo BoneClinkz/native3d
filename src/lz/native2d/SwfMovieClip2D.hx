@@ -39,7 +39,7 @@ class SwfMovieClip2D extends Node2D
 		play();
 	}
 	
-	public function update():Void {
+	override public function update():Void {
 		if(frameChanged){
 			children.length = 0;
 			cframe = frame % frames.length;

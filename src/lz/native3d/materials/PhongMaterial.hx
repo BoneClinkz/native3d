@@ -14,7 +14,7 @@ import lz.native3d.core.animation.Skin;
 import lz.native3d.core.BasicLight3D;
 import lz.native3d.core.BasicPass3D;
 import lz.native3d.core.ByteArraySet;
-import lz.native3d.core.DrawAble3D;
+import lz.native3d.core.Drawable3D;
 import lz.native3d.core.Instance3D;
 import lz.native3d.core.Node3D;
 import lz.native3d.core.VertexBufferSet;
@@ -85,10 +85,10 @@ class PhongMaterial extends MaterialBase
 		var matrixBuff = null;
 		var uv = null;
 		if(skin==null){
-			var drawAble = node.drawAble;
-			xyz = drawAble.xyz;
-			norm=drawAble.norm;
-			uv = drawAble.uv;
+			var drawable = node.drawable;
+			xyz = drawable.xyz;
+			norm=drawable.norm;
+			uv = drawable.uv;
 			
 			c3d.setVertexBufferAt(0, xyz.vertexBuff, 0, xyz.format);
 			if (shader.DiffuseColor != null || shader.SpecularColor != null) {
@@ -99,7 +99,7 @@ class PhongMaterial extends MaterialBase
 				c3d.setTextureAt(0, diffuseTex);
 			}
 			//draw
-			c3d.drawTriangles(drawAble.indexBufferSet.indexBuff);
+			c3d.drawTriangles(drawable.indexBufferSet.indexBuff);
 			
 			//clear
 			c3d.setVertexBufferAt(0,null, 0, xyz.format);
@@ -111,21 +111,21 @@ class PhongMaterial extends MaterialBase
 			if(diffuseTex!=null){
 				c3d.setTextureAt(0, diffuseTex);
 			}
-			for(drawAble in skin.draws){
-				xyz = drawAble.xyz;
-				norm = drawAble.norm;
-				weightBuff = drawAble.weightBuff;
-				matrixBuff = drawAble.matrixBuff;
-				uv = drawAble.uv;
+			for(drawable in skin.draws){
+				xyz = drawable.xyz;
+				norm = drawable.norm;
+				weightBuff = drawable.weightBuff;
+				matrixBuff = drawable.matrixBuff;
+				uv = drawable.uv;
 				c3d.setVertexBufferAt(0, xyz.vertexBuff, 0, xyz.format);
 				c3d.setVertexBufferAt(1, norm.vertexBuff, 0, norm.format);
 				c3d.setVertexBufferAt(2, weightBuff.vertexBuff, 0, weightBuff.format);
 				c3d.setVertexBufferAt(3, matrixBuff.vertexBuff, 0, matrixBuff.format);
 				c3d.setVertexBufferAt(4, uv.vertexBuff, 0, uv.format);
 				
-				var byteSet = drawAble.cacheBytes[node.frame];
+				var byteSet = drawable.cacheBytes[node.frame];
 				c3d.setProgramConstantsFromByteArray(Context3DProgramType.VERTEX, 9,byteSet.numRegisters,byteSet.data,0);
-				c3d.drawTriangles(drawAble.indexBufferSet.indexBuff);
+				c3d.drawTriangles(drawable.indexBufferSet.indexBuff);
 			}
 			//clear
 			c3d.setVertexBufferAt(0,null, 0, xyz.format);
@@ -140,12 +140,12 @@ class PhongMaterial extends MaterialBase
 	}
 	override public function init(node:Node3D):Void {
 		if(skin==null){//有骨骼动画 初始化交给其它类处理
-			node.drawAble.xyz.init();
+			node.drawable.xyz.init();
 			if(shader.DiffuseColor!=null||shader.SpecularColor!=null)
-			node.drawAble.norm.init();
+			node.drawable.norm.init();
 			if(diffuseTex!=null)
-			if(node.drawAble.uv!=null)node.drawAble.uv.init();
-			node.drawAble.indexBufferSet.init();
+			if(node.drawable.uv!=null)node.drawable.uv.init();
+			node.drawable.indexBufferSet.init();
 		}
 	}
 }
@@ -194,8 +194,8 @@ class PhongMaterial extends MaterialBase
 		glslProgram.attach();
 		glslProgram.setVertexUniformFromMatrix("mpos", node.worldMatrix, true);
 		glslProgram.setVertexUniformFromMatrix("mproj", pass.camera.perspectiveProjectionMatirx, true);
-		glslProgram.setVertexBufferAt("pos", node.drawAble.xyz.vertexBuff, 0, flash.display3D.Context3DVertexBufferFormat.FLOAT_3);
-		glslProgram.setVertexBufferAt("norm", node.drawAble.norm.vertexBuff, 0, flash.display3D.Context3DVertexBufferFormat.FLOAT_3);
+		glslProgram.setVertexBufferAt("pos", node.drawable.xyz.vertexBuff, 0, flash.display3D.Context3DVertexBufferFormat.FLOAT_3);
+		glslProgram.setVertexBufferAt("norm", node.drawable.norm.vertexBuff, 0, flash.display3D.Context3DVertexBufferFormat.FLOAT_3);
 		LightPositionV[0] = lightNode.worldRawData[12];
 		LightPositionV[1] =lightNode.worldRawData[13];
 		LightPositionV[2] = lightNode.worldRawData[14];
@@ -205,7 +205,7 @@ class PhongMaterial extends MaterialBase
 		c3d.setGLSLProgramConstantsFromVector3("specularColor", SpecularColorV);
 		c3d.setGLSLProgramConstantsFromVector1("specularExponent", SpecularExponentV);
 		
-		c3d.drawTriangles(node.drawAble.indexBufferSet.indexBuff);
+		c3d.drawTriangles(node.drawable.indexBufferSet.indexBuff);
 		glslProgram.detach();
 	}
 	private function createProgram ():Void {
@@ -262,9 +262,9 @@ class PhongMaterial extends MaterialBase
         glslProgram.upload(vertexShader, fragmentShader);
     }
 	override public function init(node:Node3D):Void {
-		node.drawAble.xyz.init();
-		node.drawAble.norm.init();
-		node.drawAble.indexBufferSet.init();
+		node.drawable.xyz.init();
+		node.drawable.norm.init();
+		node.drawable.indexBufferSet.init();
 	}
 }
 #end

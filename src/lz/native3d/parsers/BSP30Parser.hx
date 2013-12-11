@@ -27,7 +27,7 @@ import flash.geom.Vector3D;
 import flash.utils.ByteArray;
 import flash.utils.Endian;
 import flash.Vector;
-import lz.native3d.core.DrawAble3D;
+import lz.native3d.core.Drawable3D;
 import lz.native3d.core.IndexBufferSet;
 import lz.native3d.core.Node3D;
 import lz.native3d.core.TextureSet;
@@ -92,7 +92,7 @@ class BSP30Parser extends AbsParser
 	/** An array (for each leaf) of arrays (for each leaf) of booleans. */
 	//private var visLists;
 	
-	public var drawAble:DrawAble3D;
+	public var drawable:Drawable3D;
 	public function new(data:Dynamic) 
 	{
 		super(data);
@@ -695,10 +695,10 @@ class BSP30Parser extends AbsParser
 			vs.push(v.y);
 			vs.push(v.z);
 		}
-		drawAble = new DrawAble3D();
-		drawAble.xyz = new VertexBufferSet(untyped vs.length / 3, 3, vs, 0,null);
-		drawAble.indexBufferSet = new IndexBufferSet(ixs.length, ixs, 0,null);
-		MeshUtils.computeNorm(drawAble);
+		drawable = new Drawable3D();
+		drawable.xyz = new VertexBufferSet(untyped vs.length / 3, 3, vs, 0,null);
+		drawable.indexBufferSet = new IndexBufferSet(ixs.length, ixs, 0,null);
+		MeshUtils.computeNorm(drawable);
 		
 		/*var vertices = new Array();
 		var texCoords = new Array();

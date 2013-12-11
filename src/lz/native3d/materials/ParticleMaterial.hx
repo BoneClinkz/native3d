@@ -70,21 +70,21 @@ class ParticleMaterial extends MaterialBase
 			Instance3D.getInstance().c3d.setDepthTest(true, passCompareMode);
 			c3d.setBlendFactors(sourceFactor, destinationFactor);
 			c3d.setProgram(progrom);
-			var xyz = node.drawAble.xyz;
+			var xyz = node.drawable.xyz;
 			c3d.setVertexBufferAt(0, xyz.vertexBuff, 0, xyz.format);
-			var offset = node.drawAble.offset;
+			var offset = node.drawable.offset;
 			c3d.setVertexBufferAt(1, offset.vertexBuff, 0, offset.format);
-			var scale = node.drawAble.scale;
+			var scale = node.drawable.scale;
 			c3d.setVertexBufferAt(2, scale.vertexBuff, 0, scale.format);
-			var color = node.drawAble.color;
+			var color = node.drawable.color;
 			c3d.setVertexBufferAt(3, color.vertexBuff, 0, color.format);
-			var uv = node.drawAble.uv;
+			var uv = node.drawable.uv;
 			c3d.setVertexBufferAt(4, uv.vertexBuff, 0, uv.format);
 			c3d.setTextureAt(0, texture);
 			c3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, node.worldMatrix, true);
 			c3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 4, pass.camera.invert, true);
 			c3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 8, pass.camera.perspectiveProjection, true);
-			c3d.drawTriangles(node.drawAble.indexBufferSet.indexBuff);
+			c3d.drawTriangles(node.drawable.indexBufferSet.indexBuff);
 			c3d.setVertexBufferAt(0,null, 0, xyz.format);
 			c3d.setVertexBufferAt(1,null, 0, offset.format);
 			c3d.setVertexBufferAt(2,null, 0, scale.format);
@@ -93,11 +93,11 @@ class ParticleMaterial extends MaterialBase
 			c3d.setTextureAt(0, null);
 		}
 		override public function init(node:Node3D):Void {
-			node.drawAble.xyz.init();
-			node.drawAble.uv.init();
-			node.drawAble.offset.init();
-			node.drawAble.scale.init();
-			node.drawAble.color.init();
-			node.drawAble.indexBufferSet.init();
+			node.drawable.xyz.init();
+			node.drawable.uv.init();
+			node.drawable.offset.init();
+			node.drawable.scale.init();
+			node.drawable.color.init();
+			node.drawable.indexBufferSet.init();
 		}
 }

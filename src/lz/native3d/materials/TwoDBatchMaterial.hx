@@ -156,7 +156,7 @@ class TwoDBatchMaterial extends MaterialBase
 		c3d.setVertexBufferAt(1, null, 0, uvBuff.format);
 		c3d.setTextureAt(0, null);
 		
-		mouse2d.nodes = mouse2d.nodes.concat(nodes);
+		if(mouse2d.changed)mouse2d.nodes = mouse2d.nodes.concat(nodes);
 	}
 	
 	inline private function setPosData(node:Node3D, i:Int):Void {
@@ -185,9 +185,7 @@ class TwoDBatchMaterial extends MaterialBase
 				}
 				this.nodes.push(node);
 			}
-			if (Std.is(node, SwfMovieClip2D)) {
-				cast(node, SwfMovieClip2D).update();
-			}
+			node.update();
 		}
 	}
 	

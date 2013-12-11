@@ -47,8 +47,8 @@ class Skin
 		return;
 		var matrixs:Vector<Matrix3D> = cacheMatrixs[frame];
 		if(vin==null){
-			vin = new Vector<Float>(#if flash node.drawAble.xyz.data.length #end);
-			bindShapeMatrix.transformVectors(node.drawAble.xyz.data, vin);
+			vin = new Vector<Float>(#if flash node.drawable.xyz.data.length #end);
+			bindShapeMatrix.transformVectors(node.drawable.xyz.data, vin);
 			vout = new Vector<Float>(#if flash vin.length #end);
 		}else {
 			//return;
@@ -80,7 +80,7 @@ class Skin
 				j += 2;
 			}
 		}
-		node.drawAble.xyz.vertexBuff.uploadFromVector(vout, 0, untyped(vout.length / 3));
+		node.drawable.xyz.vertexBuff.uploadFromVector(vout, 0, untyped(vout.length / 3));
 	}
 	
 }

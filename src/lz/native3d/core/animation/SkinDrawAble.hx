@@ -1,7 +1,7 @@
 package lz.native3d.core.animation;
 import flash.Vector;
 import lz.native3d.core.ByteArraySet;
-import lz.native3d.core.DrawAble3D;
+import lz.native3d.core.Drawable3D;
 import lz.native3d.core.VertexBufferSet;
 import lz.native3d.materials.MaterialBase;
 
@@ -9,7 +9,7 @@ import lz.native3d.materials.MaterialBase;
  * ...
  * @author lizhi http://matrix3d.github.io/
  */
-class SkinDrawAble extends DrawAble3D
+class SkinDrawAble extends Drawable3D
 {
 	
 	public var cacheBytes:Vector<ByteArraySet>;

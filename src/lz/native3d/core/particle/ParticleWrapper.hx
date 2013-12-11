@@ -24,7 +24,7 @@ class ParticleWrapper extends Node3D
 		initer.init(this);
 	}
 	
-	public function update():Void {
+	override public function update():Void {
 		updater.update(this);
 	}
 	

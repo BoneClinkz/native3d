@@ -55,9 +55,10 @@ package lz.native3d.core ;
 		public var worldRawData:Vector<Float>;
 		/**@private**/
 		public var worldVersion:Int = -123;
-		public var drawAble:DrawAble3D;
+		public var drawable:Drawable3D;
 		
 		private var _material:MaterialBase;
+		#if swc @:extern #end 
 		public var material(get_material, set_material):MaterialBase;
 		
 		/**@getter,setter**/
@@ -259,17 +260,16 @@ package lz.native3d.core ;
 		
 		#if swc @:setter(scaleZ) #end inline private function set_scaleZ(value:Float):Float 
 		{
-			
 			compsVersion++;
 			return scale.z = value;
 		}
 		
-		private function get_material():MaterialBase 
+		#if swc @:getter(material) #end inline private function get_material():MaterialBase 
 		{
 			return _material;
 		}
 		
-		private function set_material(value:MaterialBase):MaterialBase 
+		#if swc @:setter(material) #end inline private function set_material(value:MaterialBase):MaterialBase 
 		{
 			_material = value;
 			if(value!=null)
@@ -319,7 +319,7 @@ package lz.native3d.core ;
 			#end
 			
 			node.worldVersion = worldVersion;
-			node.drawAble = drawAble;
+			node.drawable = drawable;
 			
 			node.material = material;
 			
@@ -342,6 +342,10 @@ package lz.native3d.core ;
 		
 		public function hittest(mousePos:Vector3D):Bool {
 			return false;
+		}
+		
+		public function update():Void {
+			
 		}
 	}
 

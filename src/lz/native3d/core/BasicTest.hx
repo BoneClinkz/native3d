@@ -9,7 +9,7 @@ import flash.text.TextField;
 import flash.text.TextFieldAutoSize;
 import lz.native3d.core.BasicLight3D;
 import lz.native3d.core.BasicView;
-import lz.native3d.core.DrawAble3D;
+import lz.native3d.core.Drawable3D;
 import lz.native3d.core.Node3D;
 import lz.native3d.core.TextureSet;
 import lz.native3d.ctrls.FirstPersonCtrl;
@@ -36,7 +36,7 @@ class BasicTest extends Sprite
 	public var bv:BasicView;
 	private var light:BasicLight3D;
 	public var root3d:Node3D;
-	private var cubeDrawAble:DrawAble3D;
+	private var cubeDrawAble:Drawable3D;
 	public var ctrl:FirstPersonCtrl;
 	public var loading:TextField;
 	public function new() 
@@ -111,7 +111,7 @@ class BasicTest extends Sprite
 		node.setRotation(rotationX, rotationY, rotationZ);
 		node.setScale(scaleX, scaleY, scaleZ);
 		node.frustumCulling = null;
-		node.drawAble = cubeDrawAble;
+		node.drawable = cubeDrawAble;
 		node.radius = -cubeDrawAble.radius * .3*scaleX;
 		parent.add(node);
 		node.material = new PhongMaterial(bv.instance3Ds[0], light,
@@ -150,7 +150,7 @@ class BasicTest extends Sprite
 	private function sky_loader_complete(e:Event):Void 
 	{
 		var loader:LoaderBat = cast(e.currentTarget, LoaderBat);
-		var drawAble:DrawAble3D = MeshUtils.createCube(2000,bv.instance3Ds[0],true);
+		var drawable:Drawable3D = MeshUtils.createCube(2000,bv.instance3Ds[0],true);
 		var textureset:TextureSet = new TextureSet(bv.instance3Ds[0]);
 		textureset.createCubeTextureBy6Bitmap([
 			getImage("px",loader),
@@ -163,7 +163,7 @@ class BasicTest extends Sprite
 		var skybox:Node3D = new Node3D();
 		skybox.frustumCulling = null;
 		bv.instance3Ds[0].root.add(skybox);
-		skybox.drawAble = drawAble;
+		skybox.drawable = drawable;
 		skybox.material = 
 		new SkyboxMaterial(bv.instance3Ds[0],textureset.texture);
 	}

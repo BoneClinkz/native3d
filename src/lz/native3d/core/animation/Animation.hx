@@ -7,7 +7,7 @@ import flash.utils.Endian;
 import flash.Vector;
 import lz.native3d.core.BasicLight3D;
 import lz.native3d.core.ByteArraySet;
-import lz.native3d.core.DrawAble3D;
+import lz.native3d.core.Drawable3D;
 import lz.native3d.core.IndexBufferSet;
 import lz.native3d.core.Instance3D;
 import lz.native3d.core.Node3D;
@@ -241,8 +241,8 @@ class Animation
 				skinDrawAble.indexBufferSet.init();
 				skinDrawAble.weightBuff.init();
 				skinDrawAble.matrixBuff.init();
-				skin.node.drawAble = new DrawAble3D();
-				skin.node.drawAble.radius = MeshUtils.computeRadius(vs);
+				skin.node.drawable = new Drawable3D();
+				skin.node.drawable.radius = MeshUtils.computeRadius(vs);
 				//skin.node.material=new SkinMaterial(skin, Std.random(0xffffff), Std.random(0xffffff), new BasicLight3D());
 				skin.node.material = new PhongMaterial(Instance3D.getInstance(),
 										light,

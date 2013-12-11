@@ -7,7 +7,6 @@ package
 	import lz.native3d.core.BasicLight3D;
 	import lz.native3d.core.BasicTest;
 	import lz.native3d.core.BasicView;
-	import lz.native3d.core.DrawAble3D;
 	import lz.native3d.core.Node3D;
 	import lz.native3d.materials.PhongMaterial;
 	import lz.native3d.meshs.MeshUtils;

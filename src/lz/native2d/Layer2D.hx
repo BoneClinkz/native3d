@@ -1,6 +1,6 @@
 package lz.native2d;
 import flash.display3D.textures.TextureBase;
-import lz.native3d.core.DrawAble3D;
+import lz.native3d.core.Drawable3D;
 import lz.native3d.core.Instance3D;
 import lz.native3d.materials.TwoDBatchMaterial;
 
@@ -16,7 +16,7 @@ class Layer2D extends Node2D
 		super();
 		this.isBatch = isBatch;
 		if (isBatch) {
-			drawAble = new DrawAble3D();
+			drawable = new Drawable3D();
 			material = new TwoDBatchMaterial(texture, i3d);
 		}
 	}
