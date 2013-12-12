@@ -85,7 +85,7 @@ class Animation
 			// TODO : maxWeightLen
 			maxWeightLen = 3;
 			
-			skin.draws = new Vector<SkinDrawAble>();
+			skin.draws = new Vector<SkinDrawable>();
 			
 			var daeIndexs =new Vector<Vector<Int>>();
 			var daeUVIndexs =new Vector<Vector<Int>>();
@@ -150,7 +150,7 @@ class Animation
 			for (a in 0...daeIndexs.length) {
 				var indexs = daeIndexs[a];
 				var uvsi = daeUVIndexs[a];
-				var skinDrawAble = new SkinDrawAble();
+				var skinDrawable = new SkinDrawable();
 				var newIndexs = new Vector<UInt>(indexs.length);
 				var i2newi = new Map<Int,Int>();
 				var vs = skin.daeXyz;
@@ -201,8 +201,8 @@ class Animation
 				if (newMatrixs.length > 39) {
 					continue;
 				}
-				skin.draws.push(skinDrawAble);
-				skinDrawAble.cacheBytes = new Vector<ByteArraySet>();
+				skin.draws.push(skinDrawable);
+				skinDrawable.cacheBytes = new Vector<ByteArraySet>();
 				var temp = new Matrix3D();
 				for (cmatrixs in skin.cacheMatrixs) {
 					var catchVector = new Vector<Float>(16);
@@ -221,7 +221,7 @@ class Animation
 					catchByte.position = 0;
 					
 					var byteSet = new ByteArraySet();
-					skinDrawAble.cacheBytes.push(byteSet);
+					skinDrawable.cacheBytes.push(byteSet);
 					byteSet.byteArrayOffset = 0;
 					byteSet.data = catchByte;
 					byteSet.numRegisters = Std.int((newMatrixs.length + 1) * 3);
@@ -229,18 +229,18 @@ class Animation
 				
 				newWeights.length = newMatrixIndexs.length = newVs.length = (maxNowi + 1) * 3;
 				newUVs.length = (maxNowi + 1) * 2;
-				skinDrawAble.weightBuff = new VertexBufferSet(Std.int(newWeights.length/maxWeightLen), Std.int(maxWeightLen), newWeights, 0,Instance3D.getInstance());
-				skinDrawAble.matrixBuff = new VertexBufferSet(Std.int(newWeights.length / maxWeightLen), Std.int(maxWeightLen), newMatrixIndexs, 0,Instance3D.getInstance());
-				skinDrawAble.xyz = new VertexBufferSet(Std.int(newVs.length/3), 3, newVs, 0,Instance3D.getInstance());
-				skinDrawAble.uv = new VertexBufferSet(Std.int(newUVs.length/2), 2, newUVs, 0,Instance3D.getInstance());
-				skinDrawAble.indexBufferSet = new IndexBufferSet(newIndexs.length, newIndexs, 0,Instance3D.getInstance());
-				MeshUtils.computeNorm(skinDrawAble);
-				skinDrawAble.xyz.init();
-				skinDrawAble.uv.init();
-				skinDrawAble.norm.init();
-				skinDrawAble.indexBufferSet.init();
-				skinDrawAble.weightBuff.init();
-				skinDrawAble.matrixBuff.init();
+				skinDrawable.weightBuff = new VertexBufferSet(Std.int(newWeights.length/maxWeightLen), Std.int(maxWeightLen), newWeights, 0,Instance3D.getInstance());
+				skinDrawable.matrixBuff = new VertexBufferSet(Std.int(newWeights.length / maxWeightLen), Std.int(maxWeightLen), newMatrixIndexs, 0,Instance3D.getInstance());
+				skinDrawable.xyz = new VertexBufferSet(Std.int(newVs.length/3), 3, newVs, 0,Instance3D.getInstance());
+				skinDrawable.uv = new VertexBufferSet(Std.int(newUVs.length/2), 2, newUVs, 0,Instance3D.getInstance());
+				skinDrawable.indexBufferSet = new IndexBufferSet(newIndexs.length, newIndexs, 0,Instance3D.getInstance());
+				MeshUtils.computeNorm(skinDrawable);
+				skinDrawable.xyz.init();
+				skinDrawable.uv.init();
+				skinDrawable.norm.init();
+				skinDrawable.indexBufferSet.init();
+				skinDrawable.weightBuff.init();
+				skinDrawable.matrixBuff.init();
 				skin.node.drawable = new Drawable3D();
 				skin.node.drawable.radius = MeshUtils.computeRadius(vs);
 				//skin.node.material=new SkinMaterial(skin, Std.random(0xffffff), Std.random(0xffffff), new BasicLight3D());

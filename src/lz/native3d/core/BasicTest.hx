@@ -36,7 +36,7 @@ class BasicTest extends Sprite
 	public var bv:BasicView;
 	private var light:BasicLight3D;
 	public var root3d:Node3D;
-	private var cubeDrawAble:Drawable3D;
+	private var cubeDrawable:Drawable3D;
 	public var ctrl:FirstPersonCtrl;
 	public var loading:TextField;
 	public function new() 
@@ -103,16 +103,16 @@ class BasicTest extends Sprite
 	
 	public function addCube(parent:Node3D=null,x:Float=0,y:Float=0,z:Float=0,rotationX:Float=0,rotationY:Float=0,rotationZ:Float=0,scaleX:Float=1,scaleY:Float=1,scaleZ:Float=1):Node3D {
 		if (parent == null) parent = root3d;
-		if (cubeDrawAble==null) {
-			cubeDrawAble=MeshUtils.createCube(1,bv.instance3Ds[0]);
+		if (cubeDrawable==null) {
+			cubeDrawable=MeshUtils.createCube(1,bv.instance3Ds[0]);
 		}
 		var node:Node3D = new Node3D();
 		node.setPosition(x, y, z);
 		node.setRotation(rotationX, rotationY, rotationZ);
 		node.setScale(scaleX, scaleY, scaleZ);
 		node.frustumCulling = null;
-		node.drawable = cubeDrawAble;
-		node.radius = -cubeDrawAble.radius * .3*scaleX;
+		node.drawable = cubeDrawable;
+		node.radius = -cubeDrawable.radius * .3*scaleX;
 		parent.add(node);
 		node.material = new PhongMaterial(bv.instance3Ds[0], light,
 		new Vector3D(.2, .2, .2),//AmbientColor

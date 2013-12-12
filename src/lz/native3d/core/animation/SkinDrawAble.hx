@@ -9,7 +9,7 @@ import lz.native3d.materials.MaterialBase;
  * ...
  * @author lizhi http://matrix3d.github.io/
  */
-class SkinDrawAble extends Drawable3D
+class SkinDrawable extends Drawable3D
 {
 	
 	public var cacheBytes:Vector<ByteArraySet>;

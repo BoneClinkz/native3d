@@ -34,7 +34,7 @@ class Skin
 	public var daeXyz:Vector<Float>;
 	public var daeUV:Vector<Float>;
 	
-	public var draws:Vector<SkinDrawAble>;
+	public var draws:Vector<SkinDrawable>;
 	
 	public var texture:TextureSet;
 	public function new() 

@@ -113,12 +113,12 @@ class TwoDFromSwfExample extends Sprite
 		bv.instance3Ds[0].roots.push(root3d);
 		bv.instance3Ds[0].passs.push(pass);
 		
-		var	cubeDrawAble=MeshUtils.createCube(1,bv.instance3Ds[0]);
+		var	cubeDrawable=MeshUtils.createCube(1,bv.instance3Ds[0]);
 		var node:Node3D = new Node3D();
 		node.setPosition(0, 200, 0);
 		node.setRotation(0, 0, 0);
 		node.setScale(30, 30, 30);
-		node.drawable = cubeDrawAble;
+		node.drawable = cubeDrawable;
 		root3d.add(node);
 		var light = new BasicLight3D();
 		root3d.add(light);

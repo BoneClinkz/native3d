@@ -18,11 +18,11 @@ class AnimationPart
 	
 	public function doAnimation(time:Float,maxTime:Float):Void {
 		var rd:Vector<Float> = target.matrix.rawData;
-		for (cannel in channels) {
+		for (channel in channels) {
 			var i = 0;
-			var len = cannel.input.length;
+			var len = channel.input.length;
 			while (i < len) {
-				if (cannel.input[i] > time) {
+				if (channel.input[i] > time) {
 					break;
 				}
 				i++;
@@ -31,20 +31,20 @@ class AnimationPart
 			var v:Float = 0;
 			if (j < 0) {
 				j = len - 1;
-				v =(time-cannel.input[j]+maxTime) / (cannel.input[i] - cannel.input[j]+maxTime);
+				v =(time-channel.input[j]+maxTime) / (channel.input[i] - channel.input[j]+maxTime);
 			}else if (i>=len) {
 				i = 0;
-				v = (time-cannel.input[j]) / (cannel.input[i]+maxTime - cannel.input[j]);
+				v = (time-channel.input[j]) / (channel.input[i]+maxTime - channel.input[j]);
 			}else {
-				v = (time-cannel.input[j]) / (cannel.input[i] - cannel.input[j]);
+				v = (time-channel.input[j]) / (channel.input[i] - channel.input[j]);
 			}
-			if (cannel.index == -1) {
-				var mj:Matrix3D = cannel.outputMatirxs[j];
-				var mi:Matrix3D = cannel.outputMatirxs[i];
+			if (channel.index == -1) {
+				var mj:Matrix3D = channel.outputMatirxs[j];
+				var mi:Matrix3D = channel.outputMatirxs[i];
 				mj.interpolateTo(mi, v);
 				mj.copyRawDataTo(rd);
 			}else {
-				rd[cannel.index] = cannel.output[j] + (cannel.output[i] - cannel.output[j]) * v;
+				rd[channel.index] = channel.output[j] + (channel.output[i] - channel.output[j]) * v;
 			}
 		}
 		target.matrix.copyRawDataFrom(rd); 
