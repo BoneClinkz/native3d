@@ -6,6 +6,7 @@ package lz.native3d.core ;
 	import flash.Lib;
 	import flash.Vector;
 	import lz.native3d.core.animation.Skin;
+	import lz.native3d.core.Drawable3D;
 	import lz.native3d.materials.MaterialBase;
 	import lz.native3d.utils.Color;
 	//import lz.native3d.ns.native3d;

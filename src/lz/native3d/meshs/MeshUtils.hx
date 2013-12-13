@@ -5,9 +5,9 @@ package lz.native3d.meshs ;
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	import flash.Vector;
+	import lz.native3d.core.Drawable3D;
 	import lz.native3d.core.Instance3D;
 	//import lz.native3d.ns.native3d;
-	import lz.native3d.core.Drawable3D;
 	import lz.native3d.core.IndexBufferSet;
 	import lz.native3d.core.Node3D;
 	import lz.native3d.core.VertexBufferSet;
@@ -2029,42 +2029,6 @@ package lz.native3d.meshs ;
 				}
 			}
 			return Math.sqrt(mr);
-		}
-		public static function computeEdge(drawable:Drawable3D):Void
-		{
-			var v = new Vector<Float>(#if flash drawable.xyz.num*2 #end);
-			var last:Float = 0;
-			var data  = drawable.indexBufferSet.data;
-			for (i in 0... Std.int(data.length/3)) {
-				var i3 = i * 3;
-				var ix = data[i3] * 2;
-				var ix1 = ix + 1;
-				var iy = data[i3 + 1] * 2;
-				var iy1 = iy + 1;
-				var iz = data[i3 + 2] * 2;
-				var iz1 = iy1 + 1;
-				if (Math.random() < .5) {
-					var t = ix;
-					ix = ix1;
-					ix1 = t;
-					t = iy;
-					iy = iy1;
-					iy1 = t;
-					t = iz;
-					iz = iz1;
-					iz1 = t;
-				}
-				var a = Math.random() > .5?1:0;
-				var b = Math.random() > .5?1:0;
-				
-				v[ix] = a;
-				v[ix1] = b;
-				v[iy] = a==0?1:0;
-				v[iy1] = Math.random()>.5?1:0;
-				v[iz] = a;
-				v[iz1] = b==0?1:0;
-			}
-			drawable.edge = new VertexBufferSet(drawable.xyz.num, 2,v, 0,drawable.xyz.i3d);
 		}
 		public static function computeNorm(drawable:Drawable3D):Void
 		{

@@ -20,10 +20,13 @@ class ParticleIniter
 	}
 	
 	public function init(wrapper:ParticleWrapper):Void {
-		wrapper.drawable = new Drawable3D();
-		var data = new Vector<Float>(3 * wrapper.particles.length * 4, true);
-		var sdata = new Vector<Float>(wrapper.particles.length * 4, true);
-		var cdata = new Vector<Float>(4 * wrapper.particles.length * 4, true);
+		wrapper.drawable = new ParticleDrawable3D();
+		var timeLefeVariance = new Vector<Float>(2*wrapper.particles.length * 4, true);
+		var startPosVariance = new Vector<Float>(3 * wrapper.particles.length * 4, true);
+		var endPosVariance = new Vector<Float>(3 * wrapper.particles.length * 4, true);
+		var startEndScaleVariance = new Vector<Float>(2*wrapper.particles.length * 4, true);
+		var startColorVariance = new Vector<Float>(4 * wrapper.particles.length * 4, true);
+		var endColorVariance = new Vector<Float>(4 * wrapper.particles.length * 4, true);
 		var odata = new Vector<Float>(2 * wrapper.particles.length * 4, true);
 		var uvdata = new Vector<Float>(2 * wrapper.particles.length * 4, true);
 		var iData = new Vector<UInt>(wrapper.particles.length * 6);
@@ -59,13 +62,17 @@ class ParticleIniter
 			iData[i * 6+4] = i * 4+1;
 			iData[i * 6+5] = i * 4+3;
 		}
+		var drawable:ParticleDrawable3D = untyped wrapper.drawable;
+		drawable.timeLifeVariance = new VertexBufferSet(wrapper.particles.length*4, 2, timeLefeVariance, 0,i3d);
 		
-		wrapper.drawable.xyz = new VertexBufferSet(wrapper.particles.length*4, 3, data, 0,i3d);
-		wrapper.drawable.offset = new VertexBufferSet(wrapper.particles.length*4, 2, odata, 0,i3d);
-		wrapper.drawable.uv = new VertexBufferSet(wrapper.particles.length*4, 2, uvdata, 0,i3d);
-		wrapper.drawable.scale = new VertexBufferSet(wrapper.particles.length*4, 1, sdata, 0,i3d);
-		wrapper.drawable.color = new VertexBufferSet(wrapper.particles.length*4, 4, cdata, 0,i3d);
-		wrapper.drawable.indexBufferSet = new IndexBufferSet(iData.length, iData, 0,i3d);
+		drawable.startPosVariance = new VertexBufferSet(wrapper.particles.length*4, 3, startPosVariance, 0,i3d);
+		drawable.endPosVariance = new VertexBufferSet(wrapper.particles.length*4, 3, endPosVariance, 0,i3d);
+		drawable.offset = new VertexBufferSet(wrapper.particles.length*4, 2, odata, 0,i3d);
+		drawable.uv = new VertexBufferSet(wrapper.particles.length*4, 2, uvdata, 0,i3d);
+		drawable.startEndScaleVariance = new VertexBufferSet(wrapper.particles.length*4, 2, startEndScaleVariance, 0,i3d);
+		drawable.startColorVariance = new VertexBufferSet(wrapper.particles.length*4, 4, startColorVariance, 0,i3d);
+		drawable.endColorVariance = new VertexBufferSet(wrapper.particles.length*4, 4, endColorVariance, 0,i3d);
+		drawable.indexBufferSet = new IndexBufferSet(iData.length, iData, 0,i3d);
 	}
 	
 }

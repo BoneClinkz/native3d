@@ -128,11 +128,11 @@ class PhongMaterial extends MaterialBase
 				c3d.drawTriangles(drawable.indexBufferSet.indexBuff);
 			}
 			//clear
-			c3d.setVertexBufferAt(0,null, 0, xyz.format);
-			if(norm!=null)c3d.setVertexBufferAt(1, null, 0, norm.format);
-			c3d.setVertexBufferAt(2, null, 0, weightBuff.format);
-			c3d.setVertexBufferAt(3, null, 0, matrixBuff.format);
-			if(uv!=null)c3d.setVertexBufferAt(4, null, 0, uv.format);
+			c3d.setVertexBufferAt(0,null, 0,null);
+			if(norm!=null)c3d.setVertexBufferAt(1, null, 0, null);
+			c3d.setVertexBufferAt(2, null, 0,null);
+			c3d.setVertexBufferAt(3, null, 0, null);
+			if(uv!=null)c3d.setVertexBufferAt(4, null, 0, null);
 			c3d.setTextureAt(0, null);
 			node.frame++;
 		}
