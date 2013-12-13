@@ -60,7 +60,17 @@ class ParticleIniter
 			iData[i * 6+2] = i * 4+2;
 			iData[i * 6+3] = i * 4+2;
 			iData[i * 6+4] = i * 4+1;
-			iData[i * 6+5] = i * 4+3;
+			iData[i * 6 + 5] = i * 4 + 3;
+			
+			timeLefeVariance[i * 8] =  
+			timeLefeVariance[i * 8+2] =  
+			timeLefeVariance[i * 8+4] = 
+			timeLefeVariance[i * 8 + 6] = 100000 * Math.random(); 
+			timeLefeVariance[i * 8+1] =  
+			timeLefeVariance[i * 8+3] =  
+			timeLefeVariance[i * 8+5] = 
+			timeLefeVariance[i * 8 + 7] = 1000*Math.random(); 
+			
 		}
 		var drawable:ParticleDrawable3D = untyped wrapper.drawable;
 		drawable.timeLifeVariance = new VertexBufferSet(wrapper.particles.length*4, 2, timeLefeVariance, 0,i3d);

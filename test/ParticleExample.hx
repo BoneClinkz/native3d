@@ -38,7 +38,7 @@ class ParticleExample extends Sprite
 		
 		pw = new ParticleWrapper(bv.instance3Ds[0]);
 		var d = 10;
-		for (i in 0...1000) {
+		for (i in 0...16000) {
 			var p:Particle = new Particle(d * (Math.random() - .5), d * (Math.random() - .5), i, 1);
 			p.color.x = Math.random()/2;
 			p.color.y = Math.random()/2;
@@ -63,18 +63,18 @@ class ParticleExample extends Sprite
 		addEventListener(Event.ENTER_FRAME, enterFrame);
 		addChild(new Stats());
 		
+		pw.update();
 	}
 	
 	private function enterFrame(e:Event):Void 
 	{
-		pw.particles[0].x = (mouseX/200-1)*5;
+		/*pw.particles[0].x = (mouseX/200-1)*5;
 		pw.particles[0].y = (1-mouseY/200)*5;
 		for (i in 1...pw.particles.length) {
 			var p = pw.particles[i];
 			p.x += (pw.particles[i - 1].x - p.x) * .3;
 			p.y += (pw.particles[i - 1].y - p.y) * .3;
-		}
-		pw.update();
+		}*/
 		bv.instance3Ds[0].render();
 	}
 	public static function main() {

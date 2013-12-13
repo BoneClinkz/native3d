@@ -4,7 +4,9 @@ import flash.display3D.Context3DBlendFactor;
 import flash.display3D.Context3DProgramType;
 import flash.display3D.textures.TextureBase;
 import flash.geom.Vector3D;
+import flash.Lib;
 import flash.Vector;
+import haxe.Timer;
 import hxsl.Shader;
 import lz.native3d.core.BasicLight3D;
 import lz.native3d.core.BasicPass3D;
@@ -89,7 +91,7 @@ class ParticleMaterial extends MaterialBase
 		shader = new ParticleShader();
 		shader.startPos = new Vector3D();
 		shader.startScale = .5;
-		shader.life = 100;
+		shader.life = 1000;
 		shader.time = 10;
 		shader.endScale = 1;
 		shaderInstance = shader.getInstance();
@@ -103,7 +105,6 @@ class ParticleMaterial extends MaterialBase
 	}
 	inline override public function draw(node:Node3D, pass:BasicPass3D):Void {
 		super.draw(node, pass);
-		c3d.enableErrorChecking = true;
 		var drawable:ParticleDrawable3D = untyped node.drawable;
 		
 		var offset = drawable.offset;
@@ -114,7 +115,6 @@ class ParticleMaterial extends MaterialBase
 		var startEndScaleVariance=drawable.startEndScaleVariance;
 		var startColorVariance=drawable.startColorVariance;
 		var endColorVariance=drawable.endColorVariance;
-		
 		var i = 0;
 		c3d.setVertexBufferAt(i++, offset.vertexBuff, 0, offset.format);
 		c3d.setVertexBufferAt(i++, uv.vertexBuff, 0, uv.format);
@@ -128,11 +128,13 @@ class ParticleMaterial extends MaterialBase
 		node.worldMatrix.copyRawDataTo(vertex, 0, true);
 		pass.camera.invert.copyRawDataTo(vertex, 16, true);
 		pass.camera.perspectiveProjection.copyRawDataTo(vertex, 32, true);
+		vertex[48] = Lib.getTimer();
 		c3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 0, vertex);
 		c3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, fragment);
 		
 		c3d.setTextureAt(0, texture);
 		c3d.drawTriangles(node.drawable.indexBufferSet.indexBuff);
+		
 		c3d.setVertexBufferAt(0,null, 0, null);
 		c3d.setVertexBufferAt(1,null, 0, null);
 		c3d.setVertexBufferAt(2,null, 0, null);
