@@ -4,6 +4,7 @@ import flash.display3D.Context3DBlendFactor;
 import flash.display3D.Context3DProgramType;
 import flash.display3D.Context3DTriangleFace;
 import flash.display3D.Program3D;
+import flash.geom.Vector3D;
 import flash.Vector;
 import lz.native3d.core.BasicPass3D;
 import lz.native3d.core.Node3D;
@@ -40,6 +41,23 @@ import flash.display3D.Context3DCompareMode;
 	
 	public function init(node:Node3D):Void {
 		
+	}
+	
+	public function arr2ve3(arr:Array<Float>,notNull:Bool=false):Vector3D {
+		if (arr == null) {
+			if (notNull) return new Vector3D();
+			return null;
+		}
+		if (arr.length==1) {
+			return new Vector3D(arr[0]);
+		}else if (arr.length==2) {
+			return new Vector3D(arr[0],arr[1]);
+		}else if (arr.length==3) {
+			return new Vector3D(arr[0],arr[1],arr[2]);
+		}else if (arr.length>3) {
+			return new Vector3D(arr[0],arr[1],arr[2],arr[3]);
+		}
+		return new Vector3D();
 	}
 	
 }

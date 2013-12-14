@@ -18,7 +18,7 @@ Tools
 --------
 1. [2d swftool](http://matrix3d.github.io/as3/2013/11/26/swfexporter/)
 2. 3d blender tool developing
-3. particle tool developing
+3. [particle tool](http://matrix3d.github.io/as3/2013/12/14/particleeditor/)
 
 ``` as
 var n:Native3D;

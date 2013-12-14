@@ -80,20 +80,69 @@ class ParticleMaterial extends MaterialBase
 	private var shader:ParticleShader;
 	private var shaderInstance:ShaderInstance;
 	private var texture:TextureBase;
-	public function new(i3d:Instance3D,texture:TextureBase) 
+	public var endRGBAVar:Array<Float>;
+	public var endRGBA:Array<Float>;
+	public var startRGBAVar:Array<Float>;
+	public var startRGBA:Array<Float>;
+	public var endScaleVar:Float;
+	public var endScale:Float;
+	public var startScaleVar:Float;
+	public var startScale:Float;
+	public var endPosVar:Array<Float>;
+	public var endPos:Array<Float>;
+	public var startPosVar:Array<Float>;
+	public var startPos:Array<Float>;
+	public var lifeVar:Float;
+	public var life:Float;
+	public function new(
+		i3d:Instance3D,
+		texture:TextureBase,
+		life:Float=1000,
+		lifeVar:Float=0,
+		startPos:Array<Float>=null,
+		startPosVar:Array<Float>=null,
+		endPos:Array<Float>=null,
+		endPosVar:Array<Float>=null,
+		startScale:Float=1,
+		startScaleVar:Float=0,
+		endScale:Float=1,
+		endScaleVar:Float=0,
+		startRGBA:Array<Float>=null,
+		startRGBAVar:Array<Float>=null,
+		endRGBA:Array<Float>=null,
+		endRGBAVar:Array<Float>=null
+	) 
 	{
 		super();
+		this.endRGBAVar = endRGBAVar;
+		this.endRGBA = endRGBA;
+		this.startRGBAVar = startRGBAVar;
+		this.startRGBA = startRGBA;
+		this.endScaleVar = endScaleVar;
+		this.endScale = endScale;
+		this.startScaleVar = startScaleVar;
+		this.startScale = startScale;
+		this.endPosVar = endPosVar;
+		this.endPos = endPos;
+		this.startPosVar = startPosVar;
+		this.startPos = startPos;
+		this.lifeVar = lifeVar;
+		this.life = life;
 		sourceFactor = Context3DBlendFactor.SOURCE_ALPHA;
 		destinationFactor = Context3DBlendFactor.ONE;
 		passCompareMode = Context3DCompareMode.ALWAYS;
 		
 		this.texture = texture;
 		shader = new ParticleShader();
-		shader.startPos = new Vector3D();
-		shader.startScale = .5;
-		shader.life = 1000;
-		shader.time = 10;
-		shader.endScale = 1;
+		shader.life = life;
+		shader.time = 0;
+		shader.startPos = arr2ve3(startPos,true);
+		shader.endPos = arr2ve3(endPos,true);
+		shader.startScale =startScale;
+		shader.endScale = endScale;
+		shader.startColor = arr2ve3(startRGBA,true);
+		shader.endColor = arr2ve3(endRGBA,true);
+		
 		shaderInstance = shader.getInstance();
 		if (shaderInstance.program==null) {
 			shaderInstance.program = i3d.c3d.createProgram();
@@ -146,7 +195,7 @@ class ParticleMaterial extends MaterialBase
 		c3d.setTextureAt(0, null);
 	}
 	override public function init(node:Node3D):Void {
-		var drawable:ParticleDrawable3D = untyped node.drawable;
+		/*var drawable:ParticleDrawable3D = untyped node.drawable;
 		drawable.startPosVariance.init();
 		drawable.uv.init();
 		drawable.offset.init();
@@ -156,6 +205,6 @@ class ParticleMaterial extends MaterialBase
 		drawable.startEndScaleVariance.init();
 		drawable.startColorVariance.init();
 		drawable.endColorVariance.init();
-		drawable.indexBufferSet.init();
+		drawable.indexBufferSet.init();*/
 	}
 }

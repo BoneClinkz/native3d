@@ -13,7 +13,7 @@ class ParticleUpdater
 	}
 	
 	public function update(pw:ParticleWrapper):Void {
-		var drawable:ParticleDrawable3D =untyped pw.drawable;
+		/*var drawable:ParticleDrawable3D =untyped pw.drawable;
 		var xyz = drawable.startPosVariance.data;
 		var color = drawable.startColorVariance.data;
 		var scale = drawable.startEndScaleVariance.data;
@@ -37,7 +37,7 @@ class ParticleUpdater
 		}
 		drawable.startPosVariance.upload();
 		drawable.startEndScaleVariance.upload();
-		drawable.startColorVariance.upload();
+		drawable.startColorVariance.upload();*/
 	}
 	
 }
