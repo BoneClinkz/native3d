@@ -13,7 +13,7 @@ class Channel
 	public var index:Int;
 	public var input:Vector<Float>;
 	public var output:Vector<Float>;
-	public var outputMatirxs:Vector<Matrix3D>;
+	public var outputMatrix3Ds:Vector<Matrix3D>;
 	public function new() 
 	{
 		

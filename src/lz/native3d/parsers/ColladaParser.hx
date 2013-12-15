@@ -210,7 +210,7 @@ class ColladaParser extends AbsParser
 										var targetKey = areg2.matched(2);
 										if(targetKey=="transform"){
 											can.input = input;
-											can.outputMatirxs = floats2Matrixs(output);
+											can.outputMatrix3Ds = floats2Matrixs(output);
 											can.index = -1;
 											anm.channels.push(can);
 										}
