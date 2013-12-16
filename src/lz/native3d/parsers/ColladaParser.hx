@@ -17,6 +17,7 @@ import lz.native3d.core.Instance3D;
 import lz.native3d.core.Node3D;
 import lz.native3d.core.TextureSet;
 import lz.native3d.core.VertexBufferSet;
+import lz.native3d.materials.PhongMaterial;
 import lz.native3d.meshs.MeshUtils;
 
 /**
@@ -37,11 +38,13 @@ class ColladaParser extends AbsParser
 	public var jointRoot:Node3D;
 	public var texture:TextureSet;
 	public var light:BasicLight3D;
+	public var i3d:Instance3D;
 	public function new(data:Dynamic,light:BasicLight3D) 
 	{
 		super(data);
 		this.light = light;
-		texture = new TextureSet(Instance3D.getInstance());
+		i3d = Instance3D.getInstance();
+		texture = new TextureSet(i3d);
 		
 	}
 	
@@ -80,43 +83,7 @@ class ColladaParser extends AbsParser
 						var meshNode = new Node3D();
 						node.add(meshNode);
 						var source = skin.get("source").substr(1);
-						var geometry = idne2(dae, "library_geometries", "geometry", source);
-						var mesh = ne(geometry, "mesh");
-						var vertices = ne(mesh, "vertices");
-						var vlib = getVerticesById(vertices.get("id"), mesh);
-						
-						var dskin = new Skin();
-						dskin.texture = texture;
-						var vs = str2Floats(ne(vlib, "float_array").firstChild().nodeValue);
-						dskin.daeXyz = vs;
-						dskin.daeIndexs = new Vector<Vector<Int>>();
-						dskin.daeUVIndexs = new Vector<Vector<Int>>();
-						for (triangle in mesh.elements()) {
-							// TODO : polylist
-							if (triangle.nodeName == "triangles") {
-								if (dskin.daeUV==null) {
-									dskin.daeUV=str2Floats(ne(getVerticesById(idne(triangle, "input", "TEXCOORD", "semantic").get("source").substr(1),mesh),"float_array").firstChild().nodeValue);
-								}
-								var inc:Vector<Int> = new Vector<Int>();
-								var uv:Vector<Int> = new Vector<Int>();
-								dskin.daeIndexs.push(inc);
-								dskin.daeUVIndexs.push(uv);
-								var materialName = triangle.get("material");
-								var parray = str2Ints(ne(triangle, "p").firstChild().nodeValue);
-								var i = 0;
-								var len = parray.length;
-								while (i < len) {
-									inc.push(parray[i]);
-									inc.push(parray[i + 6]);
-									inc.push(parray[i + 3]);
-									
-									uv.push(parray[i + 2]);
-									uv.push(parray[i + 8]);
-									uv.push(parray[i + 5]);
-									i += 9;
-								}
-							}
-						}
+						var dskin = buildGeometry(source);
 						var drawableNode = new Node3D();
 						meshNode.add(drawableNode);
 						
@@ -134,6 +101,43 @@ class ColladaParser extends AbsParser
 						dskin.invBindMatrixs = str2Matrixs(ne(idne(skin, "source", invBindMatrixId), "float_array").firstChild().nodeValue);
 					}
 				}
+			}
+			if (child.nodeName == "instance_geometry") {
+				var source = child.get("url").substr(1);
+				var nskin = buildGeometry(source);
+				var drawableNode = new Node3D();
+				var drawable:Drawable3D = new Drawable3D();
+				drawableNode.drawable = drawable;
+				var vin = new Vector<Float>();
+				var uv = new Vector<Float>();
+				var indexs = new Vector<UInt>();
+				var ci = 0;
+				for (i in 0...nskin.daeIndexs.length) {
+					var daeIndexs:Vector<Int> = nskin.daeIndexs[i];
+					var daeUVIndexs:Vector<Int> = nskin.daeUVIndexs[i];
+					for (j in 0...daeIndexs.length) {
+						indexs.push(ci++);
+						var ji = daeIndexs[j];
+						var juvi = daeUVIndexs[j];
+						vin.push(nskin.daeXyz[ji*3]);
+						vin.push(nskin.daeXyz[ji*3+1]);
+						vin.push(nskin.daeXyz[ji*3+2]);
+						uv.push(nskin.daeUV[juvi*2]);
+						uv.push(nskin.daeUV[juvi*2+1]);
+					}
+				}
+				drawable.xyz = new VertexBufferSet(untyped(vin.length / 3), 3, vin, 0,i3d);
+				drawable.uv = new VertexBufferSet(untyped(uv.length / 2), 2, uv, 0,i3d);
+				drawable.indexBufferSet = new IndexBufferSet(indexs.length, indexs, 0,i3d);
+				MeshUtils.computeNorm(drawable);
+				node.add(drawableNode);
+				drawableNode.material=new PhongMaterial(Instance3D.getInstance(),
+										light,
+										[.2, .2, .2],
+										[Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5],
+										[.8,.8,.8],
+										200
+										);
 			}
 		}
 		for (child in xml.elements()) {
@@ -162,6 +166,62 @@ class ColladaParser extends AbsParser
 				buildNode(child, childNode,isJoint);
 			}
 		}
+	}
+	
+	private function buildGeometry(source:String):Skin {
+		var geometry = idne2(dae, "library_geometries", "geometry", source);
+		var mesh = ne(geometry, "mesh");
+		var vertices = ne(mesh, "vertices");
+		var vlib = getVerticesById(vertices.get("id"), mesh);
+		
+		var dskin = new Skin();
+		dskin.texture = texture;
+		var vs = str2Floats(ne(vlib, "float_array").firstChild().nodeValue);
+		dskin.daeXyz = vs;
+		dskin.daeIndexs = new Vector<Vector<Int>>();
+		dskin.daeUVIndexs = new Vector<Vector<Int>>();
+		for (triangle in mesh.elements()) {
+			// TODO : polylist
+			if (triangle.nodeName == "triangles") {
+				if (dskin.daeUV==null) {
+					dskin.daeUV=str2Floats(ne(getVerticesById(idne(triangle, "input", "TEXCOORD", "semantic").get("source").substr(1),mesh),"float_array").firstChild().nodeValue);
+				}
+				var inc:Vector<Int> = new Vector<Int>();
+				var uv:Vector<Int> = new Vector<Int>();
+				dskin.daeIndexs.push(inc);
+				dskin.daeUVIndexs.push(uv);
+				var materialName = triangle.get("material");
+				var parray = str2Ints(ne(triangle, "p").firstChild().nodeValue);
+				var i = 0;
+				var len = parray.length;
+				var maxOffset = 0;
+				var vertexOffset = 0;
+				var uvOffset = 0;
+				for (child in triangle.elements()) {
+					if (child.nodeName == "input") {
+						var offset = Std.parseInt(child.get("offset"));
+						if (offset > maxOffset) maxOffset = offset;
+						if (child.get("semantic")=="VERTEX") {
+							vertexOffset = offset;
+						}else if (child.get("semantic")=="TEXCOORD") {
+							uvOffset = offset;
+						}
+					}
+				}
+				var adder = maxOffset + 1;
+				while (i < len) {
+					inc.push(parray[i+vertexOffset]);
+					inc.push(parray[i  +vertexOffset +adder*2]);
+					inc.push(parray[i +vertexOffset+ adder]);
+					
+					uv.push(parray[i + uvOffset]);
+					uv.push(parray[i + uvOffset+adder*2]);
+					uv.push(parray[i + uvOffset+adder]);
+					i += adder*3;
+				}
+			}
+		}
+		return dskin;
 	}
 	
 	private function buildAnimation():Void {

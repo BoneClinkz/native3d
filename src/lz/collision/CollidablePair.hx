@@ -14,6 +14,7 @@ class CollidablePair
 	{
 		this.b = b;
 		this.a = a;
+		// todo : calculate the timetocollision value
 	}
 	
 	public function getCollisionBox(box:Box):Box {

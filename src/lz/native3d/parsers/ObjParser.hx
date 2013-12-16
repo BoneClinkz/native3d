@@ -175,9 +175,9 @@ class ObjParser extends AbsParser
 			node.node.drawable = drawable;
 			node.node.material = 
 			new PhongMaterial(i3d, light,
-				new Vector3D(.2, .2, .2),//AmbientColor
-				new Vector3D(.5,.5,.5),//DiffuseColor
-				new Vector3D(.8,.8,.8),//SpecularColor
+				[.2, .2, .2],//AmbientColor
+				[.5,.5,.5],//DiffuseColor
+				[.8,.8,.8],//SpecularColor
 				200,
 				TextureSet.getTempTexture(i3d)
 				);

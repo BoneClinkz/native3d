@@ -106,10 +106,12 @@ class World extends EventDispatcher
 		}
 		for (box in boxs) {
 			if (box.collidablePairs!=null) {
-				box.collidablePairs.sort(function(x:CollidablePair, y:CollidablePair):Int {return x.timeToCollision < y.timeToCollision?1: -1; } );
+				box.collidablePairs.sort(sortCollidablePairsFunc);
 			}
 		}
 	}
 	
-	
+	private function sortCollidablePairsFunc(x:CollidablePair, y:CollidablePair):Int {
+		return x.timeToCollision < y.timeToCollision?1: -1; 
+	} 
 }

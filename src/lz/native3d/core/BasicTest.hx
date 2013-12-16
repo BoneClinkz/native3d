@@ -115,9 +115,9 @@ class BasicTest extends Sprite
 		node.radius = -cubeDrawable.radius * .3*scaleX;
 		parent.add(node);
 		node.material = new PhongMaterial(bv.instance3Ds[0], light,
-		new Vector3D(.2, .2, .2),//AmbientColor
-		new Vector3D(Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5),//DiffuseColor
-		new Vector3D(.8,.8,.8),//SpecularColor
+		[.2, .2, .2],//AmbientColor
+		[Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5],//DiffuseColor
+		[.8,.8,.8],//SpecularColor
 		200,
 		null
 		);
@@ -188,6 +188,8 @@ class BasicTest extends Sprite
 		var parser = new ColladaParser(null,light);
 		parser.addEventListener(Event.COMPLETE, dae_parser_complete);
 		parser.fromUrlZip("../assets/model/astroBoy_walk_Max.zip", "astroBoy_walk_Max.xml","boy_10.jpg");
+		//parser.fromUrlZip("../assets/model/astroBoy_walk_Max.zip", "10_box_still_maya.xml","boy_10.jpg");
+		//parser.fromUrlZip("../assets/model/astroBoy_walk_Max.zip", "10_box_still.xml","boy_10.jpg");
 	}
 	
 	private function dae_parser_complete(e:Event):Void 
