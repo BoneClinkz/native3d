@@ -39,8 +39,8 @@ class AnimationPart
 				v = (time-channel.input[j]) / (channel.input[i] - channel.input[j]);
 			}
 			if (channel.index == -1) {
-				var mj:Matrix3D = channel.outputMatirxs[j];
-				var mi:Matrix3D = channel.outputMatirxs[i];
+				var mj:Matrix3D = channel.outputMatrix3Ds[j];
+				var mi:Matrix3D = channel.outputMatrix3Ds[i];
 				mj.interpolateTo(mi, v);
 				mj.copyRawDataTo(rd);
 			}else {
