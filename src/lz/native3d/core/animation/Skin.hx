@@ -33,6 +33,9 @@ class Skin
 	public var daeUVIndexs:Vector<Vector<Int>>;
 	public var daeXyz:Vector<Float>;
 	public var daeUV:Vector<Float>;
+	public var maxOffset:Int;
+	public var vertexOffset:Int;
+	public var uvOffset:Int;
 	
 	public var draws:Vector<SkinDrawable>;
 	
