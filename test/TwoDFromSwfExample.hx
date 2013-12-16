@@ -125,9 +125,9 @@ class TwoDFromSwfExample extends Sprite
 		bv.instance3Ds[0].lights.push(light);
 		light.setPosition( -100,100,-1000);
 		node.material = new PhongMaterial(bv.instance3Ds[0], light,
-		new Vector3D(.2, .2, .2),//AmbientColor
-		new Vector3D(Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5),//DiffuseColor
-		new Vector3D(.8,.8,.8),//SpecularColor
+		[.2, .2, .2],//AmbientColor
+		[Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5],//DiffuseColor
+		[.8,.8,.8],//SpecularColor
 		200,
 		null
 		);

@@ -30,18 +30,18 @@ class PhongMaterial extends MaterialBase
 	public var diffuseTex:TextureBase;
 	private var shaderInstance:ShaderInstance;
 	public var skin:Skin;
-	public function new(i3d:Instance3D,lightNode:BasicLight3D,AmbientColor:Vector3D,DiffuseColor:Vector3D,SpecularColor:Vector3D,SpecularExponent:Float=200,diffuseTex:TextureBase=null,skin:Skin=null) 
+	public function new(i3d:Instance3D,lightNode:BasicLight3D,AmbientColor:Array<Float>,DiffuseColor:Array<Float>,SpecularColor:Array<Float>,SpecularExponent:Float=200,diffuseTex:TextureBase=null,skin:Skin=null) 
 	{
 		super();
-		if (DiffuseColor.w>0) {//有透明度
+		if (DiffuseColor[3]>0) {//有透明度
 			sourceFactor = Context3DBlendFactor.SOURCE_ALPHA;
 			destinationFactor = Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
 			passCompareMode = Context3DCompareMode.ALWAYS;
 		}
 		shader = new PhongShader();
-		shader.AmbientColor = AmbientColor;
-		shader.DiffuseColor = DiffuseColor;
-		shader.SpecularColor = SpecularColor;
+		shader.AmbientColor = arr2ve3(AmbientColor);
+		shader.DiffuseColor = arr2ve3(DiffuseColor);
+		shader.SpecularColor = arr2ve3(SpecularColor);
 		shader.SpecularExponent = SpecularExponent;
 		shader.LightPosition = lightNode.position;
 		
