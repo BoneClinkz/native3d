@@ -194,15 +194,30 @@ class ColladaParser extends AbsParser
 				var parray = str2Ints(ne(triangle, "p").firstChild().nodeValue);
 				var i = 0;
 				var len = parray.length;
+				var maxOffset = 0;
+				var vertexOffset = 0;
+				var uvOffset = 0;
+				for (child in triangle.elements()) {
+					if (child.nodeName == "input") {
+						var offset = Std.parseInt(child.get("offset"));
+						if (offset > maxOffset) maxOffset = offset;
+						if (child.get("semantic")=="VERTEX") {
+							vertexOffset = offset;
+						}else if (child.get("semantic")=="TEXCOORD") {
+							uvOffset = offset;
+						}
+					}
+				}
+				var adder = maxOffset + 1;
 				while (i < len) {
-					inc.push(parray[i]);
-					inc.push(parray[i + 6]);
-					inc.push(parray[i + 3]);
+					inc.push(parray[i+vertexOffset]);
+					inc.push(parray[i  +vertexOffset +adder*2]);
+					inc.push(parray[i +vertexOffset+ adder]);
 					
-					uv.push(parray[i + 2]);
-					uv.push(parray[i + 8]);
-					uv.push(parray[i + 5]);
-					i += 9;
+					uv.push(parray[i + uvOffset]);
+					uv.push(parray[i + uvOffset+adder*2]);
+					uv.push(parray[i + uvOffset+adder]);
+					i += adder*3;
 				}
 			}
 		}
