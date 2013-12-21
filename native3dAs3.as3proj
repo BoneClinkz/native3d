@@ -56,9 +56,9 @@
   <!-- SWC Libraries -->
   <libraryPaths>
     <element path="lib\native3dHaxe.swc" />
-    <element path="lib\Bullet.swc" />
     <element path="lib\glsl2agal.swc" />
     <element path="lib\MinimalComps_0_9_10.swc" />
+    <element path="lib\Bullet.swc" />
   </libraryPaths>
   <!-- External Libraries -->
   <externalLibraryPaths>
@@ -78,7 +78,7 @@
   </library>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
-    <compile path="testas3\BlenderTest2flashbyte.as" />
+    <compile path="testas3\BulletTest.as" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>

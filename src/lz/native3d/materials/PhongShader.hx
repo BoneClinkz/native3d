@@ -63,7 +63,7 @@ class PhongShader extends Shader
 			}
 			
 			if(DiffuseColor!=null||SpecularColor!=null){
-				var eyespacePos   = (input.gl_Vertex*gl_ModelViewMatrix).xyz;
+				var eyespacePos   = (wpos.xyz*gl_ModelViewMatrix).xyz;
 				var surfaceNormal      = normalize(input.gl_Normal * gl_ModelViewMatrix);
 				SurfaceNormal = surfaceNormal;
 				var lightVec           = normalize(LightPosition - eyespacePos);
