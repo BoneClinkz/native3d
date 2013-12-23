@@ -234,9 +234,10 @@ package
 			helpM44[8] = CModule.readDouble(m44 + 16);//2
 			helpM44[9] = CModule.readDouble(m44 + 48);//6
 			helpM44[10] = CModule.readDouble(m44 + 80);//10
-			helpM44[12] = CModule.readDouble(m44 + 96);//12
-			helpM44[13] = CModule.readDouble(m44 + 104);//13
-			helpM44[14] = CModule.readDouble(m44 + 112);//14
+			var origin:int = helpTrans.getOrigin();
+			helpM44[12] = CModule.readDouble(origin);//12
+			helpM44[13] = CModule.readDouble(origin+8);//13
+			helpM44[14] = CModule.readDouble(origin + 16);//14
 			node.matrix.copyRawDataFrom(helpM44);
 			node.matrix.prependScale(node.scale.x, node.scale.y, node.scale.z);
 			node.matrixVersion++;

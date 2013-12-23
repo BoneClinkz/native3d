@@ -4,7 +4,7 @@
   <output>
     <movie outputType="Application" />
     <movie input="" />
-    <movie path="bin\native3dAs3.swf" />
+    <movie path="bin\native3dHaxe.swf" />
     <movie fps="60" />
     <movie width="800" />
     <movie height="600" />

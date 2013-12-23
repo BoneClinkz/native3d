@@ -27,6 +27,14 @@ private class ParticleShader extends Shader {
 			startColorVariance:Float4,
 			endColorVariance:Float4
 		};
+		
+		var hasTimeLifeVariance:Bool;
+		var hasStartPosVariance:Bool;
+		var hasEndPosVariance:Bool;
+		var hasStartEndScaleVariance:Bool;
+		var hasStartColorVariance:Bool;
+		var hasEndColorVariance:Bool;
+		
 		var mpos : M44;
 		var invert:M44;
 		var mproj : M44;
@@ -42,24 +50,59 @@ private class ParticleShader extends Shader {
 		var diffuse:Float4;
 		var tuv:Float2;
 		function vertex() {
-			var alife = life + input.timeLifeVariance.y;
-			var mVal = ((time + input.timeLifeVariance.x) % alife) / alife;
+			var mVal = 0;
+			if (hasTimeLifeVariance) {
+				var alife = life + input.timeLifeVariance.y;
+				mVal = ((time + input.timeLifeVariance.x) % alife) / alife;
+			}else {
+				mVal = (time % life) / life;
+			}
 			
-			var pos1 = input.startPosVariance.xyzw + startPos.xyzz;
-			var pos2 = input.endPosVariance.xyzw + endPos.xyzz;
-			var pos = pos1 + (pos2 - pos1)*mVal;
+			var pos = startPos.xyzz;
+			if (hasStartPosVariance) {
+				pos += input.startPosVariance.xyzw;
+			}
+			if(endPos!=null){
+				var pos2 =  endPos.xyzz;
+				if(hasEndPosVariance){
+					pos2 += input.endPosVariance.xyzw;
+				}
+				pos += (pos2 - pos)*mVal;
+			}else if (hasEndPosVariance) {
+				pos += input.endPosVariance.xyzw * mVal;
+			}
+			
+			var scale = startScale;
+			if (hasStartEndScaleVariance) {
+				scale+=input.startEndScaleVariance.x;
+			}
+			//if (endScale!=startScale) {
+				var scale2 = endScale;
+				if (hasStartEndScaleVariance) {
+					scale2+=input.startEndScaleVariance.y;
+				}
+				scale +=  (scale2 - scale) * mVal;
+			//}
+			
+			var color=startColor;
+			if(hasStartColorVariance){
+				color += input.startColorVariance;
+			}
+			if (endColor!=null) {
+				var color2 =  endColor;
+				if (hasEndColorVariance) {
+					color2 += input.endColorVariance;
+				}
+				diffuse =color + (color2 - color) * mVal;
+			}else if (hasEndColorVariance) {
+				diffuse = color + input.endColorVariance * mVal;
+			}else {
+				diffuse = color;
+			}
+			
 			var wpos = pos * mpos * invert;
-			
-			var scale1=(input.startEndScaleVariance.x + startScale);
-			var scale2=(input.startEndScaleVariance.y + endScale);
-			var scale = scale1 + (scale2 - scale1) * mVal;
 			wpos.xy += (input.offset.xy) * scale;
 			out = wpos * mproj;
-			
-			var color1=input.startColorVariance + startColor;
-			var color2 = input.endColorVariance + endColor;
-			diffuse = color1 + (color2-color1) * mVal;
-			
 			tuv = input.uv;
 		}
 		function fragment(tex:Texture) {
@@ -77,9 +120,10 @@ private class ParticleShader extends Shader {
  */
 class ParticleMaterial extends MaterialBase
 {
-	private var shader:ParticleShader;
+	public var shader:ParticleShader;
 	private var shaderInstance:ShaderInstance;
 	private var texture:TextureBase;
+	var timeVarRandom:Bool;
 	public var endRGBAVar:Array<Float>;
 	public var endRGBA:Array<Float>;
 	public var startRGBAVar:Array<Float>;
@@ -110,10 +154,16 @@ class ParticleMaterial extends MaterialBase
 		startRGBA:Array<Float>=null,
 		startRGBAVar:Array<Float>=null,
 		endRGBA:Array<Float>=null,
-		endRGBAVar:Array<Float>=null
+		endRGBAVar:Array<Float> = null,
+		timeVarRandom:Bool=true
 	) 
 	{
 		super();
+		this.timeVarRandom = timeVarRandom;
+		sourceFactor = Context3DBlendFactor.SOURCE_ALPHA;
+		destinationFactor = Context3DBlendFactor.ONE;
+		passCompareMode = Context3DCompareMode.ALWAYS;
+		
 		this.endRGBAVar = endRGBAVar;
 		this.endRGBA = endRGBA;
 		this.startRGBAVar = startRGBAVar;
@@ -128,20 +178,24 @@ class ParticleMaterial extends MaterialBase
 		this.startPos = startPos;
 		this.lifeVar = lifeVar;
 		this.life = life;
-		sourceFactor = Context3DBlendFactor.SOURCE_ALPHA;
-		destinationFactor = Context3DBlendFactor.ONE;
-		passCompareMode = Context3DCompareMode.ALWAYS;
 		
 		this.texture = texture;
 		shader = new ParticleShader();
 		shader.life = life;
 		shader.time = 0;
 		shader.startPos = arr2ve3(startPos,true);
-		shader.endPos = arr2ve3(endPos,true);
+		shader.endPos = arr2ve3(endPos);
 		shader.startScale =startScale;
 		shader.endScale = endScale;
 		shader.startColor = arr2ve3(startRGBA,true);
-		shader.endColor = arr2ve3(endRGBA,true);
+		shader.endColor = arr2ve3(endRGBA);
+		
+		shader.hasTimeLifeVariance = lifeVar != 0 || timeVarRandom;
+		shader.hasStartPosVariance = startPosVar != null;
+		shader.hasEndPosVariance = endPosVar != null;
+		shader.hasStartEndScaleVariance = startScaleVar != 0 || endScaleVar != 0;
+		shader.hasStartColorVariance = startRGBAVar != null;
+		shader.hasEndColorVariance = endRGBAVar != null;
 		
 		shaderInstance = shader.getInstance();
 		if (shaderInstance.program==null) {
@@ -167,12 +221,24 @@ class ParticleMaterial extends MaterialBase
 		var i = 0;
 		c3d.setVertexBufferAt(i++, offset.vertexBuff, 0, offset.format);
 		c3d.setVertexBufferAt(i++, uv.vertexBuff, 0, uv.format);
-		c3d.setVertexBufferAt(i++, timeLifeVariance.vertexBuff, 0, timeLifeVariance.format);
-		c3d.setVertexBufferAt(i++, startPosVariance.vertexBuff, 0, startPosVariance.format);
-		c3d.setVertexBufferAt(i++, endPosVariance.vertexBuff, 0, endPosVariance.format);
-		c3d.setVertexBufferAt(i++, startEndScaleVariance.vertexBuff, 0, startEndScaleVariance.format);
-		c3d.setVertexBufferAt(i++, startColorVariance.vertexBuff, 0, startColorVariance.format);
-		c3d.setVertexBufferAt(i++, endColorVariance.vertexBuff, 0, endColorVariance.format);
+		if (shader.hasTimeLifeVariance) {
+			c3d.setVertexBufferAt(i++, timeLifeVariance.vertexBuff, 0, timeLifeVariance.format);
+		}
+		if (shader.hasStartPosVariance) {
+			c3d.setVertexBufferAt(i++, startPosVariance.vertexBuff, 0, startPosVariance.format);
+		}
+		if (shader.hasEndPosVariance) {
+			c3d.setVertexBufferAt(i++, endPosVariance.vertexBuff, 0, endPosVariance.format);
+		}
+		if (shader.hasStartEndScaleVariance) {
+			c3d.setVertexBufferAt(i++, startEndScaleVariance.vertexBuff, 0, startEndScaleVariance.format);
+		}
+		if (shader.hasStartColorVariance) {
+			c3d.setVertexBufferAt(i++, startColorVariance.vertexBuff, 0, startColorVariance.format);
+		}
+		if (shader.hasEndColorVariance) {
+			c3d.setVertexBufferAt(i++, endColorVariance.vertexBuff, 0, endColorVariance.format);
+		}
 		
 		node.worldMatrix.copyRawDataTo(vertex, 0, true);
 		pass.camera.invert.copyRawDataTo(vertex, 16, true);
@@ -195,16 +261,5 @@ class ParticleMaterial extends MaterialBase
 		c3d.setTextureAt(0, null);
 	}
 	override public function init(node:Node3D):Void {
-		/*var drawable:ParticleDrawable3D = untyped node.drawable;
-		drawable.startPosVariance.init();
-		drawable.uv.init();
-		drawable.offset.init();
-		drawable.timeLifeVariance.init();
-		drawable.startPosVariance.init();
-		drawable.endPosVariance.init();
-		drawable.startEndScaleVariance.init();
-		drawable.startColorVariance.init();
-		drawable.endColorVariance.init();
-		drawable.indexBufferSet.init();*/
 	}
 }
