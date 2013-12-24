@@ -41,10 +41,11 @@ class TwoDBatchMaterial extends MaterialBase
 	
 	public var plane:Vector<Float>;
 	public var planeOut:Vector<Float>;
-	private var texture:TextureBase;
-	private static var shader:IShader = new IShader();
+	public var texture:TextureBase;
+	private  var shader:IShader;
+	private var shaderInstance:ShaderInstance;
 	public static var mouse2d:Mouse2D = new Mouse2D();
-	public function new(texture:TextureBase,i3d:Instance3D) 
+	public function new(texture:TextureBase,i3d:Instance3D,colorMul:Array<Float>=null) 
 	{
 		super();
 		passCompareMode = Context3DCompareMode.ALWAYS;
@@ -52,10 +53,16 @@ class TwoDBatchMaterial extends MaterialBase
 		destinationFactor = Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
 		culling = Context3DTriangleFace.NONE;
 		this.texture = texture;
-		if (shader.i == null) {
-			shader.create(Instance3D.getInstance().c3d);
+		shader = new IShader();
+		shader.colorMul = arr2ve3(colorMul);
+		shaderInstance = shader.getInstance();
+		if (shaderInstance.program==null) {
+			shaderInstance.program = i3d.c3d.createProgram();
+			shaderInstance.program.upload(shaderInstance.vertexBytes.getData(), shaderInstance.fragmentBytes.getData());
 		}
-		progrom = shader.i.program;
+		vertex = shaderInstance.vertexVars.toData().concat();
+		fragment = shaderInstance.fragmentVars.toData().concat();
+		progrom = shaderInstance.program;
 		nodes = new Vector<Node3D>();
 		this.i3d = i3d;
 		indexBuff = new IndexBufferSet(0, new Vector<UInt>(), 0, i3d);
@@ -151,6 +158,7 @@ class TwoDBatchMaterial extends MaterialBase
 		c3d.setVertexBufferAt(1, uvBuff.vertexBuff, 0, uvBuff.format);
 		c3d.setTextureAt(0, texture);
 		c3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, pass.camera.perspectiveProjectionMatirx, true);
+		c3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, fragment);
 		c3d.drawTriangles(indexBuff.indexBuff,0,nodes.length*2);
 		c3d.setVertexBufferAt(0,null, 0, xyzBuff.format);
 		c3d.setVertexBufferAt(1, null, 0, uvBuff.format);
@@ -202,8 +210,13 @@ private class IShader extends Shader {
 			out = input.pos.xyzw * mproj;
 			uv = input.uv;
 		}
+		var colorMul:Float4;
 		function fragment(tex:Texture) {
-			out = tex.get(uv, wrap);
+			if (colorMul != null) {
+				out = tex.get(uv, wrap)*colorMul;
+			}else {
+				out = tex.get(uv, wrap);
+			}
 		}
 	};
 	public var i:ShaderInstance;

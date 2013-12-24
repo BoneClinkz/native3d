@@ -10,7 +10,7 @@ import flash.Vector;
 	 */
 	class BasicDoTransform3D 
 	{
-		private var passNodes:Vector<Node3D>;
+		public var passNodes:Vector<Node3D>;
 		private var rawData:Vector<Float> ;
 		public function new() 
 		{

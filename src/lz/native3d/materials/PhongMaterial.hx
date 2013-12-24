@@ -8,6 +8,7 @@ import flash.display3D.Program3D;
 import flash.display3D.textures.TextureBase;
 import flash.errors.Error;
 import flash.geom.Vector3D;
+import flash.Lib;
 import flash.Vector;
 import hxsl.Shader.ShaderInstance;
 import lz.native3d.core.animation.Skin;

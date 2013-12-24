@@ -56,7 +56,7 @@ package lz.native3d.core ;
 				}
 			}
 			
-			texture = i3d.c3d.createTexture(w, h, Context3DTextureFormat.BGRA, false);
+			texture = i3d.c3d.createTexture(w, h, Context3DTextureFormat.BGRA, optimizeForRenderToTexture,streamingLevels);
 			ttexture = cast( texture,Texture);
 			
 			var level 		: Int 			= 0;
