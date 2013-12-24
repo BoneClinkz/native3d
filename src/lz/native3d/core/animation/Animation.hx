@@ -181,8 +181,8 @@ class Animation
 						newVs[nowi * 3 + j] = vs[oldi * 3 + j];
 					}
 					//for (j in 0...2) {
-						newUVs[nowi * 2] = uvs[oldUVI * 3];
-						newUVs[nowi * 2 + 1] = 1 - uvs[oldUVI * 3 + 1];
+						newUVs[nowi * 2] = uvs[oldUVI * (skin.maxOffset+1)];
+						newUVs[nowi * 2 + 1] = 1 - uvs[oldUVI *(skin.maxOffset+1) + 1];
 					//}
 					for (j in 0...weights[oldi].length) {
 						newWeights[Std.int(nowi * maxWeightLen + j)] = weights[oldi][j];

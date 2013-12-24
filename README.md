@@ -16,9 +16,10 @@ Examples
 
 Tools
 --------
-1. [2d swftool](http://matrix3d.github.io/as3/2013/11/26/swfexporter/)
-2. 3d blender tool developing
-3. [particle tool](http://matrix3d.github.io/as3/2013/12/14/particleeditor/)
+1. [swftool](http://matrix3d.github.io/as3/2013/11/26/swfexporter/)
+2. [blender](http://matrix3d.github.io/as3/2013/12/18/blendexporter/)
+3. [particle](http://matrix3d.github.io/as3/2013/12/14/particleeditor/)
+4. [sprite sheet](https://github.com/matrix3d/ImageTool/blob/master/out/production/ImageTool/ImageTool.air)
 
 ``` as
 var n:Native3D;

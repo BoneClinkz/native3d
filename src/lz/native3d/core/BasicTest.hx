@@ -190,6 +190,7 @@ class BasicTest extends Sprite
 		parser.fromUrlZip("../assets/model/astroBoy_walk_Max.zip", "astroBoy_walk_Max.xml","boy_10.jpg");
 		//parser.fromUrlZip("../assets/model/astroBoy_walk_Max.zip", "10_box_still_maya.xml","boy_10.jpg");
 		//parser.fromUrlZip("../assets/model/astroBoy_walk_Max.zip", "10_box_still.xml","boy_10.jpg");
+		//parser.fromUrlZip("../assets/model/astroBoy_walk_Max.zip", "50_box_smooth_scale.txt","boy_10.jpg");
 	}
 	
 	private function dae_parser_complete(e:Event):Void 

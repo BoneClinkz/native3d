@@ -209,6 +209,9 @@ class ColladaParser extends AbsParser
 					}
 				}
 				var adder = maxOffset + 1;
+				dskin.maxOffset = maxOffset;
+				dskin.vertexOffset = vertexOffset;
+				dskin.uvOffset = uvOffset;
 				while (i < len) {
 					inc.push(parray[i+vertexOffset]);
 					inc.push(parray[i  +vertexOffset +adder*2]);
