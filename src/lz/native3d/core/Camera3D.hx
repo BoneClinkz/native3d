@@ -183,7 +183,7 @@ package lz.native3d.core;
 		{
 			for (plane in frustumPlanes)
 			{
-				if (pointPlaneDistance(point, plane) < radius)
+				if (pointPlaneDistance(point, plane) < -radius)
 				{
 					return false;
 				}

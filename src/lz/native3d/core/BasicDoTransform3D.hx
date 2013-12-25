@@ -69,6 +69,17 @@ import flash.Vector;
 			}
 		}
 		
+		inline public function normalizePlane(v:Vector3D):Void {
+			var len = v.length;
+			if (len!=0) {
+				len = 1 / len;
+			}else {
+				len = 0;
+			}
+			v.scaleBy(len);
+			v.w *= len;
+		}
+		
 		inline public function doTransformCamera(camera:Camera3D):Void {
 			doTransformNode(camera, false);
 			if (camera.invertVersion != camera.worldVersion) {
@@ -98,13 +109,15 @@ import flash.Vector;
 					plane.y = rawData[1] + rawData[13];
 					plane.z = rawData[2] + rawData[14];
 					plane.w = rawData[3] + rawData[15];
-		 
+					normalizePlane(plane);
+					
 					// right = -row1 + row4
 					plane = frustumPlanes[1];
 					plane.x = -rawData[0] + rawData[12];
 					plane.y = -rawData[1] + rawData[13];
 					plane.z = -rawData[2] + rawData[14];
 					plane.w = -rawData[3] + rawData[15];
+					normalizePlane(plane);
 		 
 					// bottom = row2 + row4
 					plane = frustumPlanes[2];
@@ -112,6 +125,7 @@ import flash.Vector;
 					plane.y = rawData[5] + rawData[13];
 					plane.z = rawData[6] + rawData[14];
 					plane.w = rawData[7] + rawData[15];
+					normalizePlane(plane);
 		 
 					// top = -row2 + row4
 					plane = frustumPlanes[3];
@@ -119,6 +133,7 @@ import flash.Vector;
 					plane.y = -rawData[5] + rawData[13];
 					plane.z = -rawData[6] + rawData[14];
 					plane.w = -rawData[7] + rawData[15];
+					normalizePlane(plane);
 		 
 					// near = row3 + row4
 					plane = frustumPlanes[4];
@@ -126,6 +141,7 @@ import flash.Vector;
 					plane.y = rawData[9] /*+ rawData[13]*/;
 					plane.z = rawData[10] /*+ rawData[14]*/;
 					plane.w = rawData[11] /*+ rawData[15]*/;
+					normalizePlane(plane);
 		 
 					// far = -row3 + row4
 					plane = frustumPlanes[5];
@@ -133,6 +149,7 @@ import flash.Vector;
 					plane.y = -rawData[9] + rawData[13];
 					plane.z = -rawData[10] + rawData[14];
 					plane.w = -rawData[11] + rawData[15];
+					normalizePlane(plane);
 				}
 			}
 		}

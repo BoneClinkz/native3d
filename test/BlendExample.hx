@@ -65,7 +65,6 @@ class BlendExample extends BasicTest
 				//image2objs[obj.image].push(node);
 			}
 		}
-		bv.instance3Ds[0].camera.frustumPlanes = null;
 		//blenderScene.setScale(1000, 1000, 1000);
 		ctrl.position.z = -20;
 		ctrl.speed = 5;

@@ -87,7 +87,7 @@ package lz.native3d.meshs ;
 			drawable.uv = new VertexBufferSet(untyped(uv.length / 2), 2, uv, 0,i3d);
 			drawable.indexBufferSet = new IndexBufferSet(indexs.length, indexs, 0,i3d);
 			computeNorm(drawable);
-			drawable.radius = r;
+			drawable.radius = Math.sqrt(r*r+r*r+r*r);
 			return drawable;
 		}
 		
@@ -103,7 +103,7 @@ package lz.native3d.meshs ;
 			drawable.uv = new VertexBufferSet(untyped(uv.length / 2), 2, uv, 0,i3d);
 			drawable.indexBufferSet = new IndexBufferSet(indexs.length, indexs, 0,i3d);
 			computeNorm(drawable);
-			drawable.radius = r;
+			drawable.radius = Math.sqrt(r*r+r*r);
 			return drawable;
 		}
 		
@@ -1977,58 +1977,30 @@ package lz.native3d.meshs ;
 			drawable.indexBufferSet = new IndexBufferSet(indexs.length, indexs, 0,i3d);
 			
 			computeNorm(drawable);
-			drawable.radius = computeRadius(vin);
+			computeRadius(drawable);
 			return drawable;
 		}
 		#end
 		
-		public static function marge(nodes:Vector<Node3D>):Drawable3D {
-			var drawable:Drawable3D = new Drawable3D();
-			/*var vin:Vector<Float> = new Vector<Float>();
-			var uv:Vector<Float> = new Vector<Float>();
-			var indexs:Vector<#if flash UInt #else Int #end> = new Vector<#if flash UInt #else Int #end>();
-			var iadd:Int = 0;
-			
-			var data:Vector<Float>;
-			for each(var node:Node3D in nodes) {
-				if(data==null||data.length!=node.drawable.xyz.data.length)
-				data = new Vector<Float>(node.drawable.xyz.data.length);
-				node.worldMatrix.transformVectors(node.drawable.xyz.data,data);
-				for each(var n:Float in data) {
-					vin.push(n);
-				}
-				if (node.drawable.uv) {
-					for each(n in node.drawable.uv.data) {
-						uv.push(n);
-					}
-				}
-				
-				for each(var i:#if flash UInt #else Int #end in node.drawable.indexBufferSet.data) {
-					indexs.push(i+iadd);
-				}
-				iadd += node.drawable.xyz.data.length / 3;
-			}
-			drawable.xyz = new VertexBufferSet(vin.length / 3, 3, vin, 0,"float3");
-			drawable.uv = new VertexBufferSet(uv.length / 2, 2, uv, 0,"float2");
-			drawable.indexBufferSet = new IndexBufferSet(indexs.length, indexs, 0);*/
-			return drawable;
-		}
 		
-		public static function computeRadius(xyz:Vector<Float>):Float {
+		public static function computeRadius(drawable:Drawable3D):Void {
+			var len = drawable.indexBufferSet.data.length;
+			var xyz = drawable.xyz.data;
 			var mr = .0;
-			for (i in 0...Std.int(xyz.length/3)) {
-				var xi = i * 3;
-				var yi = xi + 1;
-				var zi = yi + 1;
-				var x = xyz[xi];
-				var y = xyz[yi];
-				var z = xyz[zi];
+			var i = 0;
+			while(i<len)
+			{
+				var i3=drawable.indexBufferSet.data[i] * 3;
+				var x = xyz[i3];
+				var y = xyz[i3+1];
+				var z = xyz[i3+2];
 				var r = x * x + y * y + z * z;
 				if (r>mr) {
 					mr = r;
 				}
+				i ++;
 			}
-			return Math.sqrt(mr);
+			drawable.radius=Math.sqrt(mr);
 		}
 		public static function computeNorm(drawable:Drawable3D):Void
 		{

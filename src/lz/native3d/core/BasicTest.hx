@@ -17,6 +17,7 @@ import lz.native3d.materials.PhongMaterial;
 import lz.native3d.materials.SkyboxMaterial;
 import lz.native3d.meshs.MeshUtils;
 import lz.native3d.parsers.ColladaParser;
+import lz.native3d.utils.Stats3D;
 import lz.net.LoaderBat;
 #if flash
 import lz.native3d.parsers.ObjParser;
@@ -51,14 +52,18 @@ class BasicTest extends Sprite
 		bv.instance3Ds[0].addEventListener(Event.CONTEXT3D_CREATE, context3dCreate);
 		addChild(bv);
 		#if flash
-		#if !swc
-		addChild(new Stats());
-		#end
+			#if !swc
+			addChild(new Stats());
+			#end
 		loading = new TextField();
 		loading.autoSize = TextFieldAutoSize.LEFT;
 		addChild(loading);
 		loading.x = 200;
 		loading.textColor = 0xff0000;
+		
+		var stats3d = new Stats3D();
+		stats3d.y = 100;
+		addChild(stats3d);
 		#end
 	}
 	
@@ -110,9 +115,7 @@ class BasicTest extends Sprite
 		node.setPosition(x, y, z);
 		node.setRotation(rotationX, rotationY, rotationZ);
 		node.setScale(scaleX, scaleY, scaleZ);
-		node.frustumCulling = null;
 		node.drawable = cubeDrawable;
-		node.radius = -cubeDrawable.radius * .3*scaleX;
 		parent.add(node);
 		node.material = new PhongMaterial(bv.instance3Ds[0], light,
 		[.2, .2, .2],//AmbientColor
@@ -161,7 +164,6 @@ class BasicTest extends Sprite
 			getImage("nz",loader)
 		]);
 		var skybox:Node3D = new Node3D();
-		skybox.frustumCulling = null;
 		bv.instance3Ds[0].root.add(skybox);
 		skybox.drawable = drawable;
 		skybox.material = 
@@ -200,7 +202,6 @@ class BasicTest extends Sprite
 		for (x in 0...c ) {
 			for(y in 0...c){
 				var clone:Node3D = parser.node.clone();
-				clone.frustumCulling = null;
 				var d:Int = 60;
 				clone.setPosition(d * (x / c - .5), 0 , d * (y / c - .5));
 				clone.setRotation(-90);

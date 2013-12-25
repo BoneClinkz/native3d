@@ -22,7 +22,6 @@ class SkeletonAnimationExample extends BasicTest
 	
 	override public function initScene() : Void
 	{
-		bv.instance3Ds[0].camera.frustumPlanes = null;
 		addDae();
 		#if flash
 		//addSky();
