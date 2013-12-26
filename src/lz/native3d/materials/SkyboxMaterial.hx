@@ -34,20 +34,13 @@ private class SkyShader extends Shader {
 class SkyboxMaterial extends MaterialBase
 {
 	public var texture:TextureBase;
-	private var shader:SkyShader;
-	private var shaderInstance:ShaderInstance;
 	public function new(i3d:Instance3D,texture:TextureBase) 
 	{
 		super();
 		shader = new SkyShader();
 		this.texture = texture;
-		shaderInstance = shader.getInstance();
-		if (shaderInstance.program==null) {
-			shaderInstance.program = i3d.c3d.createProgram();
-			shaderInstance.program.upload(shaderInstance.vertexBytes.getData(), shaderInstance.fragmentBytes.getData());
-		}
-		progrom = shaderInstance.program;
-		vertex = new Vector<Float>(4, true);
+		this.i3d = i3d;
+		build();
 	}
 	inline override public function draw(node:Node3D, pass:BasicPass3D):Void {
 		super.draw(node, pass);

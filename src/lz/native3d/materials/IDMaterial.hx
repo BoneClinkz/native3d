@@ -35,15 +35,13 @@ private class IShader extends Shader {
  */
 class IDMaterial extends MaterialBase
 {
-	private static var shader:IShader = new IShader();
 	public function new() 
 	{
 		super();
-		if (shader.i == null) {
-			shader.create(Instance3D.getInstance().c3d);
-		}
-		//fragment = new Vector<Float>(4,true);
-		progrom = shader.i.program;
+		var shader:IShader = new IShader();
+		this.shader = shader;
+		i3d = Instance3D.getInstance();
+		build();
 	}
 	inline override public function draw(node:Node3D, pass:BasicPass3D):Void {
 			var c3d:Context3D = Instance3D.getInstance().c3d;

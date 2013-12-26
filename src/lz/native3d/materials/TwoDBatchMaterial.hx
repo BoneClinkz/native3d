@@ -37,25 +37,25 @@ class TwoDBatchMaterial extends MaterialBase
 	private var nodes:Vector<Node3D>;
 	private var lastLen:Int = 0;
 	public var stepLen:Int = 50;
-	public var i3d:Instance3D;
+	
 	
 	public var plane:Vector<Float>;
 	public var planeOut:Vector<Float>;
-	private var texture:TextureBase;
-	private static var shader:IShader = new IShader();
+	public var texture:TextureBase;
 	public static var mouse2d:Mouse2D = new Mouse2D();
-	public function new(texture:TextureBase,i3d:Instance3D) 
+	public function new(texture:TextureBase,i3d:Instance3D,colorMul:Array<Float>=null) 
 	{
 		super();
+		this.i3d = i3d;
 		passCompareMode = Context3DCompareMode.ALWAYS;
 		sourceFactor = Context3DBlendFactor.ONE;
 		destinationFactor = Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
 		culling = Context3DTriangleFace.NONE;
 		this.texture = texture;
-		if (shader.i == null) {
-			shader.create(Instance3D.getInstance().c3d);
-		}
-		progrom = shader.i.program;
+		var shader = new IShader();
+		this.shader = shader;
+		shader.colorMul = arr2ve3(colorMul);
+		build();
 		nodes = new Vector<Node3D>();
 		this.i3d = i3d;
 		indexBuff = new IndexBufferSet(0, new Vector<UInt>(), 0, i3d);
@@ -151,6 +151,7 @@ class TwoDBatchMaterial extends MaterialBase
 		c3d.setVertexBufferAt(1, uvBuff.vertexBuff, 0, uvBuff.format);
 		c3d.setTextureAt(0, texture);
 		c3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, pass.camera.perspectiveProjectionMatirx, true);
+		c3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, fragment);
 		c3d.drawTriangles(indexBuff.indexBuff,0,nodes.length*2);
 		c3d.setVertexBufferAt(0,null, 0, xyzBuff.format);
 		c3d.setVertexBufferAt(1, null, 0, uvBuff.format);
@@ -202,8 +203,13 @@ private class IShader extends Shader {
 			out = input.pos.xyzw * mproj;
 			uv = input.uv;
 		}
+		var colorMul:Float4;
 		function fragment(tex:Texture) {
-			out = tex.get(uv, wrap);
+			if (colorMul != null) {
+				out = tex.get(uv, wrap)*colorMul;
+			}else {
+				out = tex.get(uv, wrap);
+			}
 		}
 	};
 	public var i:ShaderInstance;

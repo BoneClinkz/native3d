@@ -6,6 +6,7 @@ import lz.native3d.core.IndexBufferSet;
 import lz.native3d.core.Instance3D;
 import lz.native3d.core.VertexBufferSet;
 import lz.native3d.materials.ParticleMaterial;
+import lz.native3d.materials.ParticleShader;
 
 /**
  * ...
@@ -23,7 +24,7 @@ class ParticleIniter
 	public function init(wrapper:ParticleWrapper):Void {
 		var mat:ParticleMaterial = untyped wrapper.material;
 		wrapper.drawable = new ParticleDrawable3D();
-		var shader = mat.shader;
+		var shader:ParticleShader =untyped mat.shader;
 		var timeLefeVariance=null;
 		if(shader.hasTimeLifeVariance)timeLefeVariance= new Vector<Float>(2 * wrapper.particles.length * 4, true);
 		var startPosVariance = null;

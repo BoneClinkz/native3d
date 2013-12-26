@@ -25,7 +25,7 @@ package lz.native3d.core;
 		public var i3d:Instance3D;
 		public var cscale:Vector3D;
 		public var cpos:Vector3D;
-		public function new(width:Int,height:Int,i3d:Instance3D,is2d:Bool=false) 
+		public function new(width:Int,height:Int,i3d:Instance3D,is2d:Bool=false,index2d:Float=0) 
 		{
 			super();
 			this.i3d = i3d;
@@ -37,7 +37,7 @@ package lz.native3d.core;
 			add(new Node3D());
 			
 			cscale = new Vector3D(1,-1,1);
-			cpos = new Vector3D(-1,1,.999999);
+			cpos = new Vector3D(-1,1,index2d);
 			if (is2d) {
 				_zNear = 0;
 				orthoLH(width, height, _zNear, _zFar,cscale,cpos);
@@ -48,6 +48,7 @@ package lz.native3d.core;
 			
 			
 			parent = new Node3D();
+			if(!is2d)
 			frustumPlanes = Vector.ofArray([new Vector3D(), new Vector3D(), new Vector3D(), new Vector3D(), new Vector3D(), new Vector3D()]);
 		}
 		public function perspectiveFieldOfViewLH(fieldOfViewY:Float, 
@@ -182,7 +183,7 @@ package lz.native3d.core;
 		{
 			for (plane in frustumPlanes)
 			{
-				if (pointPlaneDistance(point, plane) < radius)
+				if (pointPlaneDistance(point, plane) < -radius)
 				{
 					return false;
 				}

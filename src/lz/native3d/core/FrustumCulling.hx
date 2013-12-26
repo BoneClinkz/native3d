@@ -1,4 +1,5 @@
 package lz.native3d.core;
+import flash.geom.Vector3D;
 
 /**
  * ...
@@ -10,6 +11,7 @@ class FrustumCulling
 	public var node:Node3D;
 	public var nodeVersion:Int = -100;
 	private var help:Bool;
+	private static var VONE:Vector3D = new Vector3D(1, 1, 1, 1);
 	public function new() 
 	{
 		cameraMap = new Map<Camera3D, CullingData>();
@@ -31,7 +33,17 @@ class FrustumCulling
 			help = true;
 		}
 		if (help) {
-			cd.culling = camera.isPointInFrustum(node.worldRawData,node.radius);
+			var temp = node.worldMatrix.transformVector(VONE);
+			temp.x -= node.worldRawData[12];
+			temp.y -= node.worldRawData[13];
+			temp.z -= node.worldRawData[14];
+			if (temp.x < 0) temp.x *= -1;
+			if (temp.y < 0) temp.y *= -1;
+			if (temp.z < 0) temp.z *= -1;
+			var max = temp.x;
+			if (max < temp.y) max = temp.y;
+			if (max < temp.z) max = temp.z;
+			cd.culling = camera.isPointInFrustum(node.worldRawData,max*node.drawable.radius);
 		}
 		return cd.culling;
 	}

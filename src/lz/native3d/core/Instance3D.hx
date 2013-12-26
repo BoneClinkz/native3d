@@ -14,7 +14,8 @@ package lz.native3d.core ;
 		var nodess:Vector<Vector<Node3D>>;
 		public static var _instances:Vector<Instance3D>=new Vector<Instance3D>();
 		public var c3d:Context3D;
-		
+		public var drawCounter:Int = 0;
+		public var drawTriangleCounter:Int = 0;
 		public var root:Node3D;// = new Node3D();
 		public var roots:Vector<Node3D>;
 		public var camera:Camera3D;// = new Camera3D();
@@ -48,6 +49,8 @@ package lz.native3d.core ;
 		}
 		
 		public function render():Void {
+			drawCounter = drawTriangleCounter = 0;
+			
 			nodess = new Vector<Vector<Node3D>>();
 			for (r in roots) {
 				nodess.push(doTransform.doTransform(r.children));

@@ -241,8 +241,10 @@ class Animation
 				skinDrawable.indexBufferSet.init();
 				skinDrawable.weightBuff.init();
 				skinDrawable.matrixBuff.init();
+				MeshUtils.computeRadius(skinDrawable);
 				skin.node.drawable = new Drawable3D();
-				skin.node.drawable.radius = MeshUtils.computeRadius(vs);
+				skin.node.drawable.radius = skinDrawable.radius;
+				skin.node.drawable.indexBufferSet = skinDrawable.indexBufferSet;
 				//skin.node.material=new SkinMaterial(skin, Std.random(0xffffff), Std.random(0xffffff), new BasicLight3D());
 				skin.node.material = new PhongMaterial(Instance3D.getInstance(),
 										light,

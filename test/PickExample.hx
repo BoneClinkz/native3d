@@ -47,7 +47,9 @@ class PickExample extends Sprite
 		bv.instance3Ds[0].camera.z = -100;
 		
 		node = new Node3D();
+		//node.setScale(10, 10, 10);
 		node.drawable = MeshUtils.createTeaPot(bv.instance3Ds[0]);
+		//node.drawable = MeshUtils.createCube(10, bv.instance3Ds[0]);// .createTeaPot(bv.instance3Ds[0]);
 		var light:BasicLight3D = new BasicLight3D();
 		light.z = -1000;
 		bv.instance3Ds[0].root.add(light);
@@ -56,17 +58,13 @@ class PickExample extends Sprite
 		[.2, .2, .2],//AmbientColor
 		[Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5],//DiffuseColor
 		[.8,.8,.8],//SpecularColor
-		200,
-		null
-		//texture
+		200
 		);
 		m2 = new PhongMaterial(bv.instance3Ds[0], light,
 		[.2, .2, .2],//AmbientColor
 		[Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5],//DiffuseColor
 		[.8,.8,.8],//SpecularColor
-		200,
-		null
-		//texture
+		200
 		);
 		node.material = m1;
 		bv.instance3Ds[0].root.add(node);
@@ -82,6 +80,9 @@ class PickExample extends Sprite
 	
 	private function enterFrame(e:Event):Void 
 	{
+		//node.x = mouseX-200;
+		//node.y = -mouseY+200;
+		node.z = 100;
 		node.rotationY++;
 		node.rotationX++;
 		pickPass.before(mouseX,mouseY);
