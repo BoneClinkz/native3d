@@ -29,12 +29,6 @@ private class IShader extends Shader {
 			out = comp-comp.xxyz*bitMsk;
 		}
 	};
-	public var i:ShaderInstance;
-	public function create(c:Context3D) {
-		i = getInstance();
-		i.program = c.createProgram();
-		i.program.upload(i.vertexBytes.getData(), i.fragmentBytes.getData());
-	}
 }
 /**
  * ...
@@ -42,19 +36,16 @@ private class IShader extends Shader {
  */
 class DisMaterial extends MaterialBase
 {
-	private static var shader:IShader = new IShader();
 	private var lightNode:BasicLight3D;
 	public function new(lightNode:BasicLight3D) 
 	{
 		super();
 		this.lightNode = lightNode;
-		if (shader.i == null) {
-			shader.create(Instance3D.getInstance().c3d);
-		}
+		shader = new IShader();
+		build();
 		fragment = Vector.ofArray([256. * 256. * 256., 256. * 256, 256., 1.,0., 1. / 256., 1. / 256., 1. / 256.]);
 		vertex = new Vector<Float>(4, true);
 		vertex[3] =  0.005;
-		progrom = shader.i.program;
 	}
 	inline override public function draw(node:Node3D, pass:BasicPass3D):Void {
 			var c3d:Context3D = Instance3D.getInstance().c3d;

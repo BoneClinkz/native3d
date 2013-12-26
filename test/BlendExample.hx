@@ -6,7 +6,7 @@ import flash.Lib;
 import flash.utils.CompressionAlgorithm;
 import flash.utils.Endian;
 import flash.Vector;
-import lz.native3d.core.BasicTest;
+import lz.native3d.utils.BasicTest;
 import lz.native3d.core.Drawable3D;
 import lz.native3d.core.IndexBufferSet;
 import lz.native3d.core.Node3D;

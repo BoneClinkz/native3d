@@ -1,4 +1,4 @@
-package lz.native3d.core;
+package lz.native3d.utils;
 import flash.display.BitmapData;
 import flash.display.Sprite;
 import flash.display3D.Context3DTextureFormat;

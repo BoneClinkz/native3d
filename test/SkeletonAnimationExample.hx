@@ -4,7 +4,7 @@ import flash.display3D.Context3DTextureFormat;
 import flash.display3D.textures.TextureBase;
 import flash.events.Event;
 import flash.Lib;
-import lz.native3d.core.BasicTest;
+import lz.native3d.utils.BasicTest;
 import lz.native3d.core.TextureSet;
 
 /**
