@@ -37,32 +37,25 @@ class TwoDBatchMaterial extends MaterialBase
 	private var nodes:Vector<Node3D>;
 	private var lastLen:Int = 0;
 	public var stepLen:Int = 50;
-	public var i3d:Instance3D;
+	
 	
 	public var plane:Vector<Float>;
 	public var planeOut:Vector<Float>;
 	public var texture:TextureBase;
-	private  var shader:IShader;
-	private var shaderInstance:ShaderInstance;
 	public static var mouse2d:Mouse2D = new Mouse2D();
 	public function new(texture:TextureBase,i3d:Instance3D,colorMul:Array<Float>=null) 
 	{
 		super();
+		this.i3d = i3d;
 		passCompareMode = Context3DCompareMode.ALWAYS;
 		sourceFactor = Context3DBlendFactor.ONE;
 		destinationFactor = Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
 		culling = Context3DTriangleFace.NONE;
 		this.texture = texture;
-		shader = new IShader();
+		var shader = new IShader();
+		this.shader = shader;
 		shader.colorMul = arr2ve3(colorMul);
-		shaderInstance = shader.getInstance();
-		if (shaderInstance.program==null) {
-			shaderInstance.program = i3d.c3d.createProgram();
-			shaderInstance.program.upload(shaderInstance.vertexBytes.getData(), shaderInstance.fragmentBytes.getData());
-		}
-		vertex = shaderInstance.vertexVars.toData().concat();
-		fragment = shaderInstance.fragmentVars.toData().concat();
-		progrom = shaderInstance.program;
+		build();
 		nodes = new Vector<Node3D>();
 		this.i3d = i3d;
 		indexBuff = new IndexBufferSet(0, new Vector<UInt>(), 0, i3d);

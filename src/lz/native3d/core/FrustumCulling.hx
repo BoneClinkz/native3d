@@ -37,6 +37,9 @@ class FrustumCulling
 			temp.x -= node.worldRawData[12];
 			temp.y -= node.worldRawData[13];
 			temp.z -= node.worldRawData[14];
+			if (temp.x < 0) temp.x *= -1;
+			if (temp.y < 0) temp.y *= -1;
+			if (temp.z < 0) temp.z *= -1;
 			var max = temp.x;
 			if (max < temp.y) max = temp.y;
 			if (max < temp.z) max = temp.z;

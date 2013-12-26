@@ -80,11 +80,11 @@ class PickExample extends Sprite
 	
 	private function enterFrame(e:Event):Void 
 	{
-		node.x = mouseX-200;
-		node.y = -mouseY+200;
+		//node.x = mouseX-200;
+		//node.y = -mouseY+200;
 		node.z = 100;
-		/*node.rotationY++;
-		node.rotationX++;*/
+		node.rotationY++;
+		node.rotationX++;
 		pickPass.before(mouseX,mouseY);
 		bv.instance3Ds[0].render();
 		if (node==pickPass.mouseNode) {

@@ -26,20 +26,20 @@ import lz.native3d.core.VertexBufferSet;
  */
 class PhongMaterial extends MaterialBase
 {
-	private var shader:PhongShader;
 	private var lightNode:BasicLight3D;
 	public var diffuseTex:TextureBase;
-	private var shaderInstance:ShaderInstance;
 	public var skin:Skin;
 	public function new(i3d:Instance3D,lightNode:BasicLight3D,AmbientColor:Array<Float>,DiffuseColor:Array<Float>,SpecularColor:Array<Float>,SpecularExponent:Float=200,diffuseTex:TextureBase=null,skin:Skin=null) 
 	{
 		super();
+		this.i3d = i3d;
 		if (DiffuseColor[3]>0) {//有透明度
 			sourceFactor = Context3DBlendFactor.SOURCE_ALPHA;
 			destinationFactor = Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
 			passCompareMode = Context3DCompareMode.ALWAYS;
 		}
-		shader = new PhongShader();
+		var shader = new PhongShader();
+		this.shader = shader;
 		shader.AmbientColor = arr2ve3(AmbientColor);
 		shader.DiffuseColor = arr2ve3(DiffuseColor);
 		shader.SpecularColor = arr2ve3(SpecularColor);
@@ -53,15 +53,8 @@ class PhongMaterial extends MaterialBase
 		this.skin = skin;
 		if(skin!=null)shader.anmMats = [new Vector3D(100,101,102,103)];
 		shader.hasAnm = skin != null;
+		build();
 		
-		shaderInstance = shader.getInstance();
-		if (shaderInstance.program==null) {
-			shaderInstance.program = i3d.c3d.createProgram();
-			shaderInstance.program.upload(shaderInstance.vertexBytes.getData(), shaderInstance.fragmentBytes.getData());
-		}
-		vertex = shaderInstance.vertexVars.toData().concat();
-		fragment = shaderInstance.fragmentVars.toData().concat();
-		progrom = shaderInstance.program;
 		this.lightNode = lightNode;
 	}
 	
@@ -69,6 +62,7 @@ class PhongMaterial extends MaterialBase
 		//super
 		super.draw(node, pass);
 		//const
+		var shader:PhongShader =untyped this.shader;
 		if (shader.DiffuseColor != null || shader.SpecularColor != null) {
 			vertex[32] = lightNode.worldRawData[12];
 			vertex[33] = lightNode.worldRawData[13];
@@ -130,10 +124,10 @@ class PhongMaterial extends MaterialBase
 			}
 			//clear
 			c3d.setVertexBufferAt(0,null, 0,null);
-			if(norm!=null)c3d.setVertexBufferAt(1, null, 0, null);
+			c3d.setVertexBufferAt(1, null, 0, null);
 			c3d.setVertexBufferAt(2, null, 0,null);
 			c3d.setVertexBufferAt(3, null, 0, null);
-			if(uv!=null)c3d.setVertexBufferAt(4, null, 0, null);
+			c3d.setVertexBufferAt(4, null, 0, null);
 			c3d.setTextureAt(0, null);
 			node.frame++;
 		}
@@ -142,6 +136,7 @@ class PhongMaterial extends MaterialBase
 	override public function init(node:Node3D):Void {
 		if(skin==null){//有骨骼动画 初始化交给其它类处理
 			node.drawable.xyz.init();
+			var shader:PhongShader = untyped this.shader;
 			if(shader.DiffuseColor!=null||shader.SpecularColor!=null)
 			node.drawable.norm.init();
 			if(diffuseTex!=null)

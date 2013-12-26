@@ -6,7 +6,10 @@ import flash.display3D.Context3DTriangleFace;
 import flash.display3D.Program3D;
 import flash.geom.Vector3D;
 import flash.Vector;
+import hxsl.Shader;
+import hxsl.Shader.ShaderInstance;
 import lz.native3d.core.BasicPass3D;
+import lz.native3d.core.Instance3D;
 import lz.native3d.core.Node3D;
 import flash.display3D.Context3DCompareMode;
 /**
@@ -14,6 +17,8 @@ import flash.display3D.Context3DCompareMode;
  */
  class MaterialBase 
 {
+	public var shader:Shader;
+	public var shaderInstance:ShaderInstance;
 	public var vertex:Vector<Float>;
 	public var fragment:Vector<Float>;
 	public var progrom:Program3D;
@@ -22,6 +27,7 @@ import flash.display3D.Context3DCompareMode;
 	public var passCompareMode:#if flash Context3DCompareMode #else Int #end;// = Context3DCompareMode.LESS;
 	public var culling:#if flash Context3DTriangleFace #else Int #end;// = Context3DCompareMode.LESS;
 	public var c3d:Context3D;
+	public var i3d:Instance3D;
 	public function new() 
 	{
 		#if flash
@@ -30,6 +36,17 @@ import flash.display3D.Context3DCompareMode;
 		passCompareMode = Context3DCompareMode.LESS;
 		culling = Context3DTriangleFace.FRONT;
 		#end
+	}
+	
+	public function build():Void {
+		shaderInstance = shader.getInstance();
+		if (shaderInstance.program==null) {
+			shaderInstance.program = i3d.c3d.createProgram();
+			shaderInstance.program.upload(shaderInstance.vertexBytes.getData(), shaderInstance.fragmentBytes.getData());
+		}
+		vertex = shaderInstance.vertexVars.toData().concat();
+		fragment = shaderInstance.fragmentVars.toData().concat();
+		progrom = shaderInstance.program;
 	}
 	
 	public function draw(node:Node3D, pass:BasicPass3D):Void {

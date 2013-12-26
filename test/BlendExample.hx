@@ -92,6 +92,7 @@ class BlendExample extends BasicTest
 			drawable.uv = new VertexBufferSet(Std.int(uvs.length / 2), 2,untyped uvs, 0,bv.instance3Ds[0]);
 			drawable.indexBufferSet = new IndexBufferSet(index.length,untyped index, 0,bv.instance3Ds[0]);
 			MeshUtils.computeNorm(drawable);
+			MeshUtils.computeRadius(drawable);
 			n.drawable = drawable;
 			n.material=material;
 			
