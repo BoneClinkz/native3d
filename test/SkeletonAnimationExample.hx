@@ -42,13 +42,13 @@ class SkeletonAnimationExample extends BasicTest
 	
 	function customDraw() 
 	{
-		bv.instance3Ds[0].c3d.setRenderToTexture(textureA, true);
-		bv.instance3Ds[0].c3d.clear(0,0,0,0);
+		bv.instance3Ds[0].setRenderToTexture(textureA, true);
+		bv.instance3Ds[0].clear(0,0,0,0);
 		bv.instance3Ds[0].passs[0].drawScene();
 		
 		bv.instance3Ds[0].passs[0].drawQuadTexture(textureB, 0, 0, stage.stageWidth, stage.stageHeight,[.8,.7,.6,0]);
 		
-		bv.instance3Ds[0].c3d.setRenderToBackBuffer();
+		bv.instance3Ds[0].setRenderToBackBuffer();
 		bv.instance3Ds[0].passs[0].drawQuadTexture(textureA, 0, 0, stage.stageWidth, stage.stageHeight);
 		
 		var temp = textureA;

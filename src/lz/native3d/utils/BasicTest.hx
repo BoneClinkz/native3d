@@ -17,13 +17,10 @@ import lz.native3d.materials.PhongMaterial;
 import lz.native3d.materials.SkyboxMaterial;
 import lz.native3d.meshs.MeshUtils;
 import lz.native3d.parsers.ColladaParser;
-import lz.native3d.utils.Stats3D;
+import lz.native3d.utils.Stats;
 import lz.net.LoaderBat;
 #if flash
 import lz.native3d.parsers.ObjParser;
-#if !swc
-import net.hires.debug.Stats;
-#end
 #else
 import openfl.Assets;
 using OpenFLStage3D;
@@ -61,9 +58,6 @@ class BasicTest extends Sprite
 		loading.x = 200;
 		loading.textColor = 0xff0000;
 		
-		var stats3d = new Stats3D();
-		stats3d.y = 100;
-		addChild(stats3d);
 		#end
 	}
 	

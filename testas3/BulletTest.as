@@ -7,7 +7,6 @@ package
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	import lz.native3d.core.BasicLight3D;
-	import lz.native3d.core.BasicTest;
 	import lz.native3d.core.BasicView;
 	import lz.native3d.core.Drawable3D;
 	import lz.native3d.core.IndexBufferSet;
@@ -15,6 +14,7 @@ package
 	import lz.native3d.core.VertexBufferSet;
 	import lz.native3d.materials.PhongMaterial;
 	import lz.native3d.meshs.MeshUtils;
+	import lz.native3d.utils.BasicTest;
 	import net.hires.debug.Stats;
 	import org.bulletphysics.btAxisSweep3;
 	import org.bulletphysics.btBoxShape;
@@ -105,7 +105,7 @@ package
 			var s:Number = 4.0;
 			
 			var boxShape:btBoxShape = btBoxShape.create(vector(w , w, w));
-			for(var i:int=0; i<200; i++) {
+			for(var i:int=0; i<1200; i++) {
 				//spawnCube(((i%numCols)) * 10  - 30, 10.0 + ((i/numCols) * s), 0, 10, w*2, w*2, w*2)
 				spawnRigidBody(
 					boxShape,

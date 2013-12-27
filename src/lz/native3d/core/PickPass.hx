@@ -38,12 +38,12 @@ class PickPass extends BasicPass3D
 	}
 	
 	override public function pass(nodes:Vector<Node3D>):Void {
-		Instance3D.getInstance().c3d.clear(0,0,0,0);
+		Instance3D.getInstance().clear(0,0,0,0);
 		for(i in 0...nodes.length) {
 			var node:Node3D = nodes[i];
 			doPass(node);
 		}
-		Instance3D.getInstance().c3d.drawToBitmapData(targetBmd);
+		Instance3D.getInstance().drawToBitmapData(targetBmd);
 		nodeId = targetBmd.getPixel(0, 0);
 		mouseNode = Node3D.NODES.get(nodeId);
 	}

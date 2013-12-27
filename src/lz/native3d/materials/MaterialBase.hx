@@ -26,7 +26,6 @@ import flash.display3D.Context3DCompareMode;
 	public var destinationFactor:#if flash Context3DBlendFactor #else Int #end;// = Context3DBlendFactor.ZERO;
 	public var passCompareMode:#if flash Context3DCompareMode #else Int #end;// = Context3DCompareMode.LESS;
 	public var culling:#if flash Context3DTriangleFace #else Int #end;// = Context3DCompareMode.LESS;
-	public var c3d:Context3D;
 	public var i3d:Instance3D;
 	public function new() 
 	{
@@ -41,7 +40,7 @@ import flash.display3D.Context3DCompareMode;
 	public function build():Void {
 		shaderInstance = shader.getInstance();
 		if (shaderInstance.program==null) {
-			shaderInstance.program = i3d.c3d.createProgram();
+			shaderInstance.program = i3d.createProgram();
 			shaderInstance.program.upload(shaderInstance.vertexBytes.getData(), shaderInstance.fragmentBytes.getData());
 		}
 		vertex = shaderInstance.vertexVars.toData().concat();
@@ -50,10 +49,9 @@ import flash.display3D.Context3DCompareMode;
 	}
 	
 	public function draw(node:Node3D, pass:BasicPass3D):Void {
-		c3d = pass.i3d.c3d;
-		c3d.setDepthTest(true, passCompareMode);
-		c3d.setBlendFactors(sourceFactor, destinationFactor);
-		c3d.setProgram(progrom);
+		i3d.setDepthTest(true, passCompareMode);
+		i3d.setBlendFactors(sourceFactor, destinationFactor);
+		i3d.setProgram(progrom);
 	}
 	
 	public function init(node:Node3D):Void {

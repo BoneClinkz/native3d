@@ -48,23 +48,21 @@ class DisMaterial extends MaterialBase
 		vertex[3] =  0.005;
 	}
 	inline override public function draw(node:Node3D, pass:BasicPass3D):Void {
-			var c3d:Context3D = Instance3D.getInstance().c3d;
-			
-			Instance3D.getInstance().c3d.setDepthTest(true, passCompareMode);
-			c3d.setBlendFactors(sourceFactor, destinationFactor);
-			c3d.setProgram(progrom);
+		var i3d = Instance3D.getInstance();
+			i3d.setDepthTest(true, passCompareMode);
+			i3d.setBlendFactors(sourceFactor, destinationFactor);
+			i3d.setProgram(progrom);
 			var xyz:VertexBufferSet = node.drawable.xyz;
-			c3d.setVertexBufferAt(0, xyz.vertexBuff, 0, xyz.format);
-			c3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, node.worldMatrix, true);
-			c3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 4, pass.camera.perspectiveProjectionMatirx, true);
+			i3d.setVertexBufferAt(0, xyz.vertexBuff, 0, xyz.format);
+			i3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, node.worldMatrix, true);
+			i3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 4, pass.camera.perspectiveProjectionMatirx, true);
 			/*vertex[0] = lightNode.wpos.x;
 			vertex[1] = lightNode.wpos.y;
 			vertex[2] = lightNode.wpos.z;*/
-			c3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 8, vertex);
-			c3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, fragment);
+			i3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 8, vertex);
+			i3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, fragment);
 			
-			c3d.drawTriangles(node.drawable.indexBufferSet.indexBuff);
-			c3d.setVertexBufferAt(0,null, 0, xyz.format);
+			i3d.drawTriangles(node.drawable.indexBufferSet.indexBuff);
 		}
 		override public function init(node:Node3D):Void {
 			node.drawable.xyz.init();

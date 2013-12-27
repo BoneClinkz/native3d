@@ -44,9 +44,9 @@ class IDMaterial extends MaterialBase
 		build();
 	}
 	inline override public function draw(node:Node3D, pass:BasicPass3D):Void {
-			var c3d:Context3D = Instance3D.getInstance().c3d;
+			var c3d = Instance3D.getInstance();
 			
-			Instance3D.getInstance().c3d.setDepthTest(true, passCompareMode);
+			c3d.setDepthTest(true, passCompareMode);
 			c3d.setBlendFactors(sourceFactor, destinationFactor);
 			c3d.setProgram(progrom);
 			var xyz:VertexBufferSet = node.drawable.xyz;
@@ -56,7 +56,6 @@ class IDMaterial extends MaterialBase
 			//c3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 8, vertex);
 			c3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, node.idVector);
 			c3d.drawTriangles(node.drawable.indexBufferSet.indexBuff);
-			c3d.setVertexBufferAt(0,null, 0, xyz.format);
 		}
 		override public function init(node:Node3D):Void {
 			node.drawable.xyz.init();

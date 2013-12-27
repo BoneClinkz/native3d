@@ -1,6 +1,6 @@
 package  
 {
-	import lz.native3d.core.BasicTest;
+	import lz.native3d.utils.BasicTest;
 	/**
 	 * ...
 	 * @author lizhi http://matrix3d.github.io/

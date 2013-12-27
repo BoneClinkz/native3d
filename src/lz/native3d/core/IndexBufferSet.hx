@@ -23,7 +23,7 @@ package lz.native3d.core ;
 		}
 		public function init():Void {
 			if(indexBuff==null){
-			indexBuff = i3d.c3d.createIndexBuffer(num);
+			indexBuff = i3d.createIndexBuffer(num);
 			upload();
 			}
 		}

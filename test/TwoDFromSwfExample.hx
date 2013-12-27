@@ -29,8 +29,8 @@ import lz.native3d.core.TextureSet;
 import lz.native3d.materials.PhongMaterial;
 import lz.native3d.materials.TwoDBatchMaterial;
 import lz.native3d.meshs.MeshUtils;
+import lz.native3d.utils.Stats;
 import lz.net.LoaderCell;
-import net.hires.debug.Stats;
 
 /**
  * ...

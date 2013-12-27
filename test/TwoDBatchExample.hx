@@ -15,8 +15,8 @@ import lz.native3d.core.Camera3D;
 import lz.native3d.core.TextureSet;
 import lz.native3d.core.twoDAnimation.TDSpriteData;
 import lz.native3d.ctrls.TwoDBatAnmCtrl;
+import lz.native3d.utils.Stats;
 import lz.net.LoaderBat;
-import net.hires.debug.Stats;
 
 /**
  * ...

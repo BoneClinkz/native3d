@@ -56,7 +56,7 @@ package lz.native3d.core ;
 				}
 			}
 			
-			texture = i3d.c3d.createTexture(w, h, Context3DTextureFormat.BGRA, optimizeForRenderToTexture,streamingLevels);
+			texture = i3d.createTexture(w, h, Context3DTextureFormat.BGRA, optimizeForRenderToTexture,streamingLevels);
 			ttexture = cast( texture,Texture);
 			
 			var level 		: Int 			= 0;
@@ -91,8 +91,7 @@ package lz.native3d.core ;
 		
 		public function createCubeTextureBy6Bitmap( _bitmapDatas:Array<BitmapData>) : Void {
 			var _size:UInt = _bitmapDatas[0].width;
-			var context3D:Context3D = i3d.c3d;
-			var _resource:CubeTexture = context3D.createCubeTexture(_size, Context3DTextureFormat.BGRA, true);
+			var _resource:CubeTexture = i3d.createCubeTexture(_size, Context3DTextureFormat.BGRA, true);
 			
 			for ( side in 0...6)
 			{

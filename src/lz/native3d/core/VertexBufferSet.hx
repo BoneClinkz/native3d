@@ -28,7 +28,7 @@ package lz.native3d.core ;
 		
 		public function init():Void {
 			if (vertexBuff==null){
-			vertexBuff = i3d.c3d.createVertexBuffer(num, data32PerVertex);
+			vertexBuff = i3d.createVertexBuffer(num, data32PerVertex);
 			upload();
 			}
 		}

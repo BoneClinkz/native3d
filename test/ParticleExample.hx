@@ -14,7 +14,7 @@ import lz.native3d.core.particle.ParticleWrapper;
 import lz.native3d.core.TextureSet;
 import lz.native3d.materials.ParticleMaterial;
 import lz.native3d.meshs.MeshUtils;
-import net.hires.debug.Stats;
+import lz.native3d.utils.Stats;
 
 /**
  * ...

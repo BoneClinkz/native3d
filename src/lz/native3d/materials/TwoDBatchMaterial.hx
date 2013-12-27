@@ -66,7 +66,7 @@ class TwoDBatchMaterial extends MaterialBase
 	}
 	
 	inline override public function draw(node:Node3D, pass:BasicPass3D):Void {
-		var c3d = pass.i3d.c3d;
+		var c3d = pass.i3d;
 		
 		nodes.length = 0;
 		var needUploadPos:Bool = false;
@@ -83,18 +83,18 @@ class TwoDBatchMaterial extends MaterialBase
 			if (xyzBuff.data.length != needLenX12) {
 				xyzBuff.num = needLen*4;
 				xyzBuff.data.length = needLenX12;
-				xyzBuff.vertexBuff = xyzBuff.i3d.c3d.createVertexBuffer(xyzBuff.num, 3);
+				xyzBuff.vertexBuff = xyzBuff.i3d.createVertexBuffer(xyzBuff.num, 3);
 			}
 			if (uvBuff.data.length != needLenX8) {
 				uvBuff.num = needLen*4;
 				uvBuff.data.length = needLenX8;
-				uvBuff.vertexBuff = uvBuff.i3d.c3d.createVertexBuffer(uvBuff.num, 2);
+				uvBuff.vertexBuff = uvBuff.i3d.createVertexBuffer(uvBuff.num, 2);
 			}
 			var indexLen:Int = 6 * needLen;
 			indexBuff.num = indexLen;
 			var lastIlen:Int = indexBuff.data.length;
 			indexBuff.data.length = indexLen;
-			indexBuff.indexBuff = indexBuff.i3d.c3d.createIndexBuffer(indexLen);
+			indexBuff.indexBuff = indexBuff.i3d.createIndexBuffer(indexLen);
 			for (i in Math.ceil(lastIlen/6)...needLen) {
 				var ni:Int = i * 4;
 				var n6:Int = i * 6;
@@ -153,9 +153,6 @@ class TwoDBatchMaterial extends MaterialBase
 		c3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, pass.camera.perspectiveProjectionMatirx, true);
 		c3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, fragment);
 		c3d.drawTriangles(indexBuff.indexBuff,0,nodes.length*2);
-		c3d.setVertexBufferAt(0,null, 0, xyzBuff.format);
-		c3d.setVertexBufferAt(1, null, 0, uvBuff.format);
-		c3d.setTextureAt(0, null);
 		
 		if(mouse2d.changed)mouse2d.nodes = mouse2d.nodes.concat(nodes);
 	}

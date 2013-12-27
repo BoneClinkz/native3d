@@ -70,8 +70,8 @@ class PhongMaterial extends MaterialBase
 		}
 		node.worldMatrix.copyRawDataTo(vertex, 0, true);
 		pass.camera.perspectiveProjectionMatirx.copyRawDataTo(vertex, 16, true);
-		c3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 0, vertex);
-		c3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, fragment);
+		i3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 0, vertex);
+		i3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, fragment);
 		
 		//buff
 		var xyz=null;
@@ -85,50 +85,37 @@ class PhongMaterial extends MaterialBase
 			norm=drawable.norm;
 			uv = drawable.uv;
 			
-			c3d.setVertexBufferAt(0, xyz.vertexBuff, 0, xyz.format);
+			i3d.setVertexBufferAt(0, xyz.vertexBuff, 0, xyz.format);
 			if (shader.DiffuseColor != null || shader.SpecularColor != null) {
-				c3d.setVertexBufferAt(1, norm.vertexBuff, 0, norm.format);
+				i3d.setVertexBufferAt(1, norm.vertexBuff, 0, norm.format);
 			}
 			if(diffuseTex!=null){
-				c3d.setVertexBufferAt(2, uv.vertexBuff, 0, uv.format);
-				c3d.setTextureAt(0, diffuseTex);
+				i3d.setVertexBufferAt(2, uv.vertexBuff, 0, uv.format);
+				i3d.setTextureAt(0, diffuseTex);
 			}
 			//draw
-			c3d.drawTriangles(drawable.indexBufferSet.indexBuff);
-			
-			//clear
-			c3d.setVertexBufferAt(0,null, 0, xyz.format);
-			if(norm!=null)c3d.setVertexBufferAt(1, null, 0, norm.format);
-			if(uv!=null)c3d.setVertexBufferAt(2, null, 0, uv.format);
-			c3d.setTextureAt(0, null);
+			i3d.drawTriangles(drawable.indexBufferSet.indexBuff);
 		}else {
 			node.frame = node.frame % skin.numFrame;
-			if(diffuseTex!=null){
-				c3d.setTextureAt(0, diffuseTex);
-			}
 			for(drawable in skin.draws){
+				if(diffuseTex!=null){
+					i3d.setTextureAt(0, diffuseTex);
+				}
 				xyz = drawable.xyz;
 				norm = drawable.norm;
 				weightBuff = drawable.weightBuff;
 				matrixBuff = drawable.matrixBuff;
 				uv = drawable.uv;
-				c3d.setVertexBufferAt(0, xyz.vertexBuff, 0, xyz.format);
-				c3d.setVertexBufferAt(1, norm.vertexBuff, 0, norm.format);
-				c3d.setVertexBufferAt(2, weightBuff.vertexBuff, 0, weightBuff.format);
-				c3d.setVertexBufferAt(3, matrixBuff.vertexBuff, 0, matrixBuff.format);
-				c3d.setVertexBufferAt(4, uv.vertexBuff, 0, uv.format);
+				i3d.setVertexBufferAt(0, xyz.vertexBuff, 0, xyz.format);
+				i3d.setVertexBufferAt(1, norm.vertexBuff, 0, norm.format);
+				i3d.setVertexBufferAt(2, weightBuff.vertexBuff, 0, weightBuff.format);
+				i3d.setVertexBufferAt(3, matrixBuff.vertexBuff, 0, matrixBuff.format);
+				i3d.setVertexBufferAt(4, uv.vertexBuff, 0, uv.format);
 				
 				var byteSet = drawable.cacheBytes[node.frame];
-				c3d.setProgramConstantsFromByteArray(Context3DProgramType.VERTEX, 9,byteSet.numRegisters,byteSet.data,0);
-				c3d.drawTriangles(drawable.indexBufferSet.indexBuff);
+				i3d.setProgramConstantsFromByteArray(Context3DProgramType.VERTEX, 9,byteSet.numRegisters,byteSet.data,0);
+				i3d.drawTriangles(drawable.indexBufferSet.indexBuff);
 			}
-			//clear
-			c3d.setVertexBufferAt(0,null, 0,null);
-			c3d.setVertexBufferAt(1, null, 0, null);
-			c3d.setVertexBufferAt(2, null, 0,null);
-			c3d.setVertexBufferAt(3, null, 0, null);
-			c3d.setVertexBufferAt(4, null, 0, null);
-			c3d.setTextureAt(0, null);
 			node.frame++;
 		}
 		
@@ -186,7 +173,7 @@ class PhongMaterial extends MaterialBase
 	}
 	
 	inline override public function draw(node:Node3D, pass:BasicPass3D):Void {
-		var c3d = pass.i3d.c3d;
+		var c3d = pass.i3d;
 		glslProgram.attach();
 		glslProgram.setVertexUniformFromMatrix("mpos", node.worldMatrix, true);
 		glslProgram.setVertexUniformFromMatrix("mproj", pass.camera.perspectiveProjectionMatirx, true);
@@ -208,7 +195,7 @@ class PhongMaterial extends MaterialBase
 		 if (glslProgram!=null) {
 			 return;
 		 }
-        glslProgram = new GLSLProgram(i3d.c3d);
+        glslProgram = new GLSLProgram(i3d);
         var vertexShaderSource =
        "
 	   attribute vec3 pos;

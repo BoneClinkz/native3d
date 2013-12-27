@@ -39,13 +39,13 @@ package lz.native3d.core ;
 		
 		public function pass(nodes:Vector<Node3D>):Void {
 			this.nodes = nodes;
-			if (clear) i3d.c3d.clear(0, 0, 0, 0);
+			if (clear) i3d.clear(0, 0, 0, 0);
 			if (customDraw==null) {
 				drawScene();
 			}else {
 				customDraw();
 			}
-			if(present)i3d.c3d.present();
+			if(present)i3d.present();
 		}
 		
 		public function drawScene():Void {

@@ -45,17 +45,15 @@ class SkyboxMaterial extends MaterialBase
 	inline override public function draw(node:Node3D, pass:BasicPass3D):Void {
 		super.draw(node, pass);
 		var xyz:VertexBufferSet = node.drawable.xyz;
-		c3d.setVertexBufferAt(0, xyz.vertexBuff, 0, xyz.format);
-		c3d.setTextureAt(0, texture);
-		c3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, node.worldMatrix, true);
-		c3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 4, pass.camera.perspectiveProjectionMatirx, true);
+		i3d.setVertexBufferAt(0, xyz.vertexBuff, 0, xyz.format);
+		i3d.setTextureAt(0, texture);
+		i3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, node.worldMatrix, true);
+		i3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 4, pass.camera.perspectiveProjectionMatirx, true);
 		vertex[0] = pass.camera.worldRawData[12];
 		vertex[1] = pass.camera.worldRawData[13];
 		vertex[2] = pass.camera.worldRawData[14];
-		c3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 8, vertex);
-		c3d.drawTriangles(node.drawable.indexBufferSet.indexBuff);
-		c3d.setVertexBufferAt(0,null, 0, xyz.format);
-		c3d.setTextureAt(0, null);
+		i3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 8, vertex);
+		i3d.drawTriangles(node.drawable.indexBufferSet.indexBuff);
 	}
 	override public function init(node:Node3D):Void {
 		node.drawable.xyz.init();
@@ -95,7 +93,7 @@ class SkyboxMaterial extends MaterialBase
 	}
 	inline override public function draw(node:Node3D, pass:BasicPass3D):Void {
 		//super.draw(node, pass);
-		var c3d = pass.i3d.c3d;
+		var c3d = pass.i3d;
 		glslProgram.attach();
 		glslProgram.setVertexUniformFromMatrix("mpos", node.worldMatrix, true);
 		glslProgram.setVertexUniformFromMatrix("mproj", pass.camera.perspectiveProjectionMatirx, true);
@@ -114,7 +112,7 @@ class SkyboxMaterial extends MaterialBase
 		if (glslProgram!=null) {
 			 return;
 		}
-         glslProgram = new GLSLProgram(i3d.c3d);
+         glslProgram = new GLSLProgram(i3d);
        var vertexShaderSource =
        "
 	   attribute vec3 pos;
