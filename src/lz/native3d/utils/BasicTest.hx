@@ -49,9 +49,7 @@ class BasicTest extends Sprite
 		bv.instance3Ds[0].addEventListener(Event.CONTEXT3D_CREATE, context3dCreate);
 		addChild(bv);
 		#if flash
-			#if !swc
 			addChild(new Stats());
-			#end
 		loading = new TextField();
 		loading.autoSize = TextFieldAutoSize.LEFT;
 		addChild(loading);

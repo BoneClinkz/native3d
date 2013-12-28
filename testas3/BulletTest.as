@@ -15,7 +15,6 @@ package
 	import lz.native3d.materials.PhongMaterial;
 	import lz.native3d.meshs.MeshUtils;
 	import lz.native3d.utils.BasicTest;
-	import net.hires.debug.Stats;
 	import org.bulletphysics.btAxisSweep3;
 	import org.bulletphysics.btBoxShape;
 	import org.bulletphysics.btBvhTriangleMeshShape;
@@ -60,7 +59,6 @@ package
 				return;
 			}
 			CModule.startAsync(this);
-			addChild(new Stats);
 			createWorld();
 			ctrl.position.setTo(-90, 107, -68);
 			ctrl.rotation.setTo(43, 55,0);

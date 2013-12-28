@@ -61,6 +61,7 @@ class PhongShader extends Shader
 				
 				wpos = wpos2;
 			}
+			out = wpos * gl_ModelViewMatrix * gl_ProjectionMatrix;
 			
 			if(DiffuseColor!=null||SpecularColor!=null){
 				var eyespacePos   = (wpos.xyz*gl_ModelViewMatrix).xyz;
@@ -71,7 +72,6 @@ class PhongShader extends Shader
 				ViewVec            = normalize( -eyespacePos);
 				ReflectedLightVec  = normalize(2* dot(lightVec, surfaceNormal)* surfaceNormal-lightVec);
 			}
-			out = wpos * gl_ModelViewMatrix * gl_ProjectionMatrix;
 			if (hasDiffuseTex) {
 				UV = input.gl_UV;
 			}

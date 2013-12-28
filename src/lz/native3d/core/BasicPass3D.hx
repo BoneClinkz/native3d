@@ -11,6 +11,7 @@ package lz.native3d.core ;
 	import lz.native2d.Layer2D;
 	import lz.native3d.materials.MaterialBase;
 	import lz.native3d.materials.TwoDBatchMaterial;
+	import lz.native3d.materials.TwoDBatchShader;
 	/**
 	 * ...
 	 * @author lizhi http://matrix3d.github.io/
@@ -68,7 +69,10 @@ package lz.native3d.core ;
 			}
 			image2d.setScale(width, -height);
 			image2d.texture = texture;
-			layer.material= new TwoDBatchMaterial(texture, i3d,colorMul);
+			var shader:TwoDBatchShader = untyped layer.material.shader;
+			shader.colorMul = layer.material.arr2ve3(colorMul);
+			untyped layer.material.texture = texture;
+			layer.material.build();
 			image2d.x = x + width / 2;
 			image2d.y = y + height / 2;
 			pass2d.camera.resize(i3d.width, i3d.height);

@@ -1,6 +1,8 @@
 package ;
 import flash.display.BitmapData;
 import flash.display.Sprite;
+import flash.display.StageAlign;
+import flash.display.StageScaleMode;
 import flash.display3D.Context3DTextureFormat;
 import flash.display3D.Context3DTriangleFace;
 import flash.events.Event;
@@ -90,7 +92,8 @@ class TwoDFromSwfExample extends Sprite
 	}
 	
 	private function context3dCreate(e:Event):Void 
-	{	
+	{
+		TwoDBatchMaterial.mouse2d.init(stage);
 		var textureset:TextureSet = new TextureSet(bv.instance3Ds[0]);
 		textureset.setBmd(loader.bmd,Context3DTextureFormat.BGRA);
 		layer = new Layer2D(true, textureset.texture, bv.instance3Ds[0]);
@@ -339,7 +342,7 @@ class TwoDFromSwfExample extends Sprite
 			}
 		}
 		
-		boundWrapper.graphics.clear();
+		/*boundWrapper.graphics.clear();
 		boundWrapper.graphics.lineStyle(0, 0xff0000);
 		boundWrapper.graphics.moveTo(tank.mc.x, tank.mc.y);
 		var x1 = tank.mc.x + 1000 * Math.cos((tank.turret.rotationZ-90)*Math.PI/180);
@@ -348,7 +351,7 @@ class TwoDFromSwfExample extends Sprite
 		world.ray.raycast(tank.mc.x, tank.mc.y, x1, y1,rayFilterBox);
 		for (box in world.ray.castboxs) {
 			boundWrapper.graphics.drawRect(box.aabb.left, box.aabb.top, box.aabb.width, box.aabb.height);
-		}
+		}*/
 	}
 	
 	public static function main():Void {

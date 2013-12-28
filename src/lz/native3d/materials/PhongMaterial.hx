@@ -114,7 +114,7 @@ class PhongMaterial extends MaterialBase
 				
 				var byteSet = drawable.cacheBytes[node.frame];
 				i3d.setProgramConstantsFromByteArray(Context3DProgramType.VERTEX, 9,byteSet.numRegisters,byteSet.data,0);
-				i3d.drawTriangles(drawable.indexBufferSet.indexBuff);
+				i3d.drawTriangles(drawable.indexBufferSet.indexBuff); 
 			}
 			node.frame++;
 		}

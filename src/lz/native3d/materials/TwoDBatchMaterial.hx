@@ -52,7 +52,7 @@ class TwoDBatchMaterial extends MaterialBase
 		destinationFactor = Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
 		culling = Context3DTriangleFace.NONE;
 		this.texture = texture;
-		var shader = new IShader();
+		var shader = new TwoDBatchShader();
 		this.shader = shader;
 		shader.colorMul = arr2ve3(colorMul);
 		build();
@@ -187,32 +187,4 @@ class TwoDBatchMaterial extends MaterialBase
 		}
 	}
 	
-}
-
-private class IShader extends Shader {
-	static var SRC = {
-		var input: {
-			pos : Float3,
-			uv : Float2,
-		}
-		var uv:Float2;
-		function vertex(mproj:M44) {
-			out = input.pos.xyzw * mproj;
-			uv = input.uv;
-		}
-		var colorMul:Float4;
-		function fragment(tex:Texture) {
-			if (colorMul != null) {
-				out = tex.get(uv, wrap)*colorMul;
-			}else {
-				out = tex.get(uv, wrap);
-			}
-		}
-	};
-	public var i:ShaderInstance;
-	public function create(c:Context3D):Void {
-		i = getInstance();
-		i.program = c.createProgram();
-		i.program.upload(i.vertexBytes.getData(), i.fragmentBytes.getData());
-	}
 }

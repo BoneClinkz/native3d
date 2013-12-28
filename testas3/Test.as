@@ -1,6 +1,7 @@
 package  
 {
 	import lz.native3d.utils.BasicTest;
+	import lz.native3d.utils.Stats;
 	/**
 	 * ...
 	 * @author lizhi http://matrix3d.github.io/
@@ -24,6 +25,7 @@ package
 			addSky();
 			
 			ctrl.position.z = -1300;
+			addChild(new Stats);
 		}
 		
 	}

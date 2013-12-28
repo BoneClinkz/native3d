@@ -18,6 +18,7 @@ class Stats extends Sprite
 	var fpsCounter:Int = 0;
 	var fps:Int = 0;
 	var lastTime:Int = -10000;
+	var maxMem:Int = 0;
 	public function new() 
 	{
 		super();
@@ -54,8 +55,13 @@ class Stats extends Sprite
 				text += "\ndriver:\t" + info;
 			}
 		}
-		text += "\nfps:\t" + fps+" / "+Lib.current.stage.frameRate;
-		text += "\nmem:\t" + Std.int(System.totalMemoryNumber/1024/1024)+" / "+Std.int(System.privateMemory/1024/1024);
+		text += "\nfps:\t" + fps + " / " ;
+		if (stage!=null) {
+			text +=  stage.frameRate;
+		}
+		var mem = Std.int(System.totalMemoryNumber / 1024 / 1024);
+		if (mem > maxMem) maxMem = mem;
+		text += "\nmem:\t" + mem+" / "+maxMem;
 		tf.text = text;
 		
 		graphics.clear();

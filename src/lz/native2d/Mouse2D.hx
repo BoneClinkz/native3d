@@ -1,4 +1,5 @@
 package lz.native2d;
+import flash.display.Stage;
 import flash.events.MouseEvent;
 import flash.geom.Vector3D;
 import flash.Lib;
@@ -11,6 +12,7 @@ import lz.native3d.core.Node3D;
  */
 class Mouse2D
 {
+	var stage:Stage;
 	public var nodes:Vector<Node3D>;
 	public var mousePos:Vector3D;
 	public var lastMouseNodes:Vector<Node3D>;
@@ -22,10 +24,13 @@ class Mouse2D
 		nodes = new Vector<Node3D>();
 		lastMouseNodes = new Vector<Node3D>();
 		mouseNodes = new Vector<Node3D>();
-		Lib.current.stage.addEventListener(MouseEvent.MOUSE_MOVE, stage_mouseevent);
-		Lib.current.stage.addEventListener(MouseEvent.CLICK, stage_mouseevent);
-		Lib.current.stage.addEventListener(MouseEvent.MOUSE_DOWN, stage_mouseevent);
-		Lib.current.stage.addEventListener(MouseEvent.MOUSE_UP, stage_mouseevent);
+	}
+	
+	public function init(stage:Stage):Void {
+		stage.addEventListener(MouseEvent.MOUSE_MOVE, stage_mouseevent);
+		stage.addEventListener(MouseEvent.CLICK, stage_mouseevent);
+		stage.addEventListener(MouseEvent.MOUSE_DOWN, stage_mouseevent);
+		stage.addEventListener(MouseEvent.MOUSE_UP, stage_mouseevent);
 	}
 	
 	private function stage_mouseevent(e:MouseEvent):Void 
