@@ -41,7 +41,6 @@ package
 			}
 		}
 		
-		
 		private function loader_complete(e:Event):void 
 		{
 			bv = new BasicView(200, 200, true);

@@ -20,6 +20,10 @@ Tools
 2. [blender](http://matrix3d.github.io/as3/2013/12/18/blendexporter/)
 3. [particle](http://matrix3d.github.io/as3/2013/12/14/particleeditor/)
 4. [sprite sheet](https://github.com/matrix3d/ImageTool/blob/master/out/production/ImageTool/ImageTool.air)
+	
+Documents
+--------
+1. [wiki](https://github.com/matrix3d/native3d/wiki/_pages)
 
 ``` as
 var n:Native3D;
