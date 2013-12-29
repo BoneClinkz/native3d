@@ -30,10 +30,10 @@ class SkeletonAnimationExample extends BasicTest
 		ctrl.rotation.setTo(24, 190, 0);
 		ctrl.speed = 1;
 		
-		var tset = new TextureSet(bv.instance3Ds[0]);
+		var tset = new TextureSet();
 		tset.setBmd(new BitmapData(1024, 1024,true,0), Context3DTextureFormat.BGRA, true);
 		textureA = tset.texture;
-		tset = new TextureSet(bv.instance3Ds[0]);
+		tset = new TextureSet();
 		tset.setBmd(new BitmapData(1024, 1024,true,0), Context3DTextureFormat.BGRA, true);
 		textureB = tset.texture;
 		

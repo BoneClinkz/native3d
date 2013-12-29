@@ -94,9 +94,9 @@ class TwoDFromSwfExample extends Sprite
 	private function context3dCreate(e:Event):Void 
 	{
 		TwoDBatchMaterial.mouse2d.init(stage);
-		var textureset:TextureSet = new TextureSet(bv.instance3Ds[0]);
+		var textureset:TextureSet = new TextureSet();
 		textureset.setBmd(loader.bmd,Context3DTextureFormat.BGRA);
-		layer = new Layer2D(true, textureset.texture, bv.instance3Ds[0]);
+		layer = new Layer2D(true, textureset.texture);
 		cast(layer.material , TwoDBatchMaterial).gchanged = true;
 		
 		mapboundloader = LoaderCell.createUrlLoader("../assets/map/objs.json", null);
@@ -104,20 +104,20 @@ class TwoDFromSwfExample extends Sprite
 		mapboundloader.start();
 		
 		//init2d
-		bv.instance3Ds[0].passs[0].camera = new Camera3D(200, 200, bv.instance3Ds[0], true,.999999);
+		bv.instance3Ds[0].passs[0].camera = new Camera3D(200, 200, true,.999999);
 		
 		//init3d
 		bv.instance3Ds[0].passs[0].present = false;
-		var pass:BasicPass3D = new BasicPass3D(bv.instance3Ds[0]);
+		var pass:BasicPass3D = new BasicPass3D();
 		pass.rootIndex = 1;
 		pass.clear = false;
-		pass.camera = new Camera3D(100, 100, bv.instance3Ds[0]);
+		pass.camera = new Camera3D(100, 100);
 		pass.camera.z = -1000;
 		var root3d:Node3D = new Node3D();
 		bv.instance3Ds[0].roots.push(root3d);
 		bv.instance3Ds[0].passs.push(pass);
 		
-		var	cubeDrawable=MeshUtils.createCube(1,bv.instance3Ds[0]);
+		var	cubeDrawable=MeshUtils.createCube(1);
 		var node:Node3D = new Node3D();
 		node.setPosition(0, 200, 0);
 		node.setRotation(0, 0, 0);
@@ -128,7 +128,7 @@ class TwoDFromSwfExample extends Sprite
 		root3d.add(light);
 		bv.instance3Ds[0].lights.push(light);
 		light.setPosition( -100,100,-1000);
-		node.material = new PhongMaterial(bv.instance3Ds[0], light,
+		node.material = new PhongMaterial(
 		[.2, .2, .2],//AmbientColor
 		[Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5],//DiffuseColor
 		[.8,.8,.8],//SpecularColor
@@ -153,9 +153,9 @@ class TwoDFromSwfExample extends Sprite
 	private function maploader_complete(e:Event):Void 
 	{
 		mapb = maploader.getImage();
-		var textureset:TextureSet = new TextureSet(bv.instance3Ds[0]);
+		var textureset:TextureSet = new TextureSet();
 		textureset.setBmd(mapb, Context3DTextureFormat.BGRA);
-		maplayer = new Layer2D(true, textureset.texture, bv.instance3Ds[0]);
+		maplayer = new Layer2D(true, textureset.texture);
 		bv.instance3Ds[0].root.add(maplayer);
 		bv.instance3Ds[0].root.add(layer);
 		var map:Image2D = new Image2D(null, new Point(mapb.width, mapb.height));
@@ -215,9 +215,9 @@ class TwoDFromSwfExample extends Sprite
 	
 	private function ui_loader_complete(e:Event):Void 
 	{
-		var textureset:TextureSet = new TextureSet(bv.instance3Ds[0]);
+		var textureset:TextureSet = new TextureSet();
 		textureset.setBmd(uiloader.bmd,Context3DTextureFormat.BGRA);
-		var uilayer = new Layer2D(true, textureset.texture, bv.instance3Ds[0]);
+		var uilayer = new Layer2D(true, textureset.texture);
 		uilayer.x = 200;
 		cast(uilayer.material , TwoDBatchMaterial).gchanged = true;
 		bv.instance3Ds[0].root.add(uilayer);

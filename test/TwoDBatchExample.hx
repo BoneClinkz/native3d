@@ -61,10 +61,10 @@ class TwoDBatchExample extends Sprite
 	
 	private function context3dCreate(e:Event):Void 
 	{
-		var textureset:TextureSet = new TextureSet(bv.instance3Ds[0]);
+		var textureset:TextureSet = new TextureSet();
 		
 		textureset.setBmd(bmd,Context3DTextureFormat.BGRA);
-		var layer:Layer2D = new Layer2D(true, textureset.texture, bv.instance3Ds[0]);
+		var layer:Layer2D = new Layer2D(true, textureset.texture);
 		bv.instance3Ds[0].root.add(layer);
 		var td:TDSpriteData = TDSpriteData.create1(bmd, xml, center);
 		image = new Image2D(null, new Point(bmd.width, bmd.height));

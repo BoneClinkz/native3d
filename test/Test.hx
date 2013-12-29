@@ -16,8 +16,8 @@ import lz.native3d.materials.PhongMaterial;
 import lz.native3d.parsers.AbsParser;
 import lz.native3d.parsers.BSP30Parser;
 import lz.native3d.parsers.ColladaParser;
+import lz.native3d.utils.Stats;
 import lz.net.LoaderBat;
-import net.hires.debug.Stats;
 
 /**
  * ...
@@ -64,7 +64,7 @@ class Test extends Sprite
 	{
 		node = new Node3D();
 		node.drawable = parser.drawable;
-		node.material = new PhongMaterial(bv.instance3Ds[0], new BasicLight3D(), new Vector3D(), new Vector3D(), new Vector3D());// new ColorMaterial(Std.random(0xffffff), Std.random(0xffffff), new BasicLight3D());
+		node.material = new PhongMaterial([1,1,1],[1,1,1],[1,1,1]);// new ColorMaterial(Std.random(0xffffff), Std.random(0xffffff), new BasicLight3D());
 		bv.instance3Ds[0].root.add(node);
 	}
 	

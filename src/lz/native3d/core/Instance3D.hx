@@ -30,6 +30,8 @@ package lz.native3d.core ;
 	 */
 	class Instance3D extends EventDispatcher
 	{
+		public static var current:Instance3D;
+		
 		var nodess:Vector<Vector<Node3D>>;
 		public static var _instances:Vector<Instance3D>=new Vector<Instance3D>();
 		public var context:Context3D;
@@ -54,6 +56,7 @@ package lz.native3d.core ;
 		public function new() 
 		{
 			super();
+			current = this;
 			lastBuffs = new Array<VertexBuffer3D>();
 			nowBuffs = new Array<VertexBuffer3D>();
 			buffsFormats=new Array<Context3DVertexBufferFormat>();
@@ -61,7 +64,7 @@ package lz.native3d.core ;
 			lastTextures = new Array<TextureBase>();
 			nowTextures = new Array<TextureBase>();
 			root = new Node3D();
-			camera = new Camera3D(width,height,this);
+			camera = new Camera3D(width,height);
 			 doTransform = new BasicDoTransform3D();
 			 passs = new Vector<BasicPass3D>();
 			 lights = new Vector<BasicLight3D>();
@@ -75,7 +78,7 @@ package lz.native3d.core ;
 		
 		public function init(c3d:Context3D):Void {
 			context = c3d;
-			passs.push(new BasicPass3D(this));
+			passs.push(new BasicPass3D());
 			resize(width, height);
 			dispatchEvent(new Event(Event.CONTEXT3D_CREATE));
 		}

@@ -39,7 +39,6 @@ class ParticleMaterial extends MaterialBase
 	public var lifeVar:Float;
 	public var life:Float;
 	public function new(
-		i3d:Instance3D,
 		texture:TextureBase,
 		life:Float=1000,
 		lifeVar:Float=0,
@@ -59,7 +58,6 @@ class ParticleMaterial extends MaterialBase
 	) 
 	{
 		super();
-		this.i3d = i3d;
 		this.timeVarRandom = timeVarRandom;
 		sourceFactor = Context3DBlendFactor.SOURCE_ALPHA;
 		destinationFactor = Context3DBlendFactor.ONE;
@@ -106,7 +104,6 @@ class ParticleMaterial extends MaterialBase
 		var shader:ParticleShader = untyped this.shader;
 		var drawable:ParticleDrawable3D = untyped node.drawable;
 		
-		var offset = drawable.offset;
 		var uv = drawable.uv;
 		var timeLifeVariance=drawable.timeLifeVariance;
 		var startPosVariance=drawable.startPosVariance;
@@ -116,7 +113,6 @@ class ParticleMaterial extends MaterialBase
 		var endColorVariance=drawable.endColorVariance;
 		var i = 0;
 		
-		i3d.setVertexBufferAt(i++, offset.vertexBuff, 0, offset.format);
 		i3d.setVertexBufferAt(i++, uv.vertexBuff, 0, uv.format);
 		if (shader.hasTimeLifeVariance) {
 			i3d.setVertexBufferAt(i++, timeLifeVariance.vertexBuff, 0, timeLifeVariance.format);

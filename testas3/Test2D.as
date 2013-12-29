@@ -51,12 +51,12 @@ package
 		private function instance3Ds_context3dCreate(e:Event):void 
 		{
 			addChild(new Stats);
-			var textureset:TextureSet = new TextureSet(bv.instance3Ds[0]);
+			var textureset:TextureSet = new TextureSet();
 			textureset.setBmd(loader.bmd,Context3DTextureFormat.BGRA);
-			layer = new Layer2D(true, textureset.texture, bv.instance3Ds[0]);
+			layer = new Layer2D(true, textureset.texture);
 			(layer.material as TwoDBatchMaterial).gchanged = true;
 			bv.instance3Ds[0].root.add(layer);
-			bv.instance3Ds[0].passs[0].camera = new Camera3D(200, 200, bv.instance3Ds[0], true,.999999);
+			bv.instance3Ds[0].passs[0].camera = new Camera3D(200, 200, true,.999999);
 			initModel();
 			addEventListener(Event.ENTER_FRAME, enterFrame);
 		}

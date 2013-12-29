@@ -34,12 +34,11 @@ private class SkyShader extends Shader {
 class SkyboxMaterial extends MaterialBase
 {
 	public var texture:TextureBase;
-	public function new(i3d:Instance3D,texture:TextureBase) 
+	public function new(texture:TextureBase) 
 	{
 		super();
 		shader = new SkyShader();
 		this.texture = texture;
-		this.i3d = i3d;
 		build();
 	}
 	inline override public function draw(node:Node3D, pass:BasicPass3D):Void {

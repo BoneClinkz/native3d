@@ -12,18 +12,16 @@ package lz.native3d.core ;
 		private var start:Int;
 		public var data:Vector<UInt>;
 		public var indexBuff:IndexBuffer3D;
-		public var i3d:Instance3D;
 		
-		public function new(num:Int,data:Vector<UInt>,start:Int,i3d:Instance3D) 
+		public function new(num:Int,data:Vector<UInt>,start:Int) 
 		{
 			this.start = start;
 			this.num = num;
 			this.data = data;
-			this.i3d = i3d;
 		}
 		public function init():Void {
 			if(indexBuff==null){
-			indexBuff = i3d.createIndexBuffer(num);
+			indexBuff = Instance3D.current.createIndexBuffer(num);
 			upload();
 			}
 		}

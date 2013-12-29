@@ -26,40 +26,21 @@ class PhongShader extends Shader
 		//gl_NormalMatrix:M44,
 		var gl_ProjectionMatrix:M44;
 		var LightPosition:Float3;
-		var anmMats:Float4<117>;
-		//var anmMats:Array<Float4>;
+		var anmMats:M34<39>;
+		var test:Param < {
+			var dirs:Array<Float4>;
+		}>;
 		var hasAnm:Bool;
 		function vertex() {
+			for (p in test.dirs) {
+				
+			}
 			var wpos:Float4 = input.gl_Vertex.xyzw;
-			if(hasAnm!=null){
-				var t = input.matrixIndex.x;
-				wpos.x = dp4(input.gl_Vertex.xyzw, anmMats[t]);
-				t+=1;
-				wpos.y = dp4(input.gl_Vertex.xyzw, anmMats[t]);
-				t +=1;
-				wpos.z = dp4(input.gl_Vertex.xyzw, anmMats[t]);
-				wpos.w = input.gl_Vertex.w;
-				var wpos2 = wpos*input.weight.x;
-				
-				t = input.matrixIndex.y;
-				wpos.x = dp4(input.gl_Vertex.xyzw, anmMats[t]);
-				t +=1;
-				wpos.y = dp4(input.gl_Vertex.xyzw, anmMats[t]);
-				t +=1;
-				wpos.z = dp4(input.gl_Vertex.xyzw, anmMats[t]) ;
-				wpos.w = input.gl_Vertex.w;
-				wpos2 += wpos * input.weight.y;
-				
-				t = input.matrixIndex.z;
-				wpos.x = dp4(input.gl_Vertex.xyzw, anmMats[t]);
-				t +=1;
-				wpos.y = dp4(input.gl_Vertex.xyzw, anmMats[t]);
-				t +=1;
-				wpos.z = dp4(input.gl_Vertex.xyzw, anmMats[t]) ;
-				wpos.w = input.gl_Vertex.w;
-				wpos2 += wpos * input.weight.z;
-				
-				wpos = wpos2;
+			if (hasAnm != null) {
+				wpos.xyz = 
+					wpos * input.weight.x * anmMats[input.matrixIndex.x ] 
+					+ wpos * input.weight.y * anmMats[input.matrixIndex.y] 
+					+ wpos * input.weight.z * anmMats[input.matrixIndex.z];
 			}
 			out = wpos * gl_ModelViewMatrix * gl_ProjectionMatrix;
 			

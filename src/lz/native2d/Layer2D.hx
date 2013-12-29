@@ -11,13 +11,13 @@ import lz.native3d.materials.TwoDBatchMaterial;
 class Layer2D extends Node2D
 {
 	public var isBatch:Bool;
-	public function new(isBatch:Bool,texture:TextureBase,i3d:Instance3D) 
+	public function new(isBatch:Bool,texture:TextureBase) 
 	{
 		super();
 		this.isBatch = isBatch;
 		if (isBatch) {
 			drawable = new Drawable3D();
-			material = new TwoDBatchMaterial(texture, i3d);
+			material = new TwoDBatchMaterial(texture);
 		}
 	}
 	

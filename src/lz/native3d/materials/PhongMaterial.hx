@@ -7,6 +7,7 @@ import flash.display3D.Context3DProgramType;
 import flash.display3D.Program3D;
 import flash.display3D.textures.TextureBase;
 import flash.errors.Error;
+import flash.geom.Matrix3D;
 import flash.geom.Vector3D;
 import flash.Lib;
 import flash.Vector;
@@ -26,13 +27,11 @@ import lz.native3d.core.VertexBufferSet;
  */
 class PhongMaterial extends MaterialBase
 {
-	private var lightNode:BasicLight3D;
 	public var diffuseTex:TextureBase;
 	public var skin:Skin;
-	public function new(i3d:Instance3D,lightNode:BasicLight3D,AmbientColor:Array<Float>,DiffuseColor:Array<Float>,SpecularColor:Array<Float>,SpecularExponent:Float=200,diffuseTex:TextureBase=null,skin:Skin=null) 
+	public function new(AmbientColor:Array<Float>,DiffuseColor:Array<Float>,SpecularColor:Array<Float>,SpecularExponent:Float=200,diffuseTex:TextureBase=null,skin:Skin=null) 
 	{
 		super();
-		this.i3d = i3d;
 		if (DiffuseColor[3]>0) {//有透明度
 			sourceFactor = Context3DBlendFactor.SOURCE_ALPHA;
 			destinationFactor = Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
@@ -44,18 +43,16 @@ class PhongMaterial extends MaterialBase
 		shader.DiffuseColor = arr2ve3(DiffuseColor);
 		shader.SpecularColor = arr2ve3(SpecularColor);
 		shader.SpecularExponent = SpecularExponent;
-		shader.LightPosition = lightNode.position;
+		shader.LightPosition = i3d.lights[0].position;// lightNode.position;
 		
 		this.diffuseTex = diffuseTex;
 		if(diffuseTex!=null)shader.DiffuseTex = diffuseTex;
 		shader.hasDiffuseTex = diffuseTex != null;
-		
+		//trace(shader.getDebugShaderCode(true));
 		this.skin = skin;
-		if(skin!=null)shader.anmMats = [new Vector3D(100,101,102,103)];
+		if (skin != null) shader.anmMats = [];
 		shader.hasAnm = skin != null;
 		build();
-		
-		this.lightNode = lightNode;
 	}
 	
 	inline override public function draw(node:Node3D, pass:BasicPass3D):Void {
@@ -64,9 +61,10 @@ class PhongMaterial extends MaterialBase
 		//const
 		var shader:PhongShader =untyped this.shader;
 		if (shader.DiffuseColor != null || shader.SpecularColor != null) {
-			vertex[32] = lightNode.worldRawData[12];
-			vertex[33] = lightNode.worldRawData[13];
-			vertex[34] = lightNode.worldRawData[14];
+			var wrd = i3d.lights[0].worldRawData;
+			vertex[32] = wrd[12];
+			vertex[33] = wrd[13];
+			vertex[34] = wrd[14];
 		}
 		node.worldMatrix.copyRawDataTo(vertex, 0, true);
 		pass.camera.perspectiveProjectionMatirx.copyRawDataTo(vertex, 16, true);

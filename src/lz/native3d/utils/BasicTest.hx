@@ -101,7 +101,7 @@ class BasicTest extends Sprite
 	public function addCube(parent:Node3D=null,x:Float=0,y:Float=0,z:Float=0,rotationX:Float=0,rotationY:Float=0,rotationZ:Float=0,scaleX:Float=1,scaleY:Float=1,scaleZ:Float=1):Node3D {
 		if (parent == null) parent = root3d;
 		if (cubeDrawable==null) {
-			cubeDrawable=MeshUtils.createCube(1,bv.instance3Ds[0]);
+			cubeDrawable=MeshUtils.createCube(1);
 		}
 		var node:Node3D = new Node3D();
 		node.setPosition(x, y, z);
@@ -109,7 +109,7 @@ class BasicTest extends Sprite
 		node.setScale(scaleX, scaleY, scaleZ);
 		node.drawable = cubeDrawable;
 		parent.add(node);
-		node.material = new PhongMaterial(bv.instance3Ds[0], light,
+		node.material = new PhongMaterial(
 		[.2, .2, .2],//AmbientColor
 		[Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5],//DiffuseColor
 		[.8,.8,.8],//SpecularColor
@@ -145,8 +145,8 @@ class BasicTest extends Sprite
 	private function sky_loader_complete(e:Event):Void 
 	{
 		var loader:LoaderBat = cast(e.currentTarget, LoaderBat);
-		var drawable:Drawable3D = MeshUtils.createCube(2000,bv.instance3Ds[0],true);
-		var textureset:TextureSet = new TextureSet(bv.instance3Ds[0]);
+		var drawable:Drawable3D = MeshUtils.createCube(2000,true);
+		var textureset:TextureSet = new TextureSet();
 		textureset.createCubeTextureBy6Bitmap([
 			getImage("px",loader),
 			getImage("nx",loader),
@@ -159,7 +159,7 @@ class BasicTest extends Sprite
 		bv.instance3Ds[0].root.add(skybox);
 		skybox.drawable = drawable;
 		skybox.material = 
-		new SkyboxMaterial(bv.instance3Ds[0],textureset.texture);
+		new SkyboxMaterial(textureset.texture);
 	}
 	
 	#if flash
@@ -179,7 +179,7 @@ class BasicTest extends Sprite
 	}
 	
 	public function addDae():Void {
-		var parser = new ColladaParser(null,light);
+		var parser = new ColladaParser(null);
 		parser.addEventListener(Event.COMPLETE, dae_parser_complete);
 		parser.fromUrlZip("../assets/model/astroBoy_walk_Max.zip", "astroBoy_walk_Max.xml","boy_10.jpg");
 		//parser.fromUrlZip("../assets/model/astroBoy_walk_Max.zip", "10_box_still_maya.xml","boy_10.jpg");

@@ -35,6 +35,7 @@ import flash.display3D.Context3DCompareMode;
 		passCompareMode = Context3DCompareMode.LESS;
 		culling = Context3DTriangleFace.FRONT;
 		#end
+		i3d = Instance3D.current;
 	}
 	
 	public function build():Void {

@@ -15,13 +15,13 @@ class PickPass extends BasicPass3D
 	public var targetBmd:BitmapData;
 	public var nodeId:Int = 0;
 	public var mouseNode:Node3D;
-	public function new(i3d:Instance3D) 
+	public function new() 
 	{
-		super(i3d);
+		super();
 		rawdata = new Vector<Float>(16);
 		targetBmd = new BitmapData(1, 1, false);
 		material = new IDMaterial();
-		camera = new Camera3D(400, 400,i3d);
+		camera = new Camera3D(400, 400);
 		camera.frustumPlanes = null;
 	}
 	

@@ -167,19 +167,19 @@ class ObjParser extends AbsParser
 			}
 			
 			var drawable:Drawable3D = new Drawable3D();
-			drawable.indexBufferSet = new IndexBufferSet(index.length, index, 0,i3d);
-			drawable.xyz = new VertexBufferSet(untyped(newv.length/3), 3, newv, 0,i3d);
-			drawable.uv = new VertexBufferSet(untyped(newvt.length/2), 2, newvt, 0,i3d);
-			drawable.norm = new VertexBufferSet(untyped(newnt.length/3), 3, newnt, 0,i3d);
+			drawable.indexBufferSet = new IndexBufferSet(index.length, index, 0);
+			drawable.xyz = new VertexBufferSet(untyped(newv.length/3), 3, newv, 0);
+			drawable.uv = new VertexBufferSet(untyped(newvt.length/2), 2, newvt, 0);
+			drawable.norm = new VertexBufferSet(untyped(newnt.length/3), 3, newnt, 0);
 			MeshUtils.computeNorm(drawable);
 			node.node.drawable = drawable;
 			node.node.material = 
-			new PhongMaterial(i3d, light,
+			new PhongMaterial(
 				[.2, .2, .2],//AmbientColor
 				[.5,.5,.5],//DiffuseColor
 				[.8,.8,.8],//SpecularColor
 				200,
-				TextureSet.getTempTexture(i3d)
+				TextureSet.getTempTexture()
 				);
 			this.node.add(node.node);
 		}
@@ -202,15 +202,15 @@ class ObjParser extends AbsParser
 			if (image == null) {
 				continue;
 			}
-			var set:TextureSet = new TextureSet(i3d);
+			var set:TextureSet = new TextureSet();
 			set.setBmd(image, Context3DTextureFormat.BGRA);
 			 cast(mit2node.get(key).node.material, PhongMaterial).diffuseTex = set.texture;
 		}
 	}
 	
 	private function getTexture(mtl:String):TextureBase {
-		return TextureSet.getTempTexture(i3d);
-		var texture:TextureSet = new TextureSet(i3d);
+		return TextureSet.getTempTexture();
+		var texture:TextureSet = new TextureSet();
 		return texture.texture;
 	}
 	

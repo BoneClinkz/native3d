@@ -20,12 +20,10 @@ package lz.native3d.core ;
 		private var ttexture:Texture;
 		
 		private static var tempTexture:TextureBase;
-		public var i3d:Instance3D;
 		public var width:Int;
 		public var height:Int;
-		public function new(i3d:Instance3D) 
+		public function new() 
 		{
-			this.i3d = i3d;
 		}
 		
 		/*public function get bmd():BitmapData 
@@ -56,7 +54,7 @@ package lz.native3d.core ;
 				}
 			}
 			
-			texture = i3d.createTexture(w, h, Context3DTextureFormat.BGRA, optimizeForRenderToTexture,streamingLevels);
+			texture = Instance3D.current.createTexture(w, h, Context3DTextureFormat.BGRA, optimizeForRenderToTexture,streamingLevels);
 			ttexture = cast( texture,Texture);
 			
 			var level 		: Int 			= 0;
@@ -91,7 +89,7 @@ package lz.native3d.core ;
 		
 		public function createCubeTextureBy6Bitmap( _bitmapDatas:Array<BitmapData>) : Void {
 			var _size:UInt = _bitmapDatas[0].width;
-			var _resource:CubeTexture = i3d.createCubeTexture(_size, Context3DTextureFormat.BGRA, true);
+			var _resource:CubeTexture = Instance3D.current.createCubeTexture(_size, Context3DTextureFormat.BGRA, true);
 			
 			for ( side in 0...6)
 			{
@@ -118,11 +116,11 @@ package lz.native3d.core ;
 		}
 		
 		
-		public static function getTempTexture(i3d:Instance3D):TextureBase {
+		public static function getTempTexture():TextureBase {
 			if (tempTexture == null) {
 				var bmd:BitmapData = new BitmapData(128, 128, false);
 				bmd.perlinNoise(100, 100, 3, 1, true, true);
-				var tb:TextureSet = new TextureSet(i3d);
+				var tb:TextureSet = new TextureSet();
 				tb.setBmd(bmd, Context3DTextureFormat.BGRA);
 				tempTexture = tb.texture;
 			}

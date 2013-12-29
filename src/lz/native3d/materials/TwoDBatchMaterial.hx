@@ -43,10 +43,9 @@ class TwoDBatchMaterial extends MaterialBase
 	public var planeOut:Vector<Float>;
 	public var texture:TextureBase;
 	public static var mouse2d:Mouse2D = new Mouse2D();
-	public function new(texture:TextureBase,i3d:Instance3D,colorMul:Array<Float>=null) 
+	public function new(texture:TextureBase,colorMul:Array<Float>=null) 
 	{
 		super();
-		this.i3d = i3d;
 		passCompareMode = Context3DCompareMode.ALWAYS;
 		sourceFactor = Context3DBlendFactor.ONE;
 		destinationFactor = Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
@@ -57,16 +56,14 @@ class TwoDBatchMaterial extends MaterialBase
 		shader.colorMul = arr2ve3(colorMul);
 		build();
 		nodes = new Vector<Node3D>();
-		this.i3d = i3d;
-		indexBuff = new IndexBufferSet(0, new Vector<UInt>(), 0, i3d);
-		xyzBuff = new VertexBufferSet(0, 3, new Vector<Float>(), 0, i3d);
-		uvBuff = new VertexBufferSet(0, 2, new Vector<Float>(), 0, i3d);
-		plane = MeshUtils.createPlane(.5, i3d).xyz.data;
+		indexBuff = new IndexBufferSet(0, new Vector<UInt>(), 0);
+		xyzBuff = new VertexBufferSet(0, 3, new Vector<Float>(), 0);
+		uvBuff = new VertexBufferSet(0, 2, new Vector<Float>(), 0);
+		plane = MeshUtils.createPlane(.5).xyz.data;
 		planeOut = new Vector<Float>(plane.length);
 	}
 	
 	inline override public function draw(node:Node3D, pass:BasicPass3D):Void {
-		var c3d = pass.i3d;
 		
 		nodes.length = 0;
 		var needUploadPos:Bool = false;
@@ -83,18 +80,18 @@ class TwoDBatchMaterial extends MaterialBase
 			if (xyzBuff.data.length != needLenX12) {
 				xyzBuff.num = needLen*4;
 				xyzBuff.data.length = needLenX12;
-				xyzBuff.vertexBuff = xyzBuff.i3d.createVertexBuffer(xyzBuff.num, 3);
+				xyzBuff.vertexBuff = i3d.createVertexBuffer(xyzBuff.num, 3);
 			}
 			if (uvBuff.data.length != needLenX8) {
 				uvBuff.num = needLen*4;
 				uvBuff.data.length = needLenX8;
-				uvBuff.vertexBuff = uvBuff.i3d.createVertexBuffer(uvBuff.num, 2);
+				uvBuff.vertexBuff = i3d.createVertexBuffer(uvBuff.num, 2);
 			}
 			var indexLen:Int = 6 * needLen;
 			indexBuff.num = indexLen;
 			var lastIlen:Int = indexBuff.data.length;
 			indexBuff.data.length = indexLen;
-			indexBuff.indexBuff = indexBuff.i3d.createIndexBuffer(indexLen);
+			indexBuff.indexBuff = i3d.createIndexBuffer(indexLen);
 			for (i in Math.ceil(lastIlen/6)...needLen) {
 				var ni:Int = i * 4;
 				var n6:Int = i * 6;
@@ -144,15 +141,15 @@ class TwoDBatchMaterial extends MaterialBase
 		}
 		changed = false;
 		//draw
-		c3d.setDepthTest(true, passCompareMode);
-		c3d.setBlendFactors(sourceFactor, destinationFactor);
-		c3d.setProgram(progrom);
-		c3d.setVertexBufferAt(0, xyzBuff.vertexBuff, 0, xyzBuff.format);
-		c3d.setVertexBufferAt(1, uvBuff.vertexBuff, 0, uvBuff.format);
-		c3d.setTextureAt(0, texture);
-		c3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, pass.camera.perspectiveProjectionMatirx, true);
-		c3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, fragment);
-		c3d.drawTriangles(indexBuff.indexBuff,0,nodes.length*2);
+		i3d.setDepthTest(true, passCompareMode);
+		i3d.setBlendFactors(sourceFactor, destinationFactor);
+		i3d.setProgram(progrom);
+		i3d.setVertexBufferAt(0, xyzBuff.vertexBuff, 0, xyzBuff.format);
+		i3d.setVertexBufferAt(1, uvBuff.vertexBuff, 0, uvBuff.format);
+		i3d.setTextureAt(0, texture);
+		i3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, pass.camera.perspectiveProjectionMatirx, true);
+		i3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, fragment);
+		i3d.drawTriangles(indexBuff.indexBuff,0,nodes.length*2);
 		
 		if(mouse2d.changed)mouse2d.nodes = mouse2d.nodes.concat(nodes);
 	}

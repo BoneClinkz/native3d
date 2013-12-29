@@ -133,11 +133,11 @@ package
 			var node:Node3D = new Node3D;
 			node.frustumCulling = null;
 			var drawable:Drawable3D = new Drawable3D;
-			drawable.indexBufferSet = new IndexBufferSet(ins.length, ins, 0, bv.instance3Ds[0]);
-			drawable.xyz = new VertexBufferSet(vin.length / 3, 3, vin, 0, bv.instance3Ds[0]);
+			drawable.indexBufferSet = new IndexBufferSet(ins.length, ins, 0);
+			drawable.xyz = new VertexBufferSet(vin.length / 3, 3, vin, 0);
 			MeshUtils.computeNorm(drawable);
 			node.drawable = drawable;
-			node.material = new PhongMaterial(bv.instance3Ds[0], light, [.2, .2, .2], [Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5], [.8, .8, .8], 200);
+			node.material = new PhongMaterial( [.2, .2, .2], [Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5], [.8, .8, .8], 200);
 			root3d.add(node);
 			
 			var triangleIndexArray:btTriangleIndexVertexArray = btTriangleIndexVertexArray.create();

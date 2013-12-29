@@ -27,19 +27,18 @@ package lz.native3d.core ;
 		public var cnodes:Vector<Node3D>;
 		public var camera:Camera3D;
 		public var material:MaterialBase;
-		public var i3d:Instance3D;
 		public var rootIndex:Int = 0;
 		public var clear:Bool = true;
 		public var present:Bool = true;
 		public var customDraw:Function;
-		public function new(i3d:Instance3D) 
+		public function new() 
 		{
-			this.i3d = i3d;
-			camera = i3d.camera;
+			camera = Instance3D.current.camera;
 		}
 		
 		public function pass(nodes:Vector<Node3D>):Void {
 			this.nodes = nodes;
+			var i3d = Instance3D.current;
 			if (clear) i3d.clear(0, 0, 0, 0);
 			if (customDraw==null) {
 				drawScene();
@@ -57,11 +56,12 @@ package lz.native3d.core ;
 		}
 		
 		public function drawQuadTexture(texture:TextureBase, x:Float, y:Float, width:Float, height:Float,colorMul:Array<Float>=null):Void {
+			var i3d = Instance3D.current;
 			if(pass2d==null){
-				pass2d = new BasicPass3D(i3d);
-				pass2d.camera = new Camera3D(i3d.width, i3d.height, i3d, true);
+				pass2d = new BasicPass3D();
+				pass2d.camera = new Camera3D(i3d.width, i3d.height, true);
 				root2d = new Node3D();
-				layer = new Layer2D(true, texture, i3d);
+				layer = new Layer2D(true, texture);
 				root2d.add(layer);
 				image2d = new Image2D(texture, new Point(width, height));
 				layer.add(image2d);
@@ -75,6 +75,7 @@ package lz.native3d.core ;
 			layer.material.build();
 			image2d.x = x + width / 2;
 			image2d.y = y + height / 2;
+			
 			pass2d.camera.resize(i3d.width, i3d.height);
 			doTransform.doTransformCamera(pass2d.camera);
 			doTransform.doTransform(root2d.children);
@@ -85,6 +86,7 @@ package lz.native3d.core ;
 		inline public function doPass(node:Node3D):Void {
 			var m = material;
 			if (m == null) m = node.material;
+			var i3d = Instance3D.current;
 			if (camera.frustumPlanes == null || node.frustumCulling == null || node.frustumCulling.culling(camera)) {
 				i3d.drawCounter++;
 				if(node.drawable.indexBufferSet!=null)
