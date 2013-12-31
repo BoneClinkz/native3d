@@ -19,7 +19,7 @@ import lz.native3d.materials.MaterialBase;
 import lz.native3d.materials.ParticleMaterial;
 import lz.native3d.materials.PhongMaterial;
 import lz.native3d.meshs.MeshUtils;
-import net.hires.debug.Stats;
+import lz.native3d.utils.Stats;
 
 /**
  * ...
@@ -42,25 +42,25 @@ class PickExample extends Sprite
 	
 	private function bv_context3dCreate(e:Event):Void 
 	{
-		pickPass = new PickPass(bv.instance3Ds[0]);
+		pickPass = new PickPass();
 		bv.instance3Ds[0].passs.unshift(pickPass);
 		bv.instance3Ds[0].camera.z = -100;
 		
 		node = new Node3D();
 		//node.setScale(10, 10, 10);
-		node.drawable = MeshUtils.createTeaPot(bv.instance3Ds[0]);
-		//node.drawable = MeshUtils.createCube(10, bv.instance3Ds[0]);// .createTeaPot(bv.instance3Ds[0]);
+		node.drawable = MeshUtils.createCube(10);// .createTeaPot(bv.instance3Ds[0]);
 		var light:BasicLight3D = new BasicLight3D();
 		light.z = -1000;
 		bv.instance3Ds[0].root.add(light);
+		bv.instance3Ds[0].lights.push(light);
 		light.x = 500;
-		m1=new PhongMaterial(bv.instance3Ds[0], light,
+		m1=new PhongMaterial(
 		[.2, .2, .2],//AmbientColor
 		[Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5],//DiffuseColor
 		[.8,.8,.8],//SpecularColor
 		200
 		);
-		m2 = new PhongMaterial(bv.instance3Ds[0], light,
+		m2 = new PhongMaterial(
 		[.2, .2, .2],//AmbientColor
 		[Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5],//DiffuseColor
 		[.8,.8,.8],//SpecularColor

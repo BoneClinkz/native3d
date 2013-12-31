@@ -1,6 +1,6 @@
 package ;
 import flash.Lib;
-import lz.native3d.core.BasicTest;
+import lz.native3d.utils.BasicTest;
 
 /**
  * ...

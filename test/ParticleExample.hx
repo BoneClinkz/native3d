@@ -14,7 +14,7 @@ import lz.native3d.core.particle.ParticleWrapper;
 import lz.native3d.core.TextureSet;
 import lz.native3d.materials.ParticleMaterial;
 import lz.native3d.meshs.MeshUtils;
-import net.hires.debug.Stats;
+import lz.native3d.utils.Stats;
 
 /**
  * ...
@@ -49,9 +49,9 @@ class ParticleExample extends Sprite
 		pen.graphics.endFill();
 		pen.filters = [new BlurFilter(4,4,3)];
 		shadow.draw(pen);
-		var texture = new TextureSet(bv.instance3Ds[0]);
+		var texture = new TextureSet();
 		texture.setBmd(shadow, Context3DTextureFormat.BGRA, false, 0);
-		pw.material = new ParticleMaterial(bv.instance3Ds[0], texture.texture,1000,0,null,[0,0,0],null,[10,10,0],1,0,1,0,[1,1,1,1]);
+		pw.material = new ParticleMaterial( texture.texture,1000,0,null,[0,0,0],null,[10,10,0],1,0,1,0,[1,1,1,1]);
 		
 		pw.init();
 		pw.update();

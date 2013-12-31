@@ -7,7 +7,6 @@ package
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	import lz.native3d.core.BasicLight3D;
-	import lz.native3d.core.BasicTest;
 	import lz.native3d.core.BasicView;
 	import lz.native3d.core.Drawable3D;
 	import lz.native3d.core.IndexBufferSet;
@@ -15,7 +14,7 @@ package
 	import lz.native3d.core.VertexBufferSet;
 	import lz.native3d.materials.PhongMaterial;
 	import lz.native3d.meshs.MeshUtils;
-	import net.hires.debug.Stats;
+	import lz.native3d.utils.BasicTest;
 	import org.bulletphysics.btAxisSweep3;
 	import org.bulletphysics.btBoxShape;
 	import org.bulletphysics.btBvhTriangleMeshShape;
@@ -60,7 +59,6 @@ package
 				return;
 			}
 			CModule.startAsync(this);
-			addChild(new Stats);
 			createWorld();
 			ctrl.position.setTo(-90, 107, -68);
 			ctrl.rotation.setTo(43, 55,0);
@@ -105,7 +103,7 @@ package
 			var s:Number = 4.0;
 			
 			var boxShape:btBoxShape = btBoxShape.create(vector(w , w, w));
-			for(var i:int=0; i<200; i++) {
+			for(var i:int=0; i<1200; i++) {
 				//spawnCube(((i%numCols)) * 10  - 30, 10.0 + ((i/numCols) * s), 0, 10, w*2, w*2, w*2)
 				spawnRigidBody(
 					boxShape,
@@ -135,11 +133,11 @@ package
 			var node:Node3D = new Node3D;
 			node.frustumCulling = null;
 			var drawable:Drawable3D = new Drawable3D;
-			drawable.indexBufferSet = new IndexBufferSet(ins.length, ins, 0, bv.instance3Ds[0]);
-			drawable.xyz = new VertexBufferSet(vin.length / 3, 3, vin, 0, bv.instance3Ds[0]);
+			drawable.indexBufferSet = new IndexBufferSet(ins.length, ins, 0);
+			drawable.xyz = new VertexBufferSet(vin.length / 3, 3, vin, 0);
 			MeshUtils.computeNorm(drawable);
 			node.drawable = drawable;
-			node.material = new PhongMaterial(bv.instance3Ds[0], light, [.2, .2, .2], [Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5], [.8, .8, .8], 200);
+			node.material = new PhongMaterial( [.2, .2, .2], [Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5], [.8, .8, .8], 200);
 			root3d.add(node);
 			
 			var triangleIndexArray:btTriangleIndexVertexArray = btTriangleIndexVertexArray.create();

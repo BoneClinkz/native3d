@@ -9,93 +9,74 @@ class PhongShader extends Shader
 {
 	static var SRC = { 
 		var input: {
-			gl_Vertex:Float3,
-			gl_Normal:Float3,
+			xyz:Float3,
+			normal:Float3,
 			weight:Float3,
 			matrixIndex:Float4,
-			gl_UV:Float2
+			uv:Float2
 		}
 		
-		var LightVec:Float3;
-		var SurfaceNormal:Float3;
-		var ReflectedLightVec:Float3;
-		var ViewVec:Float3;
-		var UV:Float2;
+		//interpolated
+		var eyespacePos:Float3;
+		var surfaceNormal:Float3;
+		var viewVec:Float3;
+		var uv:Float2;
 		
-		var gl_ModelViewMatrix:M44;
-		//gl_NormalMatrix:M44,
-		var gl_ProjectionMatrix:M44;
-		var LightPosition:Float3;
-		var anmMats:Float4<117>;
-		//var anmMats:Array<Float4>;
+		//vertex parameter
+		var modelViewMatrix:M44;
+		var projectionMatrix:M44;
+		var anmMats:M34<39>;
 		var hasAnm:Bool;
+		
+		//fragment parameter
+		var	ambient:Float3;
+		var	diffuse:Float3;
+		var	specular:Float3;
+		var lights:Param < {
+			var lights:Array<{color:Float3,position:Float3,intensity:Float}>;
+		}>;
+		
+		var diffuseMap:Texture;
+		var hasDiffuseMap:Bool;
+		
 		function vertex() {
-			var wpos:Float4 = input.gl_Vertex.xyzw;
-			if(hasAnm!=null){
-				var t = input.matrixIndex.x;
-				wpos.x = dp4(input.gl_Vertex.xyzw, anmMats[t]);
-				t+=1;
-				wpos.y = dp4(input.gl_Vertex.xyzw, anmMats[t]);
-				t +=1;
-				wpos.z = dp4(input.gl_Vertex.xyzw, anmMats[t]);
-				wpos.w = input.gl_Vertex.w;
-				var wpos2 = wpos*input.weight.x;
-				
-				t = input.matrixIndex.y;
-				wpos.x = dp4(input.gl_Vertex.xyzw, anmMats[t]);
-				t +=1;
-				wpos.y = dp4(input.gl_Vertex.xyzw, anmMats[t]);
-				t +=1;
-				wpos.z = dp4(input.gl_Vertex.xyzw, anmMats[t]) ;
-				wpos.w = input.gl_Vertex.w;
-				wpos2 += wpos * input.weight.y;
-				
-				t = input.matrixIndex.z;
-				wpos.x = dp4(input.gl_Vertex.xyzw, anmMats[t]);
-				t +=1;
-				wpos.y = dp4(input.gl_Vertex.xyzw, anmMats[t]);
-				t +=1;
-				wpos.z = dp4(input.gl_Vertex.xyzw, anmMats[t]) ;
-				wpos.w = input.gl_Vertex.w;
-				wpos2 += wpos * input.weight.z;
-				
-				wpos = wpos2;
+			var wpos:Float4 = input.xyz.xyzw;
+			if (hasAnm != null) {
+				wpos.xyz = 
+					wpos * input.weight.x * anmMats[input.matrixIndex.x ] 
+					+ wpos * input.weight.y * anmMats[input.matrixIndex.y] 
+					+ wpos * input.weight.z * anmMats[input.matrixIndex.z];
 			}
+			out = wpos * modelViewMatrix * projectionMatrix;
 			
-			if(DiffuseColor!=null||SpecularColor!=null){
-				var eyespacePos   = (wpos.xyz*gl_ModelViewMatrix).xyz;
-				var surfaceNormal      = normalize(input.gl_Normal * gl_ModelViewMatrix);
-				SurfaceNormal = surfaceNormal;
-				var lightVec           = normalize(LightPosition - eyespacePos);
-				LightVec = lightVec;
-				ViewVec            = normalize( -eyespacePos);
-				ReflectedLightVec  = normalize(2* dot(lightVec, surfaceNormal)* surfaceNormal-lightVec);
+			if(diffuse!=null||specular!=null){
+				var eyespacePosTemp = (wpos.xyz * modelViewMatrix).xyz;
+				eyespacePos = eyespacePosTemp;
+				viewVec = normalize( -eyespacePosTemp);
+				surfaceNormal = normalize(input.normal * modelViewMatrix);
 			}
-			out = wpos * gl_ModelViewMatrix * gl_ProjectionMatrix;
-			if (hasDiffuseTex) {
-				UV = input.gl_UV;
+			if (hasDiffuseMap) {
+				uv = input.uv;
 			}
 		}
 		
-		var	AmbientColor:Float4;
-		var	DiffuseColor:Float4;
-		var	SpecularColor:Float4;
-		var	SpecularExponent:Float;
-		
-		var DiffuseTex:Texture;
-		var hasDiffuseTex:Bool;
-		function fragment(){
-			var color:Float4 = AmbientColor;
-			if (DiffuseColor!=null) {
-				color += DiffuseColor * max(0, dot(LightVec, SurfaceNormal));
+		function fragment() {
+			var color:Float4 = [0,0,0,1.];
+			for (light in lights.lights) {
+				var lightVec:Float3 = normalize(light.position - eyespacePos);
+				color.xyz += ambient;
+				if (diffuse!=null) {
+					color.xyz += light.color*diffuse.xyz * max(0, dot(lightVec, surfaceNormal));
+				}
+				if(specular!=null){
+					var reflectedLightVec:Float3  = normalize(2* dot(lightVec, surfaceNormal)* surfaceNormal-lightVec);
+					color.xyz += specular * pow(max(0, dot(reflectedLightVec, viewVec)), light.intensity);
+				}
 			}
-			if(SpecularColor!=null){
-				color += SpecularColor * pow(max(0, dot(ReflectedLightVec, ViewVec)), SpecularExponent);
+			if (hasDiffuseMap) {
+				color *=diffuseMap.get(uv, wrap);
 			}
-			if (hasDiffuseTex) {
-				color *= DiffuseTex.get(UV, wrap);
-			}
-			out =  color.xyzw;
+			out =  color;
 		}
 	};
 	public function new() 

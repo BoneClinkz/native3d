@@ -39,7 +39,6 @@ class ParticleMaterial extends MaterialBase
 	public var lifeVar:Float;
 	public var life:Float;
 	public function new(
-		i3d:Instance3D,
 		texture:TextureBase,
 		life:Float=1000,
 		lifeVar:Float=0,
@@ -59,7 +58,6 @@ class ParticleMaterial extends MaterialBase
 	) 
 	{
 		super();
-		this.i3d = i3d;
 		this.timeVarRandom = timeVarRandom;
 		sourceFactor = Context3DBlendFactor.SOURCE_ALPHA;
 		destinationFactor = Context3DBlendFactor.ONE;
@@ -106,7 +104,6 @@ class ParticleMaterial extends MaterialBase
 		var shader:ParticleShader = untyped this.shader;
 		var drawable:ParticleDrawable3D = untyped node.drawable;
 		
-		var offset = drawable.offset;
 		var uv = drawable.uv;
 		var timeLifeVariance=drawable.timeLifeVariance;
 		var startPosVariance=drawable.startPosVariance;
@@ -115,46 +112,36 @@ class ParticleMaterial extends MaterialBase
 		var startColorVariance=drawable.startColorVariance;
 		var endColorVariance=drawable.endColorVariance;
 		var i = 0;
-		c3d.setVertexBufferAt(i++, offset.vertexBuff, 0, offset.format);
-		c3d.setVertexBufferAt(i++, uv.vertexBuff, 0, uv.format);
+		
+		i3d.setVertexBufferAt(i++, uv.vertexBuff, 0, uv.format);
 		if (shader.hasTimeLifeVariance) {
-			c3d.setVertexBufferAt(i++, timeLifeVariance.vertexBuff, 0, timeLifeVariance.format);
+			i3d.setVertexBufferAt(i++, timeLifeVariance.vertexBuff, 0, timeLifeVariance.format);
 		}
 		if (shader.hasStartPosVariance) {
-			c3d.setVertexBufferAt(i++, startPosVariance.vertexBuff, 0, startPosVariance.format);
+			i3d.setVertexBufferAt(i++, startPosVariance.vertexBuff, 0, startPosVariance.format);
 		}
 		if (shader.hasEndPosVariance) {
-			c3d.setVertexBufferAt(i++, endPosVariance.vertexBuff, 0, endPosVariance.format);
+			i3d.setVertexBufferAt(i++, endPosVariance.vertexBuff, 0, endPosVariance.format);
 		}
 		if (shader.hasStartEndScaleVariance) {
-			c3d.setVertexBufferAt(i++, startEndScaleVariance.vertexBuff, 0, startEndScaleVariance.format);
+			i3d.setVertexBufferAt(i++, startEndScaleVariance.vertexBuff, 0, startEndScaleVariance.format);
 		}
 		if (shader.hasStartColorVariance) {
-			c3d.setVertexBufferAt(i++, startColorVariance.vertexBuff, 0, startColorVariance.format);
+			i3d.setVertexBufferAt(i++, startColorVariance.vertexBuff, 0, startColorVariance.format);
 		}
 		if (shader.hasEndColorVariance) {
-			c3d.setVertexBufferAt(i++, endColorVariance.vertexBuff, 0, endColorVariance.format);
+			i3d.setVertexBufferAt(i++, endColorVariance.vertexBuff, 0, endColorVariance.format);
 		}
 		
 		node.worldMatrix.copyRawDataTo(vertex, 0, true);
 		pass.camera.invert.copyRawDataTo(vertex, 16, true);
 		pass.camera.perspectiveProjection.copyRawDataTo(vertex, 32, true);
 		vertex[48] = Lib.getTimer();
-		c3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 0, vertex);
-		c3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, fragment);
+		i3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 0, vertex);
+		i3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, fragment);
 		
-		c3d.setTextureAt(0, texture);
-		c3d.drawTriangles(node.drawable.indexBufferSet.indexBuff);
-		
-		c3d.setVertexBufferAt(0,null, 0, null);
-		c3d.setVertexBufferAt(1,null, 0, null);
-		c3d.setVertexBufferAt(2,null, 0, null);
-		c3d.setVertexBufferAt(3,null, 0, null);
-		c3d.setVertexBufferAt(4,null, 0, null);
-		c3d.setVertexBufferAt(5,null, 0, null);
-		c3d.setVertexBufferAt(6,null, 0, null);
-		c3d.setVertexBufferAt(7,null, 0, null);
-		c3d.setTextureAt(0, null);
+		i3d.setTextureAt(0, texture);
+		i3d.drawTriangles(node.drawable.indexBufferSet.indexBuff);
 	}
 	override public function init(node:Node3D):Void {
 	}

@@ -22,13 +22,11 @@ package lz.native3d.core;
 		public var frustumPlanes:Vector<Vector3D>;
 		
 		public var is2d:Bool = false;
-		public var i3d:Instance3D;
 		public var cscale:Vector3D;
 		public var cpos:Vector3D;
-		public function new(width:Int,height:Int,i3d:Instance3D,is2d:Bool=false,index2d:Float=0) 
+		public function new(width:Int,height:Int,is2d:Bool=false,index2d:Float=0) 
 		{
 			super();
-			this.i3d = i3d;
 			this.is2d = is2d;
 			invert = new Matrix3D();
 			perspectiveProjection = new Matrix3D();
@@ -107,6 +105,7 @@ package lz.native3d.core;
 		}
 		
 		public function resize(width:Int, height:Int):Void {
+			var i3d = Instance3D.current;
 			if (is2d) {
 				orthoLH(i3d.width, i3d.height, _zNear, _zFar,cscale,cpos);
 			}else {

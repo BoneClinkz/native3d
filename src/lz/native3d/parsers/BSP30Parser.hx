@@ -586,7 +586,7 @@ class BSP30Parser extends AbsParser
 		//
 		
 		// Create white texture
-		this.whiteTexture =  new TextureSet(null);
+		this.whiteTexture =  new TextureSet();
 		var bmd:BitmapData = new BitmapData(128, 128, false);
 		bmd.perlinNoise(20, 20, 3, 1, true, true);
 		this.whiteTexture.setBmd(bmd, Context3DTextureFormat.BGRA);
@@ -696,8 +696,8 @@ class BSP30Parser extends AbsParser
 			vs.push(v.z);
 		}
 		drawable = new Drawable3D();
-		drawable.xyz = new VertexBufferSet(untyped vs.length / 3, 3, vs, 0,null);
-		drawable.indexBufferSet = new IndexBufferSet(ixs.length, ixs, 0,null);
+		drawable.xyz = new VertexBufferSet(untyped vs.length / 3, 3, vs, 0);
+		drawable.indexBufferSet = new IndexBufferSet(ixs.length, ixs, 0);
 		MeshUtils.computeNorm(drawable);
 		
 		/*var vertices = new Array();

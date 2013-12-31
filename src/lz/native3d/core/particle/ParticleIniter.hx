@@ -37,7 +37,6 @@ class ParticleIniter
 		if (shader.hasStartColorVariance) startColorVariance = new Vector<Float>(4 * wrapper.particles.length * 4, true);
 		var endColorVariance = null;
 		if (shader.hasEndColorVariance) endColorVariance = new Vector<Float>(4 * wrapper.particles.length * 4, true);
-		var odata = new Vector<Float>(2 * wrapper.particles.length * 4, true);
 		var uvdata = new Vector<Float>(2 * wrapper.particles.length * 4, true);
 		var iData = new Vector<UInt>(wrapper.particles.length * 6);
 		for (i in 0...wrapper.particles.length) {
@@ -46,14 +45,6 @@ class ParticleIniter
 			p.indexs.push(i*4+1);
 			p.indexs.push(i*4+2);
 			p.indexs.push(i * 4+3);
-			odata[i * 8] = -1;
-			odata[i * 8+1] = -1;
-			odata[i * 8+2] = 1;
-			odata[i * 8+3] = -1;
-			odata[i * 8+4] = -1;
-			odata[i * 8+5] = 1;
-			odata[i * 8+6] = 1;
-			odata[i * 8 + 7] = 1;
 			
 			uvdata[i * 8] = 0;
 			uvdata[i * 8+1] = 1;
@@ -165,36 +156,34 @@ class ParticleIniter
 		var drawable:ParticleDrawable3D = untyped wrapper.drawable;
 		
 		if(timeLefeVariance!=null){
-			drawable.timeLifeVariance = new VertexBufferSet(wrapper.particles.length*4, 2, timeLefeVariance, 0,i3d);
+			drawable.timeLifeVariance = new VertexBufferSet(wrapper.particles.length*4, 2, timeLefeVariance, 0);
 			drawable.timeLifeVariance.init();
 		}
 		if(startPosVariance!=null){
-			drawable.startPosVariance = new VertexBufferSet(wrapper.particles.length*4, 3, startPosVariance, 0,i3d);
+			drawable.startPosVariance = new VertexBufferSet(wrapper.particles.length*4, 3, startPosVariance);
 			drawable.startPosVariance.init();
 		}
 		if(endPosVariance!=null){
-			drawable.endPosVariance = new VertexBufferSet(wrapper.particles.length*4, 3, endPosVariance, 0,i3d);
+			drawable.endPosVariance = new VertexBufferSet(wrapper.particles.length*4, 3, endPosVariance, 0);
 			drawable.endPosVariance.init();
 		}
-		drawable.offset = new VertexBufferSet(wrapper.particles.length*4, 2, odata, 0,i3d);
-		drawable.uv = new VertexBufferSet(wrapper.particles.length * 4, 2, uvdata, 0, i3d);
+		drawable.uv = new VertexBufferSet(wrapper.particles.length * 4, 2, uvdata, 0);
 		if(startEndScaleVariance!=null){
-			drawable.startEndScaleVariance = new VertexBufferSet(wrapper.particles.length*4, 2, startEndScaleVariance, 0,i3d);
+			drawable.startEndScaleVariance = new VertexBufferSet(wrapper.particles.length*4, 2, startEndScaleVariance, 0);
 			drawable.startEndScaleVariance.init();
 		}
 		if(startColorVariance!=null){
-			drawable.startColorVariance = new VertexBufferSet(wrapper.particles.length*4, 4, startColorVariance, 0,i3d);
+			drawable.startColorVariance = new VertexBufferSet(wrapper.particles.length*4, 4, startColorVariance, 0);
 			drawable.startColorVariance.init();
 		}
 		if(endColorVariance!=null){
-			drawable.endColorVariance = new VertexBufferSet(wrapper.particles.length*4, 4, endColorVariance, 0,i3d);
+			drawable.endColorVariance = new VertexBufferSet(wrapper.particles.length*4, 4, endColorVariance, 0);
 			drawable.endColorVariance.init();
 		}
-		drawable.indexBufferSet = new IndexBufferSet(iData.length, iData, 0, i3d);
+		drawable.indexBufferSet = new IndexBufferSet(iData.length, iData, 0);
 		
 		drawable.startPosVariance.init();
 		drawable.uv.init();
-		drawable.offset.init();
 		drawable.indexBufferSet.init();
 	}
 	

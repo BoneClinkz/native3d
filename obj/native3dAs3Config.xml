@@ -16,7 +16,7 @@
     </define>
     <define append="true">
       <name>CONFIG::timeStamp</name>
-      <value>'2013/12/21'</value>
+      <value>'2013/12/29'</value>
     </define>
     <define append="true">
       <name>CONFIG::air</name>
@@ -35,7 +35,6 @@
     <verbose-stacktraces>false</verbose-stacktraces>
     <source-path append="true">
       <path-element>D:\project\native3d\testas3</path-element>
-      <path-element>D:\project\native3d\libs</path-element>
       <path-element>D:\project\Hi-ReS-Stats-master\src</path-element>
       <path-element>D:\Program Files (x86)\FlashDevelop\Library\AS3\classes</path-element>
     </source-path>
@@ -46,7 +45,7 @@
     </library-path>
   </compiler>
   <file-specs>
-    <path-element>D:\project\native3d\testas3\BulletTest.as</path-element>
+    <path-element>D:\project\native3d\testas3\Test2D.as</path-element>
   </file-specs>
   <default-background-color>#FFFFFF</default-background-color>
   <default-frame-rate>60</default-frame-rate>

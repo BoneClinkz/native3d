@@ -6,7 +6,7 @@ import flash.Lib;
 import flash.utils.CompressionAlgorithm;
 import flash.utils.Endian;
 import flash.Vector;
-import lz.native3d.core.BasicTest;
+import lz.native3d.utils.BasicTest;
 import lz.native3d.core.Drawable3D;
 import lz.native3d.core.IndexBufferSet;
 import lz.native3d.core.Node3D;
@@ -74,7 +74,7 @@ class BlendExample extends BasicTest
 		var n = new Node3D();
 		if(obj.index){
 			var material = 
-			new PhongMaterial(bv.instance3Ds[0], light,
+			new PhongMaterial(
 				[.2, .2, .2],//AmbientColor
 				[Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5],//DiffuseColor
 				[.8,.8,.8],//SpecularColor
@@ -88,9 +88,9 @@ class BlendExample extends BasicTest
 				return null;
 			}
 			var drawable = new Drawable3D();
-			drawable.xyz = new VertexBufferSet(Std.int(xyz.length / 3), 3,untyped xyz, 0, bv.instance3Ds[0]);
-			drawable.uv = new VertexBufferSet(Std.int(uvs.length / 2), 2,untyped uvs, 0,bv.instance3Ds[0]);
-			drawable.indexBufferSet = new IndexBufferSet(index.length,untyped index, 0,bv.instance3Ds[0]);
+			drawable.xyz = new VertexBufferSet(Std.int(xyz.length / 3), 3,untyped xyz, 0);
+			drawable.uv = new VertexBufferSet(Std.int(uvs.length / 2), 2,untyped uvs, 0);
+			drawable.indexBufferSet = new IndexBufferSet(index.length,untyped index, 0);
 			MeshUtils.computeNorm(drawable);
 			MeshUtils.computeRadius(drawable);
 			n.drawable = drawable;

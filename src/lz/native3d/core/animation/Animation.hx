@@ -26,10 +26,8 @@ class Animation
 	public var maxTime:Float = 0;
 	public var numFrame:Int = 0;
 	public var frame:Int = 0;
-	public var light:BasicLight3D;
-	public function new(light:BasicLight3D) 
+	public function new() 
 	{
-		this.light = light;
 		parts = new Vector<AnimationPart>();
 	}
 	
@@ -229,11 +227,11 @@ class Animation
 				
 				newWeights.length = newMatrixIndexs.length = newVs.length = (maxNowi + 1) * 3;
 				newUVs.length = (maxNowi + 1) * 2;
-				skinDrawable.weightBuff = new VertexBufferSet(Std.int(newWeights.length/maxWeightLen), Std.int(maxWeightLen), newWeights, 0,Instance3D.getInstance());
-				skinDrawable.matrixBuff = new VertexBufferSet(Std.int(newWeights.length / maxWeightLen), Std.int(maxWeightLen), newMatrixIndexs, 0,Instance3D.getInstance());
-				skinDrawable.xyz = new VertexBufferSet(Std.int(newVs.length/3), 3, newVs, 0,Instance3D.getInstance());
-				skinDrawable.uv = new VertexBufferSet(Std.int(newUVs.length/2), 2, newUVs, 0,Instance3D.getInstance());
-				skinDrawable.indexBufferSet = new IndexBufferSet(newIndexs.length, newIndexs, 0,Instance3D.getInstance());
+				skinDrawable.weightBuff = new VertexBufferSet(Std.int(newWeights.length/maxWeightLen), Std.int(maxWeightLen), newWeights, 0);
+				skinDrawable.matrixBuff = new VertexBufferSet(Std.int(newWeights.length / maxWeightLen), Std.int(maxWeightLen), newMatrixIndexs, 0);
+				skinDrawable.xyz = new VertexBufferSet(Std.int(newVs.length/3), 3, newVs, 0);
+				skinDrawable.uv = new VertexBufferSet(Std.int(newUVs.length/2), 2, newUVs, 0);
+				skinDrawable.indexBufferSet = new IndexBufferSet(newIndexs.length, newIndexs, 0);
 				MeshUtils.computeNorm(skinDrawable);
 				skinDrawable.xyz.init();
 				skinDrawable.uv.init();
@@ -246,11 +244,7 @@ class Animation
 				skin.node.drawable.radius = skinDrawable.radius;
 				skin.node.drawable.indexBufferSet = skinDrawable.indexBufferSet;
 				//skin.node.material=new SkinMaterial(skin, Std.random(0xffffff), Std.random(0xffffff), new BasicLight3D());
-				skin.node.material = new PhongMaterial(Instance3D.getInstance(),
-										light,
-										[.2, .2, .2],//AmbientColor
-										[Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5],//DiffuseColor
-										[.8,.8,.8],//SpecularColor
+				skin.node.material = new PhongMaterial(null,null,null,
 										200,
 										skin.texture.texture,
 										skin

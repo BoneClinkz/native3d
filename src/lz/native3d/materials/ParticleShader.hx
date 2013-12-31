@@ -8,7 +8,6 @@ import hxsl.Shader;
  class ParticleShader extends Shader {
 	static var SRC = {
 		var input : {
-			offset : Float2,
 			uv:Float2,
 			timeLifeVariance:Float2,
 			startPosVariance:Float3,
@@ -91,7 +90,7 @@ import hxsl.Shader;
 			}
 			
 			var wpos = pos * mpos * invert;
-			wpos.xy += (input.offset.xy) * scale;
+			wpos.xy += (input.uv-.5) * scale;
 			out = wpos * mproj;
 			tuv = input.uv;
 		}

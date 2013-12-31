@@ -37,14 +37,10 @@ class ColladaParser extends AbsParser
 	public var sid2node:Map<String,Node3D>;
 	public var jointRoot:Node3D;
 	public var texture:TextureSet;
-	public var light:BasicLight3D;
-	public var i3d:Instance3D;
-	public function new(data:Dynamic,light:BasicLight3D) 
+	public function new(data:Dynamic) 
 	{
 		super(data);
-		this.light = light;
-		i3d = Instance3D.getInstance();
-		texture = new TextureSet(i3d);
+		texture = new TextureSet();
 		
 	}
 	
@@ -126,13 +122,12 @@ class ColladaParser extends AbsParser
 						uv.push(nskin.daeUV[juvi*2+1]);
 					}
 				}
-				drawable.xyz = new VertexBufferSet(untyped(vin.length / 3), 3, vin, 0,i3d);
-				drawable.uv = new VertexBufferSet(untyped(uv.length / 2), 2, uv, 0,i3d);
-				drawable.indexBufferSet = new IndexBufferSet(indexs.length, indexs, 0,i3d);
+				drawable.xyz = new VertexBufferSet(untyped(vin.length / 3), 3, vin, 0);
+				drawable.uv = new VertexBufferSet(untyped(uv.length / 2), 2, uv, 0);
+				drawable.indexBufferSet = new IndexBufferSet(indexs.length, indexs, 0);
 				MeshUtils.computeNorm(drawable);
 				node.add(drawableNode);
-				drawableNode.material=new PhongMaterial(Instance3D.getInstance(),
-										light,
+				drawableNode.material=new PhongMaterial(
 										[.2, .2, .2],
 										[Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5],
 										[.8,.8,.8],
@@ -230,7 +225,7 @@ class ColladaParser extends AbsParser
 	private function buildAnimation():Void {
 		var areg = ~/(.+)\/(.+)\((\d+)\)\((\d+)\)/;
 		var areg2 = ~/(.+)\/(.+)/;
-		anms = new Animation(light);
+		anms = new Animation();
 		anms.jointRoot = jointRoot;
 		for (child in dae.elements()) {
 			if (child.nodeName == "library_animations") {

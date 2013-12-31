@@ -9,7 +9,6 @@ import lz.native3d.core.VertexBufferSet;
 class ParticleDrawable3D extends Drawable3D
 {
 
-	public var offset : VertexBufferSet;
 	public var timeLifeVariance:VertexBufferSet;
 	public var startPosVariance:VertexBufferSet;
 	public var endPosVariance:VertexBufferSet;

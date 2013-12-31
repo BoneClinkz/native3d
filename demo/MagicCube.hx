@@ -7,7 +7,7 @@ import flash.Lib;
 import flash.text.TextField;
 import flash.text.TextFieldAutoSize;
 import flash.Vector;
-import lz.native3d.core.BasicTest;
+import lz.native3d.utils.BasicTest;
 import lz.native3d.core.Node3D;
 
 /**
