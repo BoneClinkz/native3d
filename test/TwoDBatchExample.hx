@@ -51,8 +51,8 @@ class TwoDBatchExample extends Sprite
 			}
 		}
 		
-		bv = new BasicView(200, 200,true);
-		bv.instance3Ds[0].camera = new Camera3D(200, 200, bv.instance3Ds[0],true);
+		bv = new BasicView(200, 200, true);
+		bv.instance3Ds[0].camera = new Camera3D(200, 200, true);
 		bv.instance3Ds[0].camera.frustumPlanes = null;
 		addChild(bv);
 		bv.instance3Ds[0].addEventListener(Event.CONTEXT3D_CREATE, context3dCreate);
