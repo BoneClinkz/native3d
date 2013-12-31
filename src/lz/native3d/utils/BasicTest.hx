@@ -91,7 +91,13 @@ class BasicTest extends Sprite
 		light = new BasicLight3D();
 		bv.instance3Ds[0].root.add(light);
 		bv.instance3Ds[0].lights.push(light);
-		light.setPosition( -100,100);
+		light.setPosition( -100, 100);
+		
+		light = new BasicLight3D();
+		bv.instance3Ds[0].root.add(light);
+		bv.instance3Ds[0].lights.push(light);
+		light.setPosition( 100, 100);
+		
 	}
 	
 	public function initScene():Void {

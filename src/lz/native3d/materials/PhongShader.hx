@@ -66,16 +66,15 @@ class PhongShader extends Shader
 				var lightVec:Float3 = normalize(light.position - eyespacePos);
 				color.xyz += ambient;
 				if (diffuse!=null) {
-					color.xyz += diffuse.xyz * max(0, dot(lightVec, surfaceNormal));
+					color.xyz += light.color*diffuse.xyz * max(0, dot(lightVec, surfaceNormal));
 				}
 				if(specular!=null){
 					var reflectedLightVec:Float3  = normalize(2* dot(lightVec, surfaceNormal)* surfaceNormal-lightVec);
 					color.xyz += specular * pow(max(0, dot(reflectedLightVec, viewVec)), light.intensity);
 				}
-				color.xyz *= light.color;
 			}
 			if (hasDiffuseMap) {
-				color *= diffuseMap.get(uv, wrap);
+				color *=diffuseMap.get(uv, wrap);
 			}
 			out =  color;
 		}
