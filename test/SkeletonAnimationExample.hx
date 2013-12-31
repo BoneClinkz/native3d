@@ -37,7 +37,7 @@ class SkeletonAnimationExample extends BasicTest
 		tset.setBmd(new BitmapData(1024, 1024,true,0), Context3DTextureFormat.BGRA, true);
 		textureB = tset.texture;
 		
-		bv.instance3Ds[0].passs[0].customDraw = customDraw;
+		//bv.instance3Ds[0].passs[0].customDraw = customDraw;
 	}
 	
 	function customDraw() 

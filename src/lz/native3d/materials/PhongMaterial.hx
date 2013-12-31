@@ -27,32 +27,50 @@ import lz.native3d.core.VertexBufferSet;
  */
 class PhongMaterial extends MaterialBase
 {
+	public static var defAmbient:Array<Float>=[.2,.2,.2];
+	public static var defDiffuse:Array<Float>=[.5,.5,.5];
+	public static var defSpecular:Array<Float>=[.8,.8,.8];
+	
 	public var diffuseTex:TextureBase;
 	public var skin:Skin;
-	public function new(AmbientColor:Array<Float>,DiffuseColor:Array<Float>,SpecularColor:Array<Float>,SpecularExponent:Float=200,diffuseTex:TextureBase=null,skin:Skin=null) 
+	public function new(ambient:Array<Float>=null,diffuse:Array<Float>=null,specular:Array<Float>=null,specularExponent:Float=200,diffuseTex:TextureBase=null,skin:Skin=null) 
 	{
 		super();
-		if (DiffuseColor[3]>0) {//有透明度
-			sourceFactor = Context3DBlendFactor.SOURCE_ALPHA;
-			destinationFactor = Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
-			passCompareMode = Context3DCompareMode.ALWAYS;
-		}
 		var shader = new PhongShader();
 		this.shader = shader;
-		shader.AmbientColor = arr2ve3(AmbientColor);
-		shader.DiffuseColor = arr2ve3(DiffuseColor);
-		shader.SpecularColor = arr2ve3(SpecularColor);
-		shader.SpecularExponent = SpecularExponent;
-		shader.LightPosition = i3d.lights[0].position;// lightNode.position;
+		shader.ambient = arr2ve3(ambient==null?defAmbient:ambient);
+		shader.diffuse = arr2ve3(diffuse==null?defDiffuse:diffuse);
+		shader.specular = arr2ve3(specular==null?defSpecular:specular);
+		var lights = { lights:[]};
+		for (light in i3d.lights) {
+			lights.lights.push({color:arr2ve3(light.color),position:light.position,intensity : light.intensity});
+		}
+		shader.lights =  lights;
 		
 		this.diffuseTex = diffuseTex;
-		if(diffuseTex!=null)shader.DiffuseTex = diffuseTex;
-		shader.hasDiffuseTex = diffuseTex != null;
+		if(diffuseTex!=null)shader.diffuseMap = diffuseTex;
+		shader.hasDiffuseMap = diffuseTex != null;
 		//trace(shader.getDebugShaderCode(true));
 		this.skin = skin;
 		if (skin != null) shader.anmMats = [];
 		shader.hasAnm = skin != null;
 		build();
+		
+		var i = 3;
+		for (light in lights.lights) {
+			fragment[i * 4] = light.color.x;
+			fragment[i * 4+1] =light.color.y;
+			fragment[i * 4 + 2] = light.color.z;
+			i++;
+			
+			fragment[i * 4] = light.position.x;
+			fragment[i * 4+1] =light.position.y;
+			fragment[i * 4 + 2] = light.position.z;
+			i++;
+			
+			fragment[i * 4] = light.intensity;
+			i++;
+		}
 	}
 	
 	inline override public function draw(node:Node3D, pass:BasicPass3D):Void {
@@ -60,11 +78,21 @@ class PhongMaterial extends MaterialBase
 		super.draw(node, pass);
 		//const
 		var shader:PhongShader =untyped this.shader;
-		if (shader.DiffuseColor != null || shader.SpecularColor != null) {
-			var wrd = i3d.lights[0].worldRawData;
-			vertex[32] = wrd[12];
-			vertex[33] = wrd[13];
-			vertex[34] = wrd[14];
+		if (shader.diffuse != null || shader.specular != null) {
+			for (light in i3d.lights) {
+				var wrd = light.worldRawData;
+				var i = 16;
+				
+				fragment[i ] = wrd[12];
+				fragment[i +1] =wrd[13];
+				fragment[i  + 2] = wrd[14];
+				
+				i+=12;
+			}
+			
+			//vertex[32] = wrd[12];
+			//vertex[33] = wrd[13];
+			//vertex[34] = wrd[14];
 		}
 		node.worldMatrix.copyRawDataTo(vertex, 0, true);
 		pass.camera.perspectiveProjectionMatirx.copyRawDataTo(vertex, 16, true);
@@ -84,7 +112,7 @@ class PhongMaterial extends MaterialBase
 			uv = drawable.uv;
 			
 			i3d.setVertexBufferAt(0, xyz.vertexBuff, 0, xyz.format);
-			if (shader.DiffuseColor != null || shader.SpecularColor != null) {
+			if (shader.diffuse != null || shader.specular != null) {
 				i3d.setVertexBufferAt(1, norm.vertexBuff, 0, norm.format);
 			}
 			if(diffuseTex!=null){
@@ -111,7 +139,7 @@ class PhongMaterial extends MaterialBase
 				i3d.setVertexBufferAt(4, uv.vertexBuff, 0, uv.format);
 				
 				var byteSet = drawable.cacheBytes[node.frame];
-				i3d.setProgramConstantsFromByteArray(Context3DProgramType.VERTEX, 9,byteSet.numRegisters,byteSet.data,0);
+				i3d.setProgramConstantsFromByteArray(Context3DProgramType.VERTEX, 8,byteSet.numRegisters,byteSet.data,0);
 				i3d.drawTriangles(drawable.indexBufferSet.indexBuff); 
 			}
 			node.frame++;
@@ -122,7 +150,7 @@ class PhongMaterial extends MaterialBase
 		if(skin==null){//有骨骼动画 初始化交给其它类处理
 			node.drawable.xyz.init();
 			var shader:PhongShader = untyped this.shader;
-			if(shader.DiffuseColor!=null||shader.SpecularColor!=null)
+			if(shader.diffuse!=null||shader.specular!=null)
 			node.drawable.norm.init();
 			if(diffuseTex!=null)
 			if(node.drawable.uv!=null)node.drawable.uv.init();

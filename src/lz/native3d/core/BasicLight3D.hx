@@ -12,7 +12,7 @@ class BasicLight3D extends Node3D
 	
 	public var lightType:Int;
 	public var color:Array<Float>;
-	public var intensity:Float = 1;
+	public var intensity:Float = 200;
 	public var shadowMapEnabled:Bool = false;
 	public var innerConeAngle:Float = 3.14 / 6;
 	public var outerConeAngle:Float = 3.14 / 3;
@@ -21,7 +21,7 @@ class BasicLight3D extends Node3D
 	{
 		super();
 		this.lightType = lightType;
-		
+		color = [1,1,1,1];
 	}
 	
 }
