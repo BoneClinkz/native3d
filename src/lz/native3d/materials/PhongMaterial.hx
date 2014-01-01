@@ -27,8 +27,11 @@ import lz.native3d.core.VertexBufferSet;
  */
 class PhongMaterial extends MaterialBase
 {
+	private static var HELP_V3D:Vector3D = new Vector3D();
+	private static var ZAX:Vector3D = new Vector3D(0, 0, 1);
+	
 	public static var defAmbient:Array<Float>=[.2,.2,.2];
-	public static var defDiffuse:Array<Float>=[.5,.5,.5];
+	public static var defDiffuse:Array<Float>=[.8,.8,.8];
 	public static var defSpecular:Array<Float>=[.8,.8,.8];
 	
 	public var diffuseTex:TextureBase;
@@ -41,9 +44,17 @@ class PhongMaterial extends MaterialBase
 		shader.ambient = arr2ve3(ambient==null?defAmbient:ambient);
 		shader.diffuse = arr2ve3(diffuse==null?defDiffuse:diffuse);
 		shader.specular = arr2ve3(specular==null?defSpecular:specular);
-		var lights = { lights:[]};
+		var lights = { ambientLights:[],distantLights:[],pointLights:[],spotLights:[]};
 		for (light in i3d.lights) {
-			lights.lights.push({color:arr2ve3(light.color),position:light.position,intensity : light.intensity});
+			if(light.lightType==BasicLight3D.TYPE_AMBIENT){
+				lights.ambientLights.push( { color:HELP_V3D } );
+			}else if(light.lightType==BasicLight3D.TYPE_DISTANT){
+				lights.distantLights.push( { color:HELP_V3D, positionIntensity:HELP_V3D } );
+			}else if(light.lightType==BasicLight3D.TYPE_POINT){
+				lights.pointLights.push( { colorLen:HELP_V3D, positionIntensity:HELP_V3D } );
+			}else if(light.lightType==BasicLight3D.TYPE_SPOT){
+				lights.spotLights.push( { colorLen:HELP_V3D, positionIntensity:HELP_V3D,direction:HELP_V3D,innerOuter:HELP_V3D } );
+			}
 		}
 		shader.lights =  lights;
 		
@@ -56,20 +67,56 @@ class PhongMaterial extends MaterialBase
 		shader.hasAnm = skin != null;
 		build();
 		
-		var i = 3;
-		for (light in lights.lights) {
-			fragment[i * 4] = light.color.x;
-			fragment[i * 4+1] =light.color.y;
-			fragment[i * 4 + 2] = light.color.z;
-			i++;
-			
-			fragment[i * 4] = light.position.x;
-			fragment[i * 4+1] =light.position.y;
-			fragment[i * 4 + 2] = light.position.z;
-			i++;
-			
-			fragment[i * 4] = light.intensity;
-			i++;
+		var i = 12;
+		for (light in i3d.lights) {
+			if(light.lightType==BasicLight3D.TYPE_AMBIENT){
+				fragment[i] = light.color[0];
+				fragment[i+1] =light.color[1];
+				fragment[i + 2] = light.color[2];
+				i+=4;
+			}else if(light.lightType==BasicLight3D.TYPE_DISTANT){
+				fragment[i] = light.color[0];
+				fragment[i+1] =light.color[1];
+				fragment[i + 2] = light.color[2];
+				i+=4;
+				
+				fragment[i] = light.position.x;
+				fragment[i+1] =light.position.y;
+				fragment[i + 2] = light.position.z;
+				fragment[i+3] = light.intensity;
+				i += 4;
+			}else if(light.lightType==BasicLight3D.TYPE_POINT){
+				fragment[i] = light.color[0];
+				fragment[i+1] =light.color[1];
+				fragment[i + 2] = light.color[2];
+				fragment[i + 3] = light.distance;
+				i+=4;
+				
+				fragment[i] = light.position.x;
+				fragment[i+1] =light.position.y;
+				fragment[i + 2] = light.position.z;
+				fragment[i+3] = light.intensity;
+				i += 4;
+			}else if(light.lightType==BasicLight3D.TYPE_SPOT){
+				fragment[i] = light.color[0];
+				fragment[i+1] =light.color[1];
+				fragment[i + 2] = light.color[2];
+				fragment[i + 3] = light.distance;
+				i+=4;
+				
+				fragment[i] = light.position.x;
+				fragment[i+1] =light.position.y;
+				fragment[i + 2] = light.position.z;
+				fragment[i+3] = light.intensity;
+				i += 4;
+				
+				//dir
+				i += 4;
+				
+				fragment[i] = light.innerConeAngle;
+				fragment[i+1] =light.outerConeAngle;
+				i += 4;
+			}
 		}
 	}
 	
@@ -79,20 +126,61 @@ class PhongMaterial extends MaterialBase
 		//const
 		var shader:PhongShader =untyped this.shader;
 		if (shader.diffuse != null || shader.specular != null) {
+			var i = 12;
 			for (light in i3d.lights) {
-				var wrd = light.worldRawData;
-				var i = 16;
-				
-				fragment[i ] = wrd[12];
-				fragment[i +1] =wrd[13];
-				fragment[i  + 2] = wrd[14];
-				
-				i+=12;
+				if(light.lightType==BasicLight3D.TYPE_AMBIENT){
+					/*fragment[i] = light.color[0];
+					fragment[i+1] =light.color[1];
+					fragment[i + 2] = light.color[2];*/
+					i+=4;
+				}else if(light.lightType==BasicLight3D.TYPE_DISTANT){
+					/*fragment[i] = light.color[0];
+					fragment[i+1] =light.color[1];
+					fragment[i + 2] = light.color[2];*/
+					i+=4;
+					
+					fragment[i] = light.position.x;
+					fragment[i+1] =light.position.y;
+					fragment[i + 2] = light.position.z;
+					//fragment[i+3] = light.intensity;
+					i += 4;
+				}else if(light.lightType==BasicLight3D.TYPE_POINT){
+					/*fragment[i] = light.color[0];
+					fragment[i+1] =light.color[1];
+					fragment[i + 2] = light.color[2];
+					fragment[i + 3] = light.distance;*/
+					i+=4;
+					
+					fragment[i] = light.position.x;
+					fragment[i+1] =light.position.y;
+					fragment[i + 2] = light.position.z;
+					//fragment[i+3] = light.intensity;
+					i += 4;
+				}else if(light.lightType==BasicLight3D.TYPE_SPOT){
+					/*fragment[i] = light.color[0];
+					fragment[i+1] =light.color[1];
+					fragment[i + 2] = light.color[2];
+					fragment[i + 3] = light.distance;*/
+					i+=4;
+					
+					fragment[i] = light.position.x;
+					fragment[i+1] =light.position.y;
+					fragment[i + 2] = light.position.z;
+					//fragment[i+3] = light.intensity;
+					i += 4;
+					
+					//dir
+					var dir = light.worldMatrix.transformVector(ZAX);
+					fragment[i] = dir.x;
+					fragment[i+1] =dir.y;
+					fragment[i + 2] = dir.z;
+					i += 4;
+					
+					//fragment[i] = light.innerConeAngle;
+					//fragment[i+1] =light.outerConeAngle;
+					i += 4;
+				}
 			}
-			
-			//vertex[32] = wrd[12];
-			//vertex[33] = wrd[13];
-			//vertex[34] = wrd[14];
 		}
 		node.worldMatrix.copyRawDataTo(vertex, 0, true);
 		pass.camera.perspectiveProjectionMatirx.copyRawDataTo(vertex, 16, true);

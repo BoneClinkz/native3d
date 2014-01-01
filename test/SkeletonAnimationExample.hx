@@ -24,7 +24,7 @@ class SkeletonAnimationExample extends BasicTest
 	{
 		addDae();
 		#if flash
-		//addSky();
+		addSky();
 		#end	
 		ctrl.position.setTo( 8, 22, 42);
 		ctrl.rotation.setTo(24, 190, 0);

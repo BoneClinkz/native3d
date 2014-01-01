@@ -125,8 +125,7 @@ class TwoDFromSwfExample extends Sprite
 		node.drawable = cubeDrawable;
 		root3d.add(node);
 		var light = new BasicLight3D();
-		root3d.add(light);
-		bv.instance3Ds[0].lights.push(light);
+		bv.instance3Ds[0].addLight(light);
 		light.setPosition( -100,100,-1000);
 		node.material = new PhongMaterial(
 		[.2, .2, .2],//AmbientColor

@@ -49,7 +49,7 @@ class BasicTest extends Sprite
 		bv.instance3Ds[0].addEventListener(Event.CONTEXT3D_CREATE, context3dCreate);
 		addChild(bv);
 		#if flash
-			//addChild(new Stats());
+			addChild(new Stats());
 		loading = new TextField();
 		loading.autoSize = TextFieldAutoSize.LEFT;
 		addChild(loading);
@@ -88,16 +88,16 @@ class BasicTest extends Sprite
 	}
 	
 	public function initLight():Void {
-		light = new BasicLight3D();
-		bv.instance3Ds[0].root.add(light);
-		bv.instance3Ds[0].lights.push(light);
-		light.setPosition( -100, 100);
-		
-		light = new BasicLight3D();
-		bv.instance3Ds[0].root.add(light);
-		bv.instance3Ds[0].lights.push(light);
-		light.setPosition( 100, 100);
-		
+		var numLight = 1;
+		var c = numLight;
+		while(c-->0){
+			light = new BasicLight3D(BasicLight3D.TYPE_DISTANT);
+			bv.instance3Ds[0].addLight(light);
+			light.setPosition(-100,100);
+			light.color[0] = 1;
+			light.color[1] = 1;
+			light.color[2] = 1;
+		}
 	}
 	
 	public function initScene():Void {

@@ -114,6 +114,25 @@ package lz.native3d.core ;
 			}
 		}
 		
+		public function addLight(light:BasicLight3D):Void {
+			if(light!=null){
+				root.add(light);
+				var newlights = new Vector<BasicLight3D>();
+				var added = false;
+				for (i in 0...lights.length) {
+					if (!added&&light.type<lights[i].type) {
+						newlights.push(light);
+						added = true;
+						break;
+					}
+					newlights.push(lights[i]);
+				}
+				if(!added)
+				newlights.push(light);
+				lights = newlights;
+			}
+		}
+		
 		public inline function clear(red : Float = 0, green : Float = 0, blue : Float = 0, alpha : Float = 1, depth : Float = 1, stencil : UInt = 0, mask : UInt = 0xFFFFFFFF) : Void {
 			context.clear(red, green, blue, alpha, depth, stencil, mask);
 		}

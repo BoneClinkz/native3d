@@ -51,8 +51,7 @@ class PickExample extends Sprite
 		node.drawable = MeshUtils.createCube(10);// .createTeaPot(bv.instance3Ds[0]);
 		var light:BasicLight3D = new BasicLight3D();
 		light.z = -1000;
-		bv.instance3Ds[0].root.add(light);
-		bv.instance3Ds[0].lights.push(light);
+		bv.instance3Ds[0].addLight(light);
 		light.x = 500;
 		m1=new PhongMaterial(
 		[.2, .2, .2],//AmbientColor
