@@ -1,5 +1,6 @@
 package ;
 import flash.display.BitmapData;
+import flash.display.Shape;
 import flash.display3D.Context3DTextureFormat;
 import flash.display3D.textures.TextureBase;
 import flash.events.Event;

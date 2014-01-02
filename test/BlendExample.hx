@@ -74,12 +74,7 @@ class BlendExample extends BasicTest
 		var n = new Node3D();
 		if(obj.index){
 			var material = 
-			new PhongMaterial(
-				[.2, .2, .2],//AmbientColor
-				[Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5],//DiffuseColor
-				[.8,.8,.8],//SpecularColor
-				200
-				);
+			new PhongMaterial();
 				
 			var xyz = obj.xyz;
 			var uvs = obj.uv;

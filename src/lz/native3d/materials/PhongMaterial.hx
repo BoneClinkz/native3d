@@ -41,6 +41,7 @@ class PhongMaterial extends MaterialBase
 		super();
 		var shader = new PhongShader();
 		this.shader = shader;
+		if (specular != null) specular[3] = specularExponent;
 		shader.ambient = arr2ve3(ambient==null?defAmbient:ambient);
 		shader.diffuse = arr2ve3(diffuse==null?defDiffuse:diffuse);
 		shader.specular = arr2ve3(specular==null?defSpecular:specular);
@@ -49,11 +50,11 @@ class PhongMaterial extends MaterialBase
 			if(light.lightType==BasicLight3D.TYPE_AMBIENT){
 				lights.ambientLights.push( { color:HELP_V3D } );
 			}else if(light.lightType==BasicLight3D.TYPE_DISTANT){
-				lights.distantLights.push( { color:HELP_V3D, positionIntensity:HELP_V3D } );
+				lights.distantLights.push( { color:HELP_V3D, position:HELP_V3D } );
 			}else if(light.lightType==BasicLight3D.TYPE_POINT){
-				lights.pointLights.push( { colorLen:HELP_V3D, positionIntensity:HELP_V3D } );
+				lights.pointLights.push( { colorLen:HELP_V3D, position:HELP_V3D } );
 			}else if(light.lightType==BasicLight3D.TYPE_SPOT){
-				lights.spotLights.push( { colorLen:HELP_V3D, positionIntensity:HELP_V3D,direction:HELP_V3D,innerOuter:HELP_V3D } );
+				lights.spotLights.push( { colorLen:HELP_V3D, position:HELP_V3D,direction:HELP_V3D,innerOuter:HELP_V3D } );
 			}
 		}
 		shader.lights =  lights;
@@ -83,7 +84,6 @@ class PhongMaterial extends MaterialBase
 				fragment[i] = light.position.x;
 				fragment[i+1] =light.position.y;
 				fragment[i + 2] = light.position.z;
-				fragment[i+3] = light.intensity;
 				i += 4;
 			}else if(light.lightType==BasicLight3D.TYPE_POINT){
 				fragment[i] = light.color[0];
@@ -95,7 +95,6 @@ class PhongMaterial extends MaterialBase
 				fragment[i] = light.position.x;
 				fragment[i+1] =light.position.y;
 				fragment[i + 2] = light.position.z;
-				fragment[i+3] = light.intensity;
 				i += 4;
 			}else if(light.lightType==BasicLight3D.TYPE_SPOT){
 				fragment[i] = light.color[0];
@@ -107,7 +106,6 @@ class PhongMaterial extends MaterialBase
 				fragment[i] = light.position.x;
 				fragment[i+1] =light.position.y;
 				fragment[i + 2] = light.position.z;
-				fragment[i+3] = light.intensity;
 				i += 4;
 				
 				//dir
@@ -174,11 +172,11 @@ class PhongMaterial extends MaterialBase
 					fragment[i] = dir.x;
 					fragment[i+1] =dir.y;
 					fragment[i + 2] = dir.z;
-					i += 4;
+					//i += 4;
 					
 					//fragment[i] = light.innerConeAngle;
 					//fragment[i+1] =light.outerConeAngle;
-					i += 4;
+					i += 8;
 				}
 			}
 		}

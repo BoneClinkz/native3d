@@ -11,7 +11,7 @@ package lz.native3d.core;
 	{
 		private var _fieldOfViewY:Float;
 		private var _aspectRatio:Float;
-		private var _zNear:Float=1;
+		private var _zNear:Float;
 		private var _zFar:Float=400000;
 		public var invert:Matrix3D;// = new Matrix3D();
 		public var perspectiveProjection:Matrix3D;// = new Matrix3D();
@@ -44,7 +44,6 @@ package lz.native3d.core;
 				perspectiveFieldOfViewLH(Math.PI / 4, width/height, _zNear, _zFar);
 			}
 			
-			
 			parent = new Node3D();
 			if(!is2d)
 			frustumPlanes = Vector.ofArray([new Vector3D(), new Vector3D(), new Vector3D(), new Vector3D(), new Vector3D(), new Vector3D()]);
@@ -59,14 +58,12 @@ package lz.native3d.core;
 			_fieldOfViewY = fieldOfViewY;
 			var yScale:Float = 1.0/Math.tan(fieldOfViewY/2.0);
 			var xScale:Float = yScale / aspectRatio; 
-			var vs:Vector<Float> = new Vector<Float>(16);
-			vs[0] = xScale;
-			vs[5] = yScale;
-			vs[10] = zFar / ( zFar-zNear);
-			//vs[10] = 1 / ( zFar-zNear);
-			vs[11] = 1;
-			vs[14] = (zNear * zFar) / (zNear - zFar);
-			vs[15] = 0;
+			var vs:Vector<Float> = Vector.ofArray([
+				xScale, 0, 0, 0,
+				0, yScale, 0, 0,
+				0, 0, zFar/(zFar-zNear), 1,
+				0,0,zNear*zFar/(zNear-zFar),0
+			]);
 			
 			#if flash
 			perspectiveProjection.copyRawDataFrom(vs);
@@ -75,12 +72,6 @@ package lz.native3d.core;
 			#end
 			
 			invertVersion = -3;
-			/*perspectiveProjection.copyRawDataFrom(Vector<Float>(
-				xScale, 0.0, 0.0, 0.0,
-				0.0, yScale, 0.0, 0.0,
-				0.0, 0.0, , 1.0,
-				0.0, 0.0, (zNear*zFar)/(zNear-zFar), 0.0
-			));*/
 		}
 		
 		public function orthoLH(width:Float, height:Float, zNear:Float, zFar:Float,scale:Vector3D,pos:Vector3D):Void {
@@ -113,52 +104,6 @@ package lz.native3d.core;
 			}
 		}
 		
-		/*public function get fieldOfViewY():Float 
-		{
-			return _fieldOfViewY;
-		}
-		
-		public function set fieldOfViewY(value:Float):Void 
-		{
-			_fieldOfViewY = value;
-			perspectiveFieldOfViewLH(_fieldOfViewY,_aspectRatio,_zNear,_zFar);
-		}
-		
-		public function get aspectRatio():Float 
-		{
-			return _aspectRatio;
-		}
-		
-		public function set aspectRatio(value:Float):Void 
-		{
-			_aspectRatio = value;
-			perspectiveFieldOfViewLH(_fieldOfViewY,_aspectRatio,_zNear,_zFar);
-		}
-		
-		public function get zNear():Float 
-		{
-			return _zNear;
-		}
-		
-		public function set zNear(value:Float):Void 
-		{
-			_zNear = value;
-			perspectiveFieldOfViewLH(_fieldOfViewY,_aspectRatio,_zNear,_zFar);
-		}
-		
-		public function get zFar():Float 
-		{
-			return _zFar;
-		}
-		
-		public function set zFar(value:Float):Void 
-		{
-			_zFar = value;
-			perspectiveFieldOfViewLH(_fieldOfViewY,_aspectRatio,_zNear,_zFar);
-		}*/
-		
-		
-		
 		/**
 		*   Get the distance between a point and a plane
 		* http://jacksondunstan.com/articles/1811
@@ -189,26 +134,6 @@ package lz.native3d.core;
 			}
 			return true;
 		}
- 
-		/**
-		*   Check if a sphere is in the viewing frustum
-		* http://jacksondunstan.com/articles/1811
-		*   @param sphere Sphere to check. XYZ are the center, W is the radius.
-		*   @return If any part of the given sphere is in the viewing frustum
-		*/
-		/*public function isSphereInFrustum(sphere:Vector3D): Bool
-		{
-			// Test all extents of the sphere 
-			var minusRadius:Float = -sphere.w;
-			for  (plane in frustumPlanes)
-			{
-				if (pointPlaneDistance(sphere, plane) < minusRadius)
-				{
-					return false;
-				}
-			}
-			return true;
-		}*/
 	}
 
 //}

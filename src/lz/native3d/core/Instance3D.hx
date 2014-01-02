@@ -1,6 +1,8 @@
 package lz.native3d.core ;
 //{
 	import flash.display.BitmapData;
+	import flash.display.Shape;
+	import flash.display.Sprite;
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DBlendFactor;
 	import flash.display3D.Context3DCompareMode;
@@ -53,6 +55,7 @@ package lz.native3d.core ;
 		public var buffsOffsets:Array<Int>;
 		public var lastTextures:Array<TextureBase>;
 		public var nowTextures:Array<TextureBase>;
+		public var shape:Sprite;
 		public function new() 
 		{
 			super();
@@ -84,6 +87,9 @@ package lz.native3d.core ;
 		}
 		
 		public function render():Void {
+			if (shape!=null) {
+				shape.graphics.clear();
+			}
 			drawCounter = drawTriangleCounter = 0;
 			
 			nodess = new Vector<Vector<Node3D>>();
