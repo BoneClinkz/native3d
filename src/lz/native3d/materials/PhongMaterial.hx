@@ -29,91 +29,103 @@ class PhongMaterial extends MaterialBase
 {
 	private static var HELP_V3D:Vector3D = new Vector3D();
 	private static var ZAX:Vector3D = new Vector3D(0, 0, 1);
+	var isShadowDepth:Bool;
 	
 	public static var defAmbient:Array<Float>=[.2,.2,.2];
 	public static var defDiffuse:Array<Float>=[.8,.8,.8];
-	public static var defSpecular:Array<Float>=[.8,.8,.8];
+	public static var defSpecular:Array<Float>=[.8,.8,.8,200];
 	
 	public var diffuseTex:TextureBase;
 	public var skin:Skin;
-	public function new(ambient:Array<Float>=null,diffuse:Array<Float>=null,specular:Array<Float>=null,specularExponent:Float=200,diffuseTex:TextureBase=null,skin:Skin=null) 
+	public function new(ambient:Array<Float>=null,diffuse:Array<Float>=null,specular:Array<Float>=null,specularExponent:Float=200,diffuseTex:TextureBase=null,skin:Skin=null,isShadowDepth:Bool=false) 
 	{
 		super();
 		var shader = new PhongShader();
 		this.shader = shader;
-		if (specular != null) specular[3] = specularExponent;
-		shader.ambient = arr2ve3(ambient==null?defAmbient:ambient);
-		shader.diffuse = arr2ve3(diffuse==null?defDiffuse:diffuse);
-		shader.specular = arr2ve3(specular==null?defSpecular:specular);
-		var lights = { ambientLights:[],distantLights:[],pointLights:[],spotLights:[]};
-		for (light in i3d.lights) {
-			if(light.lightType==BasicLight3D.TYPE_AMBIENT){
-				lights.ambientLights.push( { color:HELP_V3D } );
-			}else if(light.lightType==BasicLight3D.TYPE_DISTANT){
-				lights.distantLights.push( { color:HELP_V3D, position:HELP_V3D } );
-			}else if(light.lightType==BasicLight3D.TYPE_POINT){
-				lights.pointLights.push( { colorLen:HELP_V3D, position:HELP_V3D } );
-			}else if(light.lightType==BasicLight3D.TYPE_SPOT){
-				lights.spotLights.push( { colorLen:HELP_V3D, position:HELP_V3D,direction:HELP_V3D,innerOuter:HELP_V3D } );
-			}
-		}
-		shader.lights =  lights;
 		
-		this.diffuseTex = diffuseTex;
-		if(diffuseTex!=null)shader.diffuseMap = diffuseTex;
-		shader.hasDiffuseMap = diffuseTex != null;
-		//trace(shader.getDebugShaderCode(true));
+		//test
+		//isShadowDepth = true;
+		this.isShadowDepth = isShadowDepth;
+		shader.isShadowDepth = isShadowDepth;
+		//i3d.context.enableErrorChecking = true;
+		
+		if(!isShadowDepth){
+			if (specular != null) specular[3] = specularExponent;
+			shader.ambient = arr2ve3(ambient==null?defAmbient:ambient);
+			shader.diffuse = arr2ve3(diffuse==null?defDiffuse:diffuse);
+			shader.specular = arr2ve3(specular==null?defSpecular:specular);
+			var lights = { ambientLights:[],distantLights:[],pointLights:[],spotLights:[]};
+			for (light in i3d.lights) {
+				if(light.lightType==BasicLight3D.TYPE_AMBIENT){
+					lights.ambientLights.push( { color:HELP_V3D } );
+				}else if(light.lightType==BasicLight3D.TYPE_DISTANT){
+					lights.distantLights.push( { color:HELP_V3D, position:HELP_V3D } );
+				}else if(light.lightType==BasicLight3D.TYPE_POINT){
+					lights.pointLights.push( { colorLen:HELP_V3D, position:HELP_V3D } );
+				}else if(light.lightType==BasicLight3D.TYPE_SPOT){
+					lights.spotLights.push( { colorLen:HELP_V3D, position:HELP_V3D,direction:HELP_V3D,innerOuter:HELP_V3D } );
+				}
+			}
+			shader.lights =  lights;
+			this.diffuseTex = diffuseTex;
+			if(diffuseTex!=null)shader.diffuseMap = diffuseTex;
+			shader.hasDiffuseMap = diffuseTex != null;
+		}
+		
 		this.skin = skin;
 		if (skin != null) shader.anmMats = [];
 		shader.hasAnm = skin != null;
 		build();
+		//trace(shader.getDebugShaderCode(true));
 		
-		var i = 12;
-		for (light in i3d.lights) {
-			if(light.lightType==BasicLight3D.TYPE_AMBIENT){
-				fragment[i] = light.color[0];
-				fragment[i+1] =light.color[1];
-				fragment[i + 2] = light.color[2];
-				i+=4;
-			}else if(light.lightType==BasicLight3D.TYPE_DISTANT){
-				fragment[i] = light.color[0];
-				fragment[i+1] =light.color[1];
-				fragment[i + 2] = light.color[2];
-				i+=4;
-				
-				fragment[i] = light.position.x;
-				fragment[i+1] =light.position.y;
-				fragment[i + 2] = light.position.z;
-				i += 4;
-			}else if(light.lightType==BasicLight3D.TYPE_POINT){
-				fragment[i] = light.color[0];
-				fragment[i+1] =light.color[1];
-				fragment[i + 2] = light.color[2];
-				fragment[i + 3] = light.distance;
-				i+=4;
-				
-				fragment[i] = light.position.x;
-				fragment[i+1] =light.position.y;
-				fragment[i + 2] = light.position.z;
-				i += 4;
-			}else if(light.lightType==BasicLight3D.TYPE_SPOT){
-				fragment[i] = light.color[0];
-				fragment[i+1] =light.color[1];
-				fragment[i + 2] = light.color[2];
-				fragment[i + 3] = light.distance;
-				i+=4;
-				
-				fragment[i] = light.position.x;
-				fragment[i+1] =light.position.y;
-				fragment[i + 2] = light.position.z;
-				i += 4;
-				
-				//dir
-				i += 4;
-				
-				fragment[i] = light.innerConeAngle;
-				fragment[i+1] =light.outerConeAngle;
-				i += 4;
+		if(!isShadowDepth){
+			var i = 12;
+			for (light in i3d.lights) {
+				if(light.lightType==BasicLight3D.TYPE_AMBIENT){
+					fragment[i] = light.color[0];
+					fragment[i+1] =light.color[1];
+					fragment[i + 2] = light.color[2];
+					i+=4;
+				}else if(light.lightType==BasicLight3D.TYPE_DISTANT){
+					fragment[i] = light.color[0];
+					fragment[i+1] =light.color[1];
+					fragment[i + 2] = light.color[2];
+					i+=4;
+					
+					fragment[i] = light.position.x;
+					fragment[i+1] =light.position.y;
+					fragment[i + 2] = light.position.z;
+					i += 4;
+				}else if(light.lightType==BasicLight3D.TYPE_POINT){
+					fragment[i] = light.color[0];
+					fragment[i+1] =light.color[1];
+					fragment[i + 2] = light.color[2];
+					fragment[i + 3] = light.distance;
+					i+=4;
+					
+					fragment[i] = light.position.x;
+					fragment[i+1] =light.position.y;
+					fragment[i + 2] = light.position.z;
+					i += 4;
+				}else if(light.lightType==BasicLight3D.TYPE_SPOT){
+					fragment[i] = light.color[0];
+					fragment[i+1] =light.color[1];
+					fragment[i + 2] = light.color[2];
+					fragment[i + 3] = light.distance;
+					i+=4;
+					
+					fragment[i] = light.position.x;
+					fragment[i+1] =light.position.y;
+					fragment[i + 2] = light.position.z;
+					i += 4;
+					
+					//dir
+					i += 4;
+					
+					fragment[i] = light.innerConeAngle;
+					fragment[i+1] =light.outerConeAngle;
+					i += 4;
+				}
 			}
 		}
 	}
@@ -122,61 +134,63 @@ class PhongMaterial extends MaterialBase
 		//super
 		super.draw(node, pass);
 		//const
-		var shader:PhongShader =untyped this.shader;
-		if (shader.diffuse != null || shader.specular != null) {
-			var i = 12;
-			for (light in i3d.lights) {
-				if(light.lightType==BasicLight3D.TYPE_AMBIENT){
-					/*fragment[i] = light.color[0];
-					fragment[i+1] =light.color[1];
-					fragment[i + 2] = light.color[2];*/
-					i+=4;
-				}else if(light.lightType==BasicLight3D.TYPE_DISTANT){
-					/*fragment[i] = light.color[0];
-					fragment[i+1] =light.color[1];
-					fragment[i + 2] = light.color[2];*/
-					i+=4;
-					
-					fragment[i] = light.position.x;
-					fragment[i+1] =light.position.y;
-					fragment[i + 2] = light.position.z;
-					//fragment[i+3] = light.intensity;
-					i += 4;
-				}else if(light.lightType==BasicLight3D.TYPE_POINT){
-					/*fragment[i] = light.color[0];
-					fragment[i+1] =light.color[1];
-					fragment[i + 2] = light.color[2];
-					fragment[i + 3] = light.distance;*/
-					i+=4;
-					
-					fragment[i] = light.position.x;
-					fragment[i+1] =light.position.y;
-					fragment[i + 2] = light.position.z;
-					//fragment[i+3] = light.intensity;
-					i += 4;
-				}else if(light.lightType==BasicLight3D.TYPE_SPOT){
-					/*fragment[i] = light.color[0];
-					fragment[i+1] =light.color[1];
-					fragment[i + 2] = light.color[2];
-					fragment[i + 3] = light.distance;*/
-					i+=4;
-					
-					fragment[i] = light.position.x;
-					fragment[i+1] =light.position.y;
-					fragment[i + 2] = light.position.z;
-					//fragment[i+3] = light.intensity;
-					i += 4;
-					
-					//dir
-					var dir = light.worldMatrix.transformVector(ZAX);
-					fragment[i] = dir.x;
-					fragment[i+1] =dir.y;
-					fragment[i + 2] = dir.z;
-					//i += 4;
-					
-					//fragment[i] = light.innerConeAngle;
-					//fragment[i+1] =light.outerConeAngle;
-					i += 8;
+		var shader:PhongShader = untyped this.shader;
+		if(!isShadowDepth){
+			if (shader.diffuse != null || shader.specular != null) {
+				var i = 12;
+				for (light in i3d.lights) {
+					if(light.lightType==BasicLight3D.TYPE_AMBIENT){
+						/*fragment[i] = light.color[0];
+						fragment[i+1] =light.color[1];
+						fragment[i + 2] = light.color[2];*/
+						i+=4;
+					}else if(light.lightType==BasicLight3D.TYPE_DISTANT){
+						/*fragment[i] = light.color[0];
+						fragment[i+1] =light.color[1];
+						fragment[i + 2] = light.color[2];*/
+						i+=4;
+						
+						fragment[i] = light.position.x;
+						fragment[i+1] =light.position.y;
+						fragment[i + 2] = light.position.z;
+						//fragment[i+3] = light.intensity;
+						i += 4;
+					}else if(light.lightType==BasicLight3D.TYPE_POINT){
+						/*fragment[i] = light.color[0];
+						fragment[i+1] =light.color[1];
+						fragment[i + 2] = light.color[2];
+						fragment[i + 3] = light.distance;*/
+						i+=4;
+						
+						fragment[i] = light.position.x;
+						fragment[i+1] =light.position.y;
+						fragment[i + 2] = light.position.z;
+						//fragment[i+3] = light.intensity;
+						i += 4;
+					}else if(light.lightType==BasicLight3D.TYPE_SPOT){
+						/*fragment[i] = light.color[0];
+						fragment[i+1] =light.color[1];
+						fragment[i + 2] = light.color[2];
+						fragment[i + 3] = light.distance;*/
+						i+=4;
+						
+						fragment[i] = light.position.x;
+						fragment[i+1] =light.position.y;
+						fragment[i + 2] = light.position.z;
+						//fragment[i+3] = light.intensity;
+						i += 4;
+						
+						//dir
+						var dir = light.worldMatrix.transformVector(ZAX);
+						fragment[i] = dir.x;
+						fragment[i+1] =dir.y;
+						fragment[i + 2] = dir.z;
+						//i += 4;
+						
+						//fragment[i] = light.innerConeAngle;
+						//fragment[i+1] =light.outerConeAngle;
+						i += 8;
+					}
 				}
 			}
 		}
@@ -210,19 +224,24 @@ class PhongMaterial extends MaterialBase
 		}else {
 			node.frame = node.frame % skin.numFrame;
 			for(drawable in skin.draws){
-				if(diffuseTex!=null){
-					i3d.setTextureAt(0, diffuseTex);
-				}
 				xyz = drawable.xyz;
-				norm = drawable.norm;
 				weightBuff = drawable.weightBuff;
 				matrixBuff = drawable.matrixBuff;
-				uv = drawable.uv;
 				i3d.setVertexBufferAt(0, xyz.vertexBuff, 0, xyz.format);
-				i3d.setVertexBufferAt(1, norm.vertexBuff, 0, norm.format);
-				i3d.setVertexBufferAt(2, weightBuff.vertexBuff, 0, weightBuff.format);
-				i3d.setVertexBufferAt(3, matrixBuff.vertexBuff, 0, matrixBuff.format);
-				i3d.setVertexBufferAt(4, uv.vertexBuff, 0, uv.format);
+				if(!isShadowDepth){
+					if(diffuseTex!=null){
+						i3d.setTextureAt(0, diffuseTex);
+					}
+					norm = drawable.norm;
+					uv = drawable.uv;
+					i3d.setVertexBufferAt(1, norm.vertexBuff, 0, norm.format);
+					i3d.setVertexBufferAt(2, weightBuff.vertexBuff, 0, weightBuff.format);
+					i3d.setVertexBufferAt(3, matrixBuff.vertexBuff, 0, matrixBuff.format);
+					i3d.setVertexBufferAt(4, uv.vertexBuff, 0, uv.format);
+				}else {
+					i3d.setVertexBufferAt(1, weightBuff.vertexBuff, 0, weightBuff.format);
+					i3d.setVertexBufferAt(2, matrixBuff.vertexBuff, 0, matrixBuff.format);
+				}
 				
 				var byteSet = drawable.cacheBytes[node.frame];
 				i3d.setProgramConstantsFromByteArray(Context3DProgramType.VERTEX, 8,byteSet.numRegisters,byteSet.data,0);

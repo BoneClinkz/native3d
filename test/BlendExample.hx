@@ -65,7 +65,7 @@ class BlendExample extends BasicTest
 				//image2objs[obj.image].push(node);
 			}
 		}
-		//blenderScene.setScale(1000, 1000, 1000);
+		blenderScene.setScale(.1,.1,.1);
 		ctrl.position.z = -20;
 		ctrl.speed = 5;
 	}

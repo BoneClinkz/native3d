@@ -21,6 +21,7 @@ class PhongShader extends Shader
 		var surfaceNormal:Float3;
 		var viewVec:Float3;
 		var uv:Float2;
+		var shadowDepthZW:Float2;
 		
 		//vertex parameter
 		var modelViewMatrix:M44;
@@ -42,6 +43,8 @@ class PhongShader extends Shader
 		var diffuseMap:Texture;
 		var hasDiffuseMap:Bool;
 		
+		var isShadowDepth:Bool;
+		
 		function vertex() {
 			var wpos:Float4 = input.xyz.xyzw;
 			if (hasAnm != null) {
@@ -50,7 +53,13 @@ class PhongShader extends Shader
 					+ wpos * input.weight.y * anmMats[input.matrixIndex.y] 
 					+ wpos * input.weight.z * anmMats[input.matrixIndex.z];
 			}
-			out = wpos * modelViewMatrix * projectionMatrix;
+			if (!isShadowDepth) {
+				out = wpos * modelViewMatrix * projectionMatrix;
+			}else{
+				wpos = wpos * modelViewMatrix * projectionMatrix;
+				shadowDepthZW = wpos.zw;
+				out = wpos;
+			}
 			
 			if(diffuse!=null||specular!=null){
 				var eyespacePosTemp = (wpos.xyz * modelViewMatrix).xyz;
@@ -64,33 +73,37 @@ class PhongShader extends Shader
 		}
 		
 		function fragment() {
-			var color:Float4 = [0,0,0,1.];
-			for (light in lights.ambientLights) {
-				color.xyz += ambient*diffuse.xyz*light.color;
+			if(!isShadowDepth){
+				var color:Float4 = [0,0,0,1.];
+				for (light in lights.ambientLights) {
+					color.xyz += ambient*diffuse.xyz*light.color;
+				}
+				for (light in lights.distantLights) {
+					color.xyz += getPhongColor(light.position)
+					*light.color;
+				}
+				for (light in lights.pointLights) {
+					color.xyz += getPhongColor(light.position)
+					*getDistanceColor(light.position,light.colorLen.w)
+					*light.colorLen.xyz;
+				}
+				for (light in lights.spotLights) {
+					color.xyz += getPhongColor(light.position)
+					*getDistanceColor(light.position, light.colorLen.w)
+					*getSmoothColor(light.position,light.direction,light.innerOuter.x,light.innerOuter.y)
+					*light.colorLen.xyz;
+				}
+				if (hasDiffuseMap) {
+					color *=diffuseMap.get(uv, wrap);
+				}
+				out =  color;
+			}else {
+				//pack
+				var bitSh:Float4 = [0x1000000, 0x10000, 0x100, 1];
+				var bitMsk:Float4 = [0, 1 / 0x100, 1 / 0x100, 1 / 0x100];
+				var comp:Float4 = frc(shadowDepthZW.x/shadowDepthZW.y* bitSh);
+				out = comp- comp.xxyz* bitMsk;
 			}
-			for (light in lights.distantLights) {
-				color.xyz += getPhongColor(light.position)
-				*light.color;
-			}
-			for (light in lights.pointLights) {
-				color.xyz += getPhongColor(light.position)
-				*getDistanceColor(light.position,light.colorLen.w)
-				*light.colorLen.xyz;
-			}
-			for (light in lights.spotLights) {
-				color.xyz += getPhongColor(light.position)
-				*getDistanceColor(light.position, light.colorLen.w)
-				*getSmoothColor(light.position,light.direction,light.innerOuter.x,light.innerOuter.y)
-				*light.colorLen.xyz;
-			}
-			if (hasDiffuseMap) {
-				color *=diffuseMap.get(uv, wrap);
-			}
-			
-			//test
-			//color *= 0;
-			//color += [1, 1, depth.z/depth.x/2+.5, 1];
-			out =  color;
 		}
 		
 		function getPhongColor(position:Float3):Float3 {

@@ -57,7 +57,6 @@
   <libraryPaths>
     <element path="lib\native3dHaxe.swc" />
     <element path="lib\glsl2agal.swc" />
-    <element path="lib\MinimalComps_0_9_10.swc" />
     <element path="lib\Bullet.swc" />
   </libraryPaths>
   <!-- External Libraries -->

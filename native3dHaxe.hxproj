@@ -25,7 +25,7 @@
     <option directives="" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
-    <option mainClass="PickExample" />
+    <option mainClass="SkeletonAnimationExample" />
     <option enabledebug="True" />
     <option additional="-lib format&#xA;-lib hxsl&#xA;-lib openfl-stage3d&#xA;" />
   </build>
@@ -42,7 +42,7 @@
     <compile path="test\Test2.hx" />
     <compile path="test\TestBlender.hx" />
     <compile path="test\Test3.hx" />
-    <compile path="test\PickExample.hx" />
+    <compile path="test\SkeletonAnimationExample.hx" />
   </compileTargets>
   <!-- Assets to embed into the output SWF -->
   <library>
