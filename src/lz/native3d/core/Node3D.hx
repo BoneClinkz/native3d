@@ -316,7 +316,7 @@ package lz.native3d.core ;
 			
 			node.worldVersion = worldVersion;
 			node.drawable = drawable;
-			
+			node.skin = skin;
 			node.material = material;
 			
 			for (child in children) {

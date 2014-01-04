@@ -127,12 +127,6 @@ class ColladaParser extends AbsParser
 				drawable.indexBufferSet = new IndexBufferSet(indexs.length, indexs, 0);
 				MeshUtils.computeNorm(drawable);
 				node.add(drawableNode);
-				drawableNode.material=new PhongMaterial(
-										[.2, .2, .2],
-										[Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5],
-										[.8,.8,.8],
-										200
-										);
 			}
 		}
 		for (child in xml.elements()) {

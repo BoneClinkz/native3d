@@ -23,27 +23,6 @@ package lz.native3d.core ;
 			this.size = size;
 			texture = Instance3D.getInstance(i3dIndex).createTexture(size, size, Context3DTextureFormat.BGRA, true);
 		}
-		public function pass(pass:BasicPass3D, nodes:Vector<Node3D>):Void {
-			Instance3D.current.setRenderToTexture(texture, enableDepthAndStencil, antiAlias, surfaceSelector);
-			Instance3D.current.clear(0,0,0,0);
-			for (node in nodes) {
-				pass.doPass(node);
-			}
-		}
-		
-		/*public function get clear():Bool 
-		{
-			return _clear;
-		}*/
-		
-		public function clear(value:Bool):Void 
-		{
-			_clear = value;
-			if (!value) {
-				Instance3D.getInstance().setRenderToTexture(texture, enableDepthAndStencil, antiAlias, surfaceSelector);
-				Instance3D.getInstance().clear(0,0,0,0);
-			}
-		}
 		
 	}
 

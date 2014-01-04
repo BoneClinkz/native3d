@@ -26,6 +26,8 @@ package lz.native3d.core ;
 	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
 	import flash.Vector;
+	import lz.native3d.core.animation.Skin;
+	import lz.native3d.materials.PhongMaterial;
 	/**
 	 * ...
 	 * @author lizhi http://matrix3d.github.io/
@@ -56,6 +58,7 @@ package lz.native3d.core ;
 		public var lastTextures:Array<TextureBase>;
 		public var nowTextures:Array<TextureBase>;
 		public var shape:Sprite;
+		
 		public function new() 
 		{
 			super();
@@ -121,7 +124,18 @@ package lz.native3d.core ;
 		}
 		
 		public function addLight(light:BasicLight3D):Void {
-			if(light!=null){
+			if (light != null) {
+				if(light.shadowMapEnabled){
+					var pass = new BasicPass3D();
+					pass.cnodes = root.children;
+					pass.camera = new Camera3D(400, 400);
+					pass.camera.perspectiveFieldOfViewLH(Math.PI / 2, 1, 1, 40000000);
+					pass.target = new PassTarget(light.shadowMapSize);
+					pass.material = new PhongMaterial(null, null, null, 200, null, null, true);
+					pass.skinMaterial=new PhongMaterial(null, null, null, 200, null,new Skin(), true);
+					passs.unshift(pass);
+				}
+				
 				root.add(light);
 				var newlights = new Vector<BasicLight3D>();
 				var added = false;

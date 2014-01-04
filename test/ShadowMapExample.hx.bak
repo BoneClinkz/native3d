@@ -120,6 +120,8 @@ package ;
 			pass.camera.matrix.copyFrom(light.matrix);
 			pass.camera.matrixVersion = light.matrixVersion;
 			bv.instance3Ds[0].render();
+			
+			
 		}
 		
 		private function addObj() : Node3D

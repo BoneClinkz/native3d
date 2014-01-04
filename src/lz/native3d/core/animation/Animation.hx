@@ -243,7 +243,7 @@ class Animation
 				skin.node.drawable = new Drawable3D();
 				skin.node.drawable.radius = skinDrawable.radius;
 				skin.node.drawable.indexBufferSet = skinDrawable.indexBufferSet;
-				//skin.node.material=new SkinMaterial(skin, Std.random(0xffffff), Std.random(0xffffff), new BasicLight3D());
+				skin.node.skin = skin;
 				skin.node.material = new PhongMaterial(null,null,null,
 										200,
 										skin.texture.texture,

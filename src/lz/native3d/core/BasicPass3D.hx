@@ -27,10 +27,12 @@ package lz.native3d.core ;
 		public var cnodes:Vector<Node3D>;
 		public var camera:Camera3D;
 		public var material:MaterialBase;
+		public var skinMaterial:MaterialBase;
 		public var rootIndex:Int = 0;
 		public var clear:Bool = true;
 		public var present:Bool = true;
 		public var customDraw:Function;
+		public var target:PassTarget;
 		public function new() 
 		{
 			camera = Instance3D.current.camera;
@@ -39,6 +41,11 @@ package lz.native3d.core ;
 		public function pass(nodes:Vector<Node3D>):Void {
 			this.nodes = nodes;
 			var i3d = Instance3D.current;
+			if (target != null) {
+				i3d.setRenderToTexture(target.texture, target.enableDepthAndStencil, target.antiAlias, target.surfaceSelector);
+			}else {
+				i3d.setRenderToBackBuffer();
+			}
 			if (clear) i3d.clear(0, 0, 0, 0);
 			if (customDraw==null) {
 				drawScene();
@@ -49,6 +56,7 @@ package lz.native3d.core ;
 		}
 		
 		public function drawScene():Void {
+			if(nodes!=null)
 			for(i in 0...nodes.length) {
 				var node:Node3D = nodes[i];
 				doPass(node);
@@ -84,7 +92,14 @@ package lz.native3d.core ;
 		}
 		
 		inline public function doPass(node:Node3D):Void {
-			var m = material;
+			var m = null;
+			if (node.skin == null) {
+				m=material;
+			}else{
+				m = skinMaterial;
+				if(m!=null)
+				untyped skinMaterial.skin = node.skin;
+			}
 			if (m == null) m = node.material;
 			var i3d = Instance3D.current;
 			if (camera.frustumPlanes == null || node.frustumCulling == null || node.frustumCulling.culling(camera)) {
