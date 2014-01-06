@@ -133,7 +133,7 @@ package lz.native3d.core ;
 					pass.target = new PassTarget(light.shadowMapSize);
 					pass.material = new PhongMaterial(null, null, null, 200, null, null, true);
 					pass.skinMaterial=new PhongMaterial(null, null, null, 200, null,new Skin(), true);
-					passs.unshift(pass);
+					//passs.unshift(pass);
 				}
 				
 				root.add(light);

@@ -1,0 +1,17 @@
+{
+  "name": "native3d",
+  "license": "MIT",
+  "tags": ["cross","cpp","js","flash","game","openfl","web","3d"],
+  "description": "A simple gpu accelerated graphics engine written in haxe.",
+  "contributors": ["lizhi"],
+  "releasenote": "frist",
+  "version": "1.0.0",
+  "url": "https://github.com/matrix3d/native3d",
+  "classPath": "src/",
+  "dependencies": {
+    "format": "",
+    "hxsl": "",
+    "openfl-stage3d": ""
+  }
+}
+
