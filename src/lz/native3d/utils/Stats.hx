@@ -1,6 +1,8 @@
 package lz.native3d.utils;
 import flash.display.Sprite;
 import flash.events.Event;
+import flash.events.MouseEvent;
+import flash.geom.Rectangle;
 import flash.Lib;
 import flash.system.System;
 import flash.text.TextField;
@@ -24,11 +26,28 @@ class Stats extends Sprite
 		super();
 		addEventListener(Event.ENTER_FRAME, enterFrame);
 		tf = new TextField();
+		tf.mouseEnabled=tf.selectable = false;
+		buttonMode = true;
 		tf.defaultTextFormat = new TextFormat("Verdana");
 		tf.text = "stats3d";
 		addChild(tf);
 		tf.autoSize = TextFieldAutoSize.LEFT;
 		tf.textColor = 0xffffff;
+		addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+	}
+	
+	private function mouseDown(e:MouseEvent):Void 
+	{
+		if (stage != null) {
+			startDrag(false,new Rectangle(0,0,stage.stageWidth-width,stage.stageHeight-height));
+			stage.addEventListener(MouseEvent.MOUSE_UP, stage_mouseUp);
+		}
+	}
+	
+	private function stage_mouseUp(e:MouseEvent):Void 
+	{
+		if(stage!=null)stage.removeEventListener(MouseEvent.MOUSE_UP, stage_mouseUp);
+		stopDrag();
 	}
 	
 	private function enterFrame(e:Event):Void 

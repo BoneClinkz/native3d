@@ -5,9 +5,8 @@
   "description": "A simple gpu accelerated graphics engine written in haxe.",
   "contributors": ["lizhi"],
   "releasenote": "frist",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "url": "https://github.com/matrix3d/native3d",
-  "classPath": "src/",
   "dependencies": {
     "format": "",
     "hxsl": "",

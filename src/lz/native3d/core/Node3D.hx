@@ -34,6 +34,9 @@ package lz.native3d.core ;
 		public var parent:Node3D;
 		public var children:Vector<Node3D>;// = new Vector<Node3D>();
 		public var skin:Skin;//皮肤
+		
+		public var playing:Bool = true;
+		public var startFrame:Int;
 		public var frame:Int;
 		//native3d var compChanged:Bool = false;
 		//public var matrixChanged:Bool = false;

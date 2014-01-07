@@ -88,7 +88,7 @@ class Animation
 			var daeIndexs =new Vector<Vector<Int>>();
 			var daeUVIndexs =new Vector<Vector<Int>>();
 			var i = 0;
-			var maxn = 39;
+			var maxn = 38;
 			while (i < skin.daeIndexs.length) {
 				var indexs = skin.daeIndexs[i];
 				var uvs = skin.daeUVIndexs[i];

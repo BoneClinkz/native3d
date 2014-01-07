@@ -11,7 +11,6 @@ class SwfMovieClip2D extends Node2D
 	public var tags:Array<Node2D>;
 	public var frames:Array<Array<Array<Int>>>;
 	public var frameChanged:Bool = true;
-	public var playing:Bool = true;
 	public function new() 
 	{
 		super();

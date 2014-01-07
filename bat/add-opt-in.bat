@@ -1,2 +1,3 @@
-add-opt-in.py ../bin/native3dHaxe.swf
+cd ../bin
+for %%i in (*.swf) do "../bat/add-opt-in.py" %%i
 pause

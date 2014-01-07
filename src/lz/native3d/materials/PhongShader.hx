@@ -1,4 +1,5 @@
 package lz.native3d.materials;
+import flash.display3D.textures.Texture;
 import hxsl.Shader;
 
 /**
@@ -22,17 +23,30 @@ class PhongShader extends Shader
 		var viewVec:Float3;
 		var uv:Float2;
 		var shadowDepthZW:Float2;
+		var shadowLightPos:Float4;
 		
 		//vertex parameter
 		var modelViewMatrix:M44;
 		var projectionMatrix:M44;
-		var anmMats:M34<39>;
+		
+		//bcs the haxe array not support texture,so make a shadow light out the lights
+		var shadowProjectonMatrix:M44;
+		var shadowMap:Texture;
+		
+		var anmMats:M34<38>;
 		var hasAnm:Bool;
+		
+		//texture
+		var diffuseMap:Texture;
+		var hasDiffuseMap:Bool;
+		var isShadowDepth:Bool;
 		
 		//fragment parameter
 		var	ambient:Float3;
 		var	diffuse:Float3;
 		var	specular:Float4;
+		
+		
 		var lights:Param < {
 			var ambientLights:Array<{color:Float3}>;
 			var distantLights:Array<{color:Float3,position:Float3}>;
@@ -40,25 +54,24 @@ class PhongShader extends Shader
 			var spotLights:Array<{colorLen:Float4,position:Float3,direction:Float3,innerOuter:Float2}>;
 		}>;
 		
-		var diffuseMap:Texture;
-		var hasDiffuseMap:Bool;
-		
-		var isShadowDepth:Bool;
-		
 		function vertex() {
 			var wpos:Float4 = input.xyz.xyzw;
+			//wpos.xyz += input.normal * .7;
 			if (hasAnm != null) {
 				wpos.xyz = 
 					wpos * input.weight.x * anmMats[input.matrixIndex.x ] 
 					+ wpos * input.weight.y * anmMats[input.matrixIndex.y] 
 					+ wpos * input.weight.z * anmMats[input.matrixIndex.z];
 			}
-			if (!isShadowDepth) {
-				out = wpos * modelViewMatrix * projectionMatrix;
-			}else{
+			if (isShadowDepth||shadowProjectonMatrix != null) {
 				wpos = wpos * modelViewMatrix * projectionMatrix;
-				shadowDepthZW = wpos.zw;
 				out = wpos;
+				shadowDepthZW = wpos.zw;
+			}else {
+				out = wpos * modelViewMatrix * projectionMatrix;
+			}
+			if(shadowProjectonMatrix!=null){
+				shadowLightPos = wpos * modelViewMatrix * shadowProjectonMatrix;
 			}
 			
 			if(diffuse!=null||specular!=null){
@@ -92,6 +105,13 @@ class PhongShader extends Shader
 					*getDistanceColor(light.position, light.colorLen.w)
 					*getSmoothColor(light.position,light.direction,light.innerOuter.x,light.innerOuter.y)
 					*light.colorLen.xyz;
+				}
+				if (shadowProjectonMatrix != null) {
+					var shadowLightXY:Float2 = shadowLightPos.xy / shadowLightPos.w * [.5, -.5] + .5;
+					var lightPackedDepth:Float4 = shadowMap.get(shadowLightXY);
+					var lightDepth:Float = dp4(lightPackedDepth, [1 / 0x1000000, 1 / 0x10000, 1 / 0x100, 1]);
+					var curDepth:Float = shadowDepthZW.x / shadowDepthZW.y;
+					color *= lt(curDepth,lightDepth);
 				}
 				if (hasDiffuseMap) {
 					color *=diffuseMap.get(uv, wrap);

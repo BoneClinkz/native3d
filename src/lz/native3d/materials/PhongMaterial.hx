@@ -37,6 +37,7 @@ class PhongMaterial extends MaterialBase
 	
 	public var diffuseTex:TextureBase;
 	public var skin:Skin;
+	public var skinConstIndex:Int = 8;
 	public function new(ambient:Array<Float>=null,diffuse:Array<Float>=null,specular:Array<Float>=null,specularExponent:Float=200,diffuseTex:TextureBase=null,skin:Skin=null,isShadowDepth:Bool=false) 
 	{
 		super();
@@ -53,7 +54,11 @@ class PhongMaterial extends MaterialBase
 			if (specular != null) specular[3] = specularExponent;
 			shader.ambient = arr2ve3(ambient==null?defAmbient:ambient);
 			shader.diffuse = arr2ve3(diffuse==null?defDiffuse:diffuse);
-			shader.specular = arr2ve3(specular==null?defSpecular:specular);
+			shader.specular = arr2ve3(specular == null?defSpecular:specular);
+			if (i3d.shadowLight!=null) {
+				shader.shadowProjectonMatrix = i3d.shadowLightPass.camera.perspectiveProjectionMatirx;
+				skinConstIndex = 12;
+			}
 			var lights = { ambientLights:[],distantLights:[],pointLights:[],spotLights:[]};
 			for (light in i3d.lights) {
 				if(light.lightType==BasicLight3D.TYPE_AMBIENT){
@@ -222,16 +227,23 @@ class PhongMaterial extends MaterialBase
 			//draw
 			i3d.drawTriangles(drawable.indexBufferSet.indexBuff);
 		}else {
-			node.frame = node.frame % skin.numFrame;
+			if (node.playing) {
+				node.frame = (node.startFrame+i3d.frame) % skin.numFrame;
+			}
 			for(drawable in skin.draws){
 				xyz = drawable.xyz;
 				weightBuff = drawable.weightBuff;
 				matrixBuff = drawable.matrixBuff;
 				i3d.setVertexBufferAt(0, xyz.vertexBuff, 0, xyz.format);
-				if(!isShadowDepth){
-					if(diffuseTex!=null){
-						i3d.setTextureAt(0, diffuseTex);
+				if (!isShadowDepth) {
+					var ti = 0;
+					if (i3d.shadowLight!=null) {
+						i3d.setTextureAt(ti++, i3d.shadowLightPass.target.texture);
 					}
+					if(diffuseTex!=null){
+						i3d.setTextureAt(ti, diffuseTex);
+					}
+					
 					norm = drawable.norm;
 					uv = drawable.uv;
 					i3d.setVertexBufferAt(1, norm.vertexBuff, 0, norm.format);
@@ -244,10 +256,9 @@ class PhongMaterial extends MaterialBase
 				}
 				
 				var byteSet = drawable.cacheBytes[node.frame];
-				i3d.setProgramConstantsFromByteArray(Context3DProgramType.VERTEX, 8,byteSet.numRegisters,byteSet.data,0);
+				i3d.setProgramConstantsFromByteArray(Context3DProgramType.VERTEX, skinConstIndex,byteSet.numRegisters,byteSet.data,0);
 				i3d.drawTriangles(drawable.indexBufferSet.indexBuff); 
 			}
-			node.frame++;
 		}
 		
 	}

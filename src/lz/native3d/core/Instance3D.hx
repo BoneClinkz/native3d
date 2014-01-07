@@ -46,6 +46,8 @@ package lz.native3d.core ;
 		public var camera:Camera3D;// = new Camera3D();
 		public var doTransform:BasicDoTransform3D;// = new BasicDoTransform3D();
 		public var passs:Vector<BasicPass3D>;// = new Vector<BasicPass3D>();
+		public var shadowLight:BasicLight3D;
+		public var shadowLightPass:BasicPass3D;
 		public var lights:Vector<BasicLight3D>;
 		public var width:Int=400;
 		public var height:Int = 400;
@@ -59,6 +61,7 @@ package lz.native3d.core ;
 		public var nowTextures:Array<TextureBase>;
 		public var shape:Sprite;
 		
+		public var frame:Int = 0;
 		public function new() 
 		{
 			super();
@@ -106,6 +109,7 @@ package lz.native3d.core ;
 				if (pass.camera!=null) doTransform.doTransformCamera(pass.camera);
 				pass.pass(pass.cnodes!=null?doTransform.doTransform(pass.cnodes):nodes);
 			}
+			frame++;
 		}
 		
 		public function resize(width:Int, height:Int):Void {
@@ -125,7 +129,7 @@ package lz.native3d.core ;
 		
 		public function addLight(light:BasicLight3D):Void {
 			if (light != null) {
-				if(light.shadowMapEnabled){
+				if(shadowLight==null&&light.shadowMapEnabled){
 					var pass = new BasicPass3D();
 					pass.cnodes = root.children;
 					pass.camera = new Camera3D(400, 400);
@@ -133,7 +137,9 @@ package lz.native3d.core ;
 					pass.target = new PassTarget(light.shadowMapSize);
 					pass.material = new PhongMaterial(null, null, null, 200, null, null, true);
 					pass.skinMaterial=new PhongMaterial(null, null, null, 200, null,new Skin(), true);
-					//passs.unshift(pass);
+					passs.unshift(pass);
+					shadowLight = light;
+					shadowLightPass = pass;
 				}
 				
 				root.add(light);
