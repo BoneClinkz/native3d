@@ -62,11 +62,11 @@ class SkeletonAnimationExample extends BasicTest
 	
 	override public function enterFrame(e:Event):Void 
 	{
-		var mainpass = bv.instance3Ds[0].passs[bv.instance3Ds[0].passs.length - 1];
-		mainpass.present = false;
+		/*var mainpass = bv.instance3Ds[0].passs[bv.instance3Ds[0].passs.length - 1];
+		mainpass.present = false;*/
 		bv.instance3Ds[0].render();
 		
-		var x = 150;
+		/*var x = 150;
 		var size = 150;
 		for (i in 0...bv.instance3Ds[0].passs.length-1) {
 			var pass = bv.instance3Ds[0].passs[i];
@@ -75,7 +75,7 @@ class SkeletonAnimationExample extends BasicTest
 				x += size;
 			}
 		}
-		bv.instance3Ds[0].context.present();
+		bv.instance3Ds[0].context.present();*/
 		
 	}
 	public static function main() {

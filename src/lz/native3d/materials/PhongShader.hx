@@ -112,7 +112,7 @@ class PhongShader extends Shader
 					var lightDepth:Float = dot(lightPackedDepth, [1 / 0x1000000, 1 / 0x10000, 1 / 0x100, 1]);
 					lightDepth+=lightDepth == 0;
 					var curDepth:Float = shadowLightPos.z/shadowLightPos.w;
-					color *= lte(curDepth,lightDepth)*.8+.2;
+					color *= lt(curDepth,lightDepth+0.08*128/512)*.8+.2;
 				}
 				if (hasDiffuseMap) {
 					color *=diffuseMap.get(uv, wrap);
@@ -122,7 +122,7 @@ class PhongShader extends Shader
 				//pack
 				var bitSh:Float4 = [0x1000000, 0x10000, 0x100, 1];
 				var bitMsk:Float4 = [0, 1 / 0x100, 1 / 0x100, 1 / 0x100];
-				var comp:Float4 = frc((shadowDepthZW.x/shadowDepthZW.y/*+0.08*128/512*/)* bitSh);//0.08 * 128/width
+				var comp:Float4 = frc((shadowDepthZW.x/shadowDepthZW.y)* bitSh);//0.08 * 128/width
 				out = comp- comp.xxyz* bitMsk;
 			}
 		}
