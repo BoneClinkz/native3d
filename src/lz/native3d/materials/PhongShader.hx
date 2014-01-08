@@ -63,14 +63,14 @@ class PhongShader extends Shader
 					+ wpos * input.weight.y * anmMats[input.matrixIndex.y] 
 					+ wpos * input.weight.z * anmMats[input.matrixIndex.z];
 			}
-			if (isShadowDepth||shadowProjectonMatrix != null) {
+			if (isShadowDepth) {
 				wpos = wpos * modelViewMatrix * projectionMatrix;
 				out = wpos;
 				shadowDepthZW = wpos.zw;
 			}else {
 				out = wpos * modelViewMatrix * projectionMatrix;
 			}
-			if(shadowProjectonMatrix!=null){
+			if (shadowProjectonMatrix != null) {
 				shadowLightPos = wpos * modelViewMatrix * shadowProjectonMatrix;
 			}
 			
@@ -111,7 +111,7 @@ class PhongShader extends Shader
 					var lightPackedDepth:Float4 = shadowMap.get(shadowLightXY);
 					var lightDepth:Float = dot(lightPackedDepth, [1 / 0x1000000, 1 / 0x10000, 1 / 0x100, 1]);
 					lightDepth+=lightDepth == 0;
-					var curDepth:Float = shadowDepthZW.x / shadowDepthZW.y;
+					var curDepth:Float = shadowLightPos.z/shadowLightPos.w;
 					color *= lte(curDepth,lightDepth)*.8+.2;
 				}
 				if (hasDiffuseMap) {
@@ -122,7 +122,7 @@ class PhongShader extends Shader
 				//pack
 				var bitSh:Float4 = [0x1000000, 0x10000, 0x100, 1];
 				var bitMsk:Float4 = [0, 1 / 0x100, 1 / 0x100, 1 / 0x100];
-				var comp:Float4 = frc(shadowDepthZW.x/shadowDepthZW.y* bitSh);
+				var comp:Float4 = frc((shadowDepthZW.x/shadowDepthZW.y/*+0.08*128/512*/)* bitSh);//0.08 * 128/width
 				out = comp- comp.xxyz* bitMsk;
 			}
 		}
