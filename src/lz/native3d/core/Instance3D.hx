@@ -24,6 +24,7 @@ package lz.native3d.core ;
 	import flash.events.EventDispatcher;
 	import flash.geom.Matrix3D;
 	import flash.geom.Rectangle;
+	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
 	import flash.Vector;
 	import lz.native3d.core.animation.Skin;
@@ -98,11 +99,16 @@ package lz.native3d.core ;
 			}
 			drawCounter = drawTriangleCounter = 0;
 			
+			if (shadowLight != null) {
+				shadowLightPass.camera.matrix.identity();
+				shadowLightPass.camera.matrix.appendTranslation(.000001,100,0);
+				shadowLightPass.camera.matrix.pointAt(new Vector3D(),Vector3D.Z_AXIS,new Vector3D(0,-1,0));
+				shadowLightPass.camera.matrixVersion++;
+			}
 			nodess = new Vector<Vector<Node3D>>();
 			for (r in roots) {
 				nodess.push(doTransform.doTransform(r.children));
 			}
-			
 			for (i in 0...passs.length) {
 				var pass:BasicPass3D = passs[i];
 				var nodes:Vector<Node3D> = nodess[pass.rootIndex];
@@ -133,7 +139,7 @@ package lz.native3d.core ;
 					var pass = new BasicPass3D();
 					pass.cnodes = root.children;
 					pass.camera = new Camera3D(400, 400);
-					pass.camera.perspectiveFieldOfViewLH(Math.PI / 2, 1, 1, 40000000);
+					pass.camera.perspectiveFieldOfViewLH(Math.PI / 6, 1, 1, 40000000);
 					pass.target = new PassTarget(light.shadowMapSize);
 					pass.material = new PhongMaterial(null, null, null, 200, null, null, true);
 					pass.skinMaterial=new PhongMaterial(null, null, null, 200, null,new Skin(), true);

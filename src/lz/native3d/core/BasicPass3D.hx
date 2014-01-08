@@ -52,7 +52,7 @@ package lz.native3d.core ;
 			}else {
 				customDraw();
 			}
-			if(present)i3d.present();
+			if(target==null&&present)i3d.present();
 		}
 		
 		public function drawScene():Void {

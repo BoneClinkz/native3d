@@ -26,7 +26,7 @@ class SkeletonAnimationExample extends BasicTest
 	{
 		addDae();
 		#if flash
-		addSky();
+		//addSky();
 		#end	
 		ctrl.position.setTo( 8, 22, 42);
 		ctrl.rotation.setTo(24, 190, 0);
@@ -62,15 +62,15 @@ class SkeletonAnimationExample extends BasicTest
 	
 	override public function enterFrame(e:Event):Void 
 	{
-		bv.instance3Ds[0].render();
-		
 		var mainpass = bv.instance3Ds[0].passs[bv.instance3Ds[0].passs.length - 1];
 		mainpass.present = false;
+		bv.instance3Ds[0].render();
+		
 		var x = 150;
 		var size = 150;
 		for (i in 0...bv.instance3Ds[0].passs.length-1) {
 			var pass = bv.instance3Ds[0].passs[i];
-			if (pass.target!=null) {
+			if (pass.target != null) {
 				mainpass.drawQuadTexture(pass.target.texture, x, 0, size, size);
 				x += size;
 			}

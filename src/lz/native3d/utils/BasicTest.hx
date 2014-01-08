@@ -92,7 +92,7 @@ class BasicTest extends Sprite
 		var c = numLight;
 		while(c-->0){
 			light = new BasicLight3D(BasicLight3D.TYPE_DISTANT);
-			//light.shadowMapEnabled = true;
+			light.shadowMapEnabled = true;
 			bv.instance3Ds[0].addLight(light);
 			light.setPosition(-10000,10000);
 			light.color[0] = 1;
@@ -189,9 +189,6 @@ class BasicTest extends Sprite
 		var parser = new ColladaParser(null);
 		parser.addEventListener(Event.COMPLETE, dae_parser_complete);
 		parser.fromUrlZip("../assets/model/astroBoy_walk_Max.zip", "astroBoy_walk_Max.xml","boy_10.jpg");
-		//parser.fromUrlZip("../assets/model/astroBoy_walk_Max.zip", "10_box_still_maya.xml","boy_10.jpg");
-		//parser.fromUrlZip("../assets/model/astroBoy_walk_Max.zip", "10_box_still.xml","boy_10.jpg");
-		//parser.fromUrlZip("../assets/model/astroBoy_walk_Max.zip", "50_box_smooth_scale.txt","boy_10.jpg");
 	}
 	
 	private function dae_parser_complete(e:Event):Void 

@@ -53,6 +53,7 @@ import flash.display3D.Context3DCompareMode;
 		i3d.setDepthTest(true, passCompareMode);
 		i3d.setBlendFactors(sourceFactor, destinationFactor);
 		i3d.setProgram(progrom);
+		i3d.setCulling(culling);
 	}
 	
 	public function init(node:Node3D):Void {

@@ -201,6 +201,9 @@ class PhongMaterial extends MaterialBase
 		}
 		node.worldMatrix.copyRawDataTo(vertex, 0, true);
 		pass.camera.perspectiveProjectionMatirx.copyRawDataTo(vertex, 16, true);
+		if (i3d.shadowLight != null) {
+			i3d.shadowLightPass.camera.perspectiveProjectionMatirx.copyRawDataTo(vertex, 32, true);
+		}
 		i3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 0, vertex);
 		i3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, fragment);
 		
@@ -220,9 +223,15 @@ class PhongMaterial extends MaterialBase
 			if (shader.diffuse != null || shader.specular != null) {
 				i3d.setVertexBufferAt(1, norm.vertexBuff, 0, norm.format);
 			}
-			if(diffuseTex!=null){
-				i3d.setVertexBufferAt(2, uv.vertexBuff, 0, uv.format);
-				i3d.setTextureAt(0, diffuseTex);
+			if (!isShadowDepth) {
+				var ti = 0;
+				if (i3d.shadowLight!=null) {
+					i3d.setTextureAt(ti++, i3d.shadowLightPass.target.texture);
+				}
+				if(diffuseTex!=null){
+					i3d.setVertexBufferAt(2, uv.vertexBuff, 0, uv.format);
+					i3d.setTextureAt(ti, diffuseTex);
+				}
 			}
 			//draw
 			i3d.drawTriangles(drawable.indexBufferSet.indexBuff);
