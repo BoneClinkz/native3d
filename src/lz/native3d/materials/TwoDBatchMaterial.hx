@@ -64,7 +64,6 @@ class TwoDBatchMaterial extends MaterialBase
 	}
 	
 	inline override public function draw(node:Node3D, pass:BasicPass3D):Void {
-		
 		nodes.length = 0;
 		var needUploadPos:Bool = false;
 		var needUploadUV:Bool = false;
@@ -141,9 +140,8 @@ class TwoDBatchMaterial extends MaterialBase
 		}
 		changed = false;
 		//draw
-		i3d.setDepthTest(true, passCompareMode);
-		i3d.setBlendFactors(sourceFactor, destinationFactor);
-		i3d.setProgram(progrom);
+		super.draw(node, pass);
+		
 		i3d.setVertexBufferAt(0, xyzBuff.vertexBuff, 0, xyzBuff.format);
 		i3d.setVertexBufferAt(1, uvBuff.vertexBuff, 0, uvBuff.format);
 		i3d.setTextureAt(0, texture);

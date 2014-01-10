@@ -25,9 +25,9 @@
     <option directives="" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
-    <option mainClass="SkeletonAnimationExample" />
+    <option mainClass="Test" />
     <option enabledebug="True" />
-    <option additional="-lib format&#xA;-lib hxsl&#xA;-lib openfl-stage3d&#xA;" />
+    <option additional="-lib format&#xA;-lib hxsl&#xA;-lib openfl-stage3d&#xA;--no-inline" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>
@@ -42,7 +42,8 @@
     <compile path="test\Test2.hx" />
     <compile path="test\TestBlender.hx" />
     <compile path="test\Test3.hx" />
-    <compile path="test\SkeletonAnimationExample.hx" />
+    <compile path="test\TestXPath.hx" />
+    <compile path="test\Test.hx" />
   </compileTargets>
   <!-- Assets to embed into the output SWF -->
   <library>

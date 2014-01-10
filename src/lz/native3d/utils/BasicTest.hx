@@ -92,7 +92,7 @@ class BasicTest extends Sprite
 		var c = numLight;
 		while(c-->0){
 			light = new BasicLight3D(BasicLight3D.TYPE_DISTANT);
-			light.shadowMapEnabled = false;
+			light.shadowMapEnabled = true;
 			bv.instance3Ds[0].addLight(light);
 			light.setPosition(-10000,10000);
 			light.color[0] = 1;
@@ -194,7 +194,7 @@ class BasicTest extends Sprite
 	private function dae_parser_complete(e:Event):Void 
 	{
 		var parser = untyped e.currentTarget;
-		var c:Int = 10;
+		var c:Int = 1;
 		for (x in 0...c ) {
 			for(y in 0...c){
 				var clone:Node3D = parser.node.clone();

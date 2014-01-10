@@ -18,6 +18,7 @@ import lz.native3d.parsers.BSP30Parser;
 import lz.native3d.parsers.ColladaParser;
 import lz.native3d.utils.Stats;
 import lz.net.LoaderBat;
+import lz.xml.XPath;
 
 /**
  * ...
@@ -42,11 +43,14 @@ class Test extends Sprite
 		}
 		
 		
+		var xml = Xml.parse("<x><n id='2'>a<a>av</a></n></x>");
+		trace(XPath.xpath(xml,"x.n@id=2.a"));//[<a>av</a>]
 		return;
 		bv = new BasicView(400, 400, false);
 		addChild(bv);
 		bv.instance3Ds[0].addEventListener(Event.CONTEXT3D_CREATE, bv_context3dCreate);
 		addChild(new Stats());
+		
 	}
 	
 	private function bv_context3dCreate(e:Event):Void 

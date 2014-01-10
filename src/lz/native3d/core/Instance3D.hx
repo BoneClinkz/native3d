@@ -122,7 +122,7 @@ package lz.native3d.core ;
 			this.width = width;
 			this.height = height;
 			if (context!=null) {
-				context.configureBackBuffer(width, height, antiAlias);
+				configureBackBuffer(width, height, antiAlias);
 				for (i in 0...passs.length) {
 					var pass:BasicPass3D = passs[i];
 					if (pass.camera != null) {

@@ -50,9 +50,9 @@ import flash.display3D.Context3DCompareMode;
 	}
 	
 	public function draw(node:Node3D, pass:BasicPass3D):Void {
+		i3d.setProgram(progrom);
 		i3d.setDepthTest(true, passCompareMode);
 		i3d.setBlendFactors(sourceFactor, destinationFactor);
-		i3d.setProgram(progrom);
 		i3d.setCulling(culling);
 	}
 	
