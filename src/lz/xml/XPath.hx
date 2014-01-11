@@ -2,19 +2,35 @@ package lz.xml;
 
 /**
  * var xml = Xml.parse("<x><n id='2'>a<a>av</a></n></x>");
- * trace(XPath.xpath(xml,"x.n@id=2.a"));//[<a>av</a>]
+ * 
+ * trace(XPath.xpath(xml,"x.n@id=2.a"));
+ * //[<a>av</a>]
+ * 
+ * trace(XPath.xpathNodeValue(xml,"x.n@id=2.a"));
+ * //av
+ * 
+ * trace(XPath.xpathAttValue(xml,"x.n","id"));
+ * 2
  * 
  * @author lizhi
  */
 class XPath
 {
-
-	public function new() 
-	{
-		
+	static public function xpathAttValue(xml:Xml, exp:String,attName:String):String {
+		var xmls = xpath(xml, exp);
+		if (xmls.length>0) {
+			return xmls[0].get(attName);
+		}
+		return null;
 	}
-	
-	static public function xpath(xml:Xml,exp:String):Dynamic {
+	static public function xpathNodeValue(xml:Xml, exp:String):String {
+		var xmls = xpath(xml, exp);
+		if (xmls.length>0) {
+			return xmls[0].firstChild().nodeValue;
+		}
+		return null;
+	}
+	static public function xpath(xml:Xml,exp:String):Array<Xml> {
 		var exps = exp.split(".");
 		var xmls = [xml];
 		for (exp in exps) {
