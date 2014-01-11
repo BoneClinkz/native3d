@@ -31,21 +31,22 @@ class XPath
 	
 	static public function get(list:Array<Xml>, exp:String):Array<Xml> {
 		var xmls = new Array<Xml>();
-		for (xml in list) {
-			var attIndex = exp.indexOf("@");
-			var name:String;
-			var attName:String=null;
-			var attValue:String=null;
-			if (attIndex>0) {
-				name = exp.substr(0, attIndex);
-				var eqIndex = exp.indexOf("=");
-				if (eqIndex>0) {
-					attName = exp.substr(attIndex + 1, eqIndex - attIndex - 1);
-					attValue = exp.substr(eqIndex + 1);
-				}
-			}else {
-				name = exp;
+		var attIndex = exp.indexOf("@");
+		var name:String;
+		var attName:String=null;
+		var attValue:String=null;
+		if (attIndex>0) {
+			name = exp.substr(0, attIndex);
+			var eqIndex = exp.indexOf("=");
+			if (eqIndex>0) {
+				attName = exp.substr(attIndex + 1, eqIndex - attIndex - 1);
+				attValue = exp.substr(eqIndex + 1);
 			}
+		}else {
+			name = exp;
+		}
+		for (xml in list) {
+			
 			if (xml.nodeName == name) {
 				if(attName==null||xml.get(attName)==attValue)
 					xmls.push(xml);

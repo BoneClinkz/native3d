@@ -29,7 +29,9 @@ class BlendExample extends BasicTest
 	}
 	
 	override public function initScene():Void {
-		loader = LoaderCell.createBytesLoader("../assets/model/threecubes.blend.bin", null);
+		//loader = LoaderCell.createBytesLoader("../assets/model/threecubes.blend.bin", null);
+		//loader = LoaderCell.createBytesLoader("../assets/model/untitled.blend.bin", null);
+		loader = LoaderCell.createBytesLoader("../assets/model/monkey.blend.bin", null);
 		loader.addEventListener(Event.COMPLETE, loader_complete);
 		loader.start();
 	}
