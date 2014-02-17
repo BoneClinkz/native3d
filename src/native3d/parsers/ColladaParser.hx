@@ -50,7 +50,7 @@ class ColladaParser extends AbsParser
 		jointRoot = new Node3D();
 		var xml:Xml = Xml.parse(cast(cast(data,ByteArray).toString(),String));
 		dae = XPath.xpath(xml, "*")[0];
-		var root:Xml = XPath.xpath(dae, "scene.instance_visual_scene")[0];
+		var root:Xml = XPath.xpath(dae, "scene/instance_visual_scene")[0];
 		id2node = new Map<String, Node3D>();
 		sid2node = new Map<String, Node3D>();
 		skins = new Vector<Skin>();
@@ -69,12 +69,12 @@ class ColladaParser extends AbsParser
 	private function buildNode(xml:Xml, node:Node3D,isJoint:Bool=false):Void {
 		var url = xml.get("url");
 		if (url != null) {
-			xml =  XPath.xpathNode(dae,"library_visual_scenes.visual_scene@id="+url.substr(1));
+			xml =  XPath.xpathNode(dae,"library_visual_scenes/visual_scene@id="+url.substr(1));
 		}
 		for (child in xml.elements()) {
 			if (child.nodeName == "instance_controller") {
 				var controllerId = child.get("url").substr(1);
-				var controller = XPath.xpathNode(dae, "library_controllers.controller@id="+ controllerId);
+				var controller = XPath.xpathNode(dae, "library_controllers/controller@id="+ controllerId);
 				for (skin in controller.elements()) {
 					if (skin.nodeName=="skin") {
 						var meshNode = new Node3D();
@@ -89,13 +89,13 @@ class ColladaParser extends AbsParser
 						dskin.bindShapeMatrix = str2Matrix(XPath.xpathNodeValue(skin, "bind_shape_matrix"));
 						var vertexWeights =XPath.xpathNode(skin, "vertex_weights");
 						var jointId = XPath.xpathNode(vertexWeights,"input@semantic=JOINT").get("source").substr(1);
-						dskin.jointNames = str2Strs(XPath.xpathNodeValue(skin, "source@id=" + jointId+".Name_array"));
+						dskin.jointNames = str2Strs(XPath.xpathNodeValue(skin, "source@id=" + jointId+"/Name_array"));
 						var weightId = XPath.xpathNode(vertexWeights,"input@semantic=WEIGHT").get("source").substr(1);
-						dskin.weights = str2Floats(XPath.xpathNodeValue(skin, "source@id="+weightId+".float_array"));
+						dskin.weights = str2Floats(XPath.xpathNodeValue(skin, "source@id="+weightId+"/float_array"));
 						dskin.vcount = str2Ints(XPath.xpathNodeValue(vertexWeights, "vcount"));
 						dskin.v = str2Ints(XPath.xpathNodeValue(vertexWeights, "v"));
-						var invBindMatrixId = XPath.xpathNode(skin,"joints.input@semantic=INV_BIND_MATRIX").get("source").substr(1);
-						dskin.invBindMatrixs = str2Matrixs(XPath.xpathNodeValue(skin,"source@id="+invBindMatrixId+".float_array"));
+						var invBindMatrixId = XPath.xpathNode(skin,"joints/input@semantic=INV_BIND_MATRIX").get("source").substr(1);
+						dskin.invBindMatrixs = str2Matrixs(XPath.xpathNodeValue(skin,"source@id="+invBindMatrixId+"/float_array"));
 					}
 				}
 			}
@@ -127,6 +127,7 @@ class ColladaParser extends AbsParser
 				drawable.uv = new VertexBufferSet(untyped(uv.length / 2), 2, uv, 0);
 				drawable.indexBufferSet = new IndexBufferSet(indexs.length, indexs, 0);
 				MeshUtils.computeNorm(drawable);
+				drawableNode.material = new PhongMaterial(null,null,null,200,texture.texture);
 				node.add(drawableNode);
 			}
 		}
@@ -159,7 +160,7 @@ class ColladaParser extends AbsParser
 	}
 	
 	private function buildGeometry(source:String):Skin {
-		var geometry = XPath.xpathNode(dae, "library_geometries.geometry@id="+source);
+		var geometry = XPath.xpathNode(dae, "library_geometries/geometry@id="+source);
 		var mesh = XPath.xpathNode(geometry, "mesh");
 		var vertices = XPath.xpathNode(mesh, "vertices");
 		var vlib = getVerticesById(vertices.get("id"), mesh);
@@ -236,8 +237,8 @@ class ColladaParser extends AbsParser
 								var sampler = XPath.xpathNode(xa, "sampler@id="+sourceId);
 								var inputId =XPath.xpathNode(sampler,"input@semantic=INPUT").get("source").substr(1);
 								var outputId = XPath.xpathNode(sampler, "input@semantic=OUTPUT").get("source").substr(1);
-								var input = str2Floats(XPath.xpathNodeValue(xa, "source@id=" + inputId + ".float_array"));
-								var output = str2Floats(XPath.xpathNodeValue(xa, "source@id=" + outputId + ".float_array"));
+								var input = str2Floats(XPath.xpathNodeValue(xa, "source@id=" + inputId + "/float_array"));
+								var output = str2Floats(XPath.xpathNodeValue(xa, "source@id=" + outputId + "/float_array"));
 								for (tt in input) {
 									if (anms.maxTime < tt) anms.maxTime = tt;
 								}

@@ -3,10 +3,10 @@ package xml;
 /**
  * var xml = Xml.parse("<x><n id='2'>a<a>av</a></n></x>");
  * 
- * trace(XPath.xpath(xml,"x.n@id=2.a"));
+ * trace(XPath.xpath(xml,"x/n@id=2/a"));
  * //[<a>av</a>]
  * 
- * trace(XPath.xpathNodeValue(xml,"x.n@id=2.a"));
+ * trace(XPath.xpathNodeValue(xml,"x/n@id=2/a"));
  * //av
  * 
  * trace(XPath.xpathAttValue(xml,"x.n","id"));
@@ -38,7 +38,7 @@ class XPath
 		return null;
 	}
 	static public function xpath(xml:Xml,exp:String):Array<Xml> {
-		var exps = exp.split(".");
+		var exps = exp.split("/");
 		var xmls = [xml];
 		for (exp in exps) {
 			var newXmls = new Array<Xml>();

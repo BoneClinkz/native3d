@@ -1,3 +1,3 @@
-cd ../bin
-for %%i in (*.swf) do "../bat/add-opt-in.py" %%i
+cd ../test/bin
+for %%i in (*.swf) do "../../tools/add-opt-in.py" %%i
 pause
