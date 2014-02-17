@@ -15,6 +15,7 @@ import haxe.zip.Entry;
 import haxe.zip.Reader;
 import native3d.core.Node3D;
 import net.LoaderBat;
+import xml.XPath;
 
 /**
  * ...
@@ -177,31 +178,10 @@ class AbsParser extends EventDispatcher
 				return child;
 			}
 			if (child.nodeName=="vertices"&&child.get("id")==id) {
-				return getVerticesById(ne(child,"input").get("source").substr(1),mesh);
+				return getVerticesById(XPath.xpathNode(child,"input").get("source").substr(1),mesh);
 			}
 		}
 		return null;
-	}
-	
-	public function ne(xml:Xml, name:String):Xml {
-		for (child in xml.elements()) {
-			if (child.nodeName == name) return child;
-		}
-		return null;
-	}
-	
-	public function ne2(xml:Xml, name1:String, name2:String):Xml {
-		return ne(ne(xml, name1), name2);
-	}
-	public function idne(xml:Xml, name:String,id:String,idName:String="id"):Xml {
-		for (child in xml.elements()) {
-			if (child.nodeName == name&&child.get(idName)==id) return child;
-		}
-		return null;
-	}
-	public function idne2(xml:Xml, name1:String, name2:String, id:String,idName:String="id"):Xml {
-		var xml2:Xml = ne(xml,name1);
-		return idne(xml2, name2, id,idName);
 	}
 	
 }

@@ -30,6 +30,13 @@ class XPath
 		}
 		return null;
 	}
+	static public function xpathNode(xml:Xml, exp:String):Xml {
+		var xmls = xpath(xml, exp);
+		if (xmls.length>0) {
+			return xmls[0];
+		}
+		return null;
+	}
 	static public function xpath(xml:Xml,exp:String):Array<Xml> {
 		var exps = exp.split(".");
 		var xmls = [xml];
@@ -62,8 +69,7 @@ class XPath
 			name = exp;
 		}
 		for (xml in list) {
-			
-			if (xml.nodeName == name) {
+			if (name=="*"||xml.nodeName == name) {
 				if(attName==null||xml.get(attName)==attValue)
 					xmls.push(xml);
 			}

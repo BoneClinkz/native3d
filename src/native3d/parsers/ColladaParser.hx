@@ -19,6 +19,7 @@ import native3d.core.TextureSet;
 import native3d.core.VertexBufferSet;
 import native3d.materials.PhongMaterial;
 import native3d.meshs.MeshUtils;
+import xml.XPath;
 
 /**
  * 参考文献
@@ -48,8 +49,8 @@ class ColladaParser extends AbsParser
 		texture.setBmd(bmd, Context3DTextureFormat.BGRA);
 		jointRoot = new Node3D();
 		var xml:Xml = Xml.parse(cast(cast(data,ByteArray).toString(),String));
-		dae = ne(xml, "COLLADA");
-		var root:Xml = ne2(dae, "scene", "instance_visual_scene");
+		dae = XPath.xpath(xml, "*")[0];
+		var root:Xml = XPath.xpath(dae, "scene.instance_visual_scene")[0];
 		id2node = new Map<String, Node3D>();
 		sid2node = new Map<String, Node3D>();
 		skins = new Vector<Skin>();
@@ -68,12 +69,12 @@ class ColladaParser extends AbsParser
 	private function buildNode(xml:Xml, node:Node3D,isJoint:Bool=false):Void {
 		var url = xml.get("url");
 		if (url != null) {
-			xml =  idne2(dae,"library_visual_scenes", "visual_scene", url.substr(1));
+			xml =  XPath.xpathNode(dae,"library_visual_scenes.visual_scene@id="+url.substr(1));
 		}
 		for (child in xml.elements()) {
 			if (child.nodeName == "instance_controller") {
 				var controllerId = child.get("url").substr(1);
-				var controller = idne2(dae, "library_controllers", "controller", controllerId);
+				var controller = XPath.xpathNode(dae, "library_controllers.controller@id="+ controllerId);
 				for (skin in controller.elements()) {
 					if (skin.nodeName=="skin") {
 						var meshNode = new Node3D();
@@ -85,16 +86,16 @@ class ColladaParser extends AbsParser
 						
 						dskin.node = drawableNode;
 						skins.push(dskin);
-						dskin.bindShapeMatrix = str2Matrix(ne(skin, "bind_shape_matrix").firstChild().nodeValue);
-						var vertexWeights = ne(skin, "vertex_weights");
-						var jointId = idne(vertexWeights,"input","JOINT","semantic").get("source").substr(1);
-						dskin.jointNames = str2Strs(ne(idne(skin, "source", jointId), "Name_array").firstChild().nodeValue);
-						var weightId = idne(vertexWeights,"input","WEIGHT","semantic").get("source").substr(1);
-						dskin.weights = str2Floats(ne(idne(skin, "source", weightId), "float_array").firstChild().nodeValue);
-						dskin.vcount = str2Ints(ne(vertexWeights, "vcount").firstChild().nodeValue);
-						dskin.v = str2Ints(ne(vertexWeights, "v").firstChild().nodeValue);
-						var invBindMatrixId = idne2(skin,"joints","input","INV_BIND_MATRIX","semantic").get("source").substr(1);
-						dskin.invBindMatrixs = str2Matrixs(ne(idne(skin, "source", invBindMatrixId), "float_array").firstChild().nodeValue);
+						dskin.bindShapeMatrix = str2Matrix(XPath.xpathNodeValue(skin, "bind_shape_matrix"));
+						var vertexWeights =XPath.xpathNode(skin, "vertex_weights");
+						var jointId = XPath.xpathNode(vertexWeights,"input@semantic=JOINT").get("source").substr(1);
+						dskin.jointNames = str2Strs(XPath.xpathNodeValue(skin, "source@id=" + jointId+".Name_array"));
+						var weightId = XPath.xpathNode(vertexWeights,"input@semantic=WEIGHT").get("source").substr(1);
+						dskin.weights = str2Floats(XPath.xpathNodeValue(skin, "source@id="+weightId+".float_array"));
+						dskin.vcount = str2Ints(XPath.xpathNodeValue(vertexWeights, "vcount"));
+						dskin.v = str2Ints(XPath.xpathNodeValue(vertexWeights, "v"));
+						var invBindMatrixId = XPath.xpathNode(skin,"joints.input@semantic=INV_BIND_MATRIX").get("source").substr(1);
+						dskin.invBindMatrixs = str2Matrixs(XPath.xpathNodeValue(skin,"source@id="+invBindMatrixId+".float_array"));
 					}
 				}
 			}
@@ -146,7 +147,7 @@ class ColladaParser extends AbsParser
 					childNode.type = Node3D.JOINT_TYPE;
 				}
 				childNode.name = child.get("name");
-				var matrixXml = ne(child, "matrix");
+				var matrixXml = XPath.xpathNode(child, "matrix");
 				if(matrixXml!=null){
 					var matrix:Matrix3D = str2Matrix(matrixXml.firstChild().nodeValue);
 					childNode.matrix.copyFrom(matrix);
@@ -158,14 +159,14 @@ class ColladaParser extends AbsParser
 	}
 	
 	private function buildGeometry(source:String):Skin {
-		var geometry = idne2(dae, "library_geometries", "geometry", source);
-		var mesh = ne(geometry, "mesh");
-		var vertices = ne(mesh, "vertices");
+		var geometry = XPath.xpathNode(dae, "library_geometries.geometry@id="+source);
+		var mesh = XPath.xpathNode(geometry, "mesh");
+		var vertices = XPath.xpathNode(mesh, "vertices");
 		var vlib = getVerticesById(vertices.get("id"), mesh);
 		
 		var dskin = new Skin();
 		dskin.texture = texture;
-		var vs = str2Floats(ne(vlib, "float_array").firstChild().nodeValue);
+		var vs = str2Floats(XPath.xpathNodeValue(vlib, "float_array"));
 		dskin.daeXyz = vs;
 		dskin.daeIndexs = new Vector<Vector<Int>>();
 		dskin.daeUVIndexs = new Vector<Vector<Int>>();
@@ -173,14 +174,16 @@ class ColladaParser extends AbsParser
 			// TODO : polylist
 			if (triangle.nodeName == "triangles") {
 				if (dskin.daeUV==null) {
-					dskin.daeUV=str2Floats(ne(getVerticesById(idne(triangle, "input", "TEXCOORD", "semantic").get("source").substr(1),mesh),"float_array").firstChild().nodeValue);
+					dskin.daeUV = str2Floats(XPath.xpathNodeValue(getVerticesById(
+						XPath.xpathNode(triangle, "input@semantic=TEXCOORD").get("source").substr(1), mesh)
+						,"float_array"));
 				}
 				var inc:Vector<Int> = new Vector<Int>();
 				var uv:Vector<Int> = new Vector<Int>();
 				dskin.daeIndexs.push(inc);
 				dskin.daeUVIndexs.push(uv);
 				var materialName = triangle.get("material");
-				var parray = str2Ints(ne(triangle, "p").firstChild().nodeValue);
+				var parray = str2Ints(XPath.xpathNodeValue(triangle, "p"));
 				var i = 0;
 				var len = parray.length;
 				var maxOffset = 0;
@@ -230,11 +233,11 @@ class ColladaParser extends AbsParser
 						for (channel in xa.elements()) {
 							if (channel.nodeName == "channel") {
 								var sourceId = channel.get("source").substr(1);
-								var sampler = idne(xa, "sampler", sourceId);
-								var inputId =idne(sampler,"input","INPUT","semantic").get("source").substr(1);
-								var outputId = idne(sampler, "input", "OUTPUT", "semantic").get("source").substr(1);
-								var input = str2Floats(ne(idne(xa, "source", inputId), "float_array").firstChild().nodeValue);
-								var output = str2Floats(ne(idne(xa, "source", outputId), "float_array").firstChild().nodeValue);
+								var sampler = XPath.xpathNode(xa, "sampler@id="+sourceId);
+								var inputId =XPath.xpathNode(sampler,"input@semantic=INPUT").get("source").substr(1);
+								var outputId = XPath.xpathNode(sampler, "input@semantic=OUTPUT").get("source").substr(1);
+								var input = str2Floats(XPath.xpathNodeValue(xa, "source@id=" + inputId + ".float_array"));
+								var output = str2Floats(XPath.xpathNodeValue(xa, "source@id=" + outputId + ".float_array"));
 								for (tt in input) {
 									if (anms.maxTime < tt) anms.maxTime = tt;
 								}
