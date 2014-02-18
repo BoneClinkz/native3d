@@ -2,6 +2,7 @@ package native3d.materials;
 import flash.display3D.Context3D;
 import flash.display3D.Context3DBlendFactor;
 import flash.display3D.Context3DProgramType;
+import flash.display3D.Context3DTriangleFace;
 import flash.display3D.textures.TextureBase;
 import flash.geom.Vector3D;
 import flash.Lib;
@@ -62,6 +63,7 @@ class ParticleMaterial extends MaterialBase
 		sourceFactor = Context3DBlendFactor.SOURCE_ALPHA;
 		destinationFactor = Context3DBlendFactor.ONE;
 		passCompareMode = Context3DCompareMode.ALWAYS;
+		culling = Context3DTriangleFace.NONE;
 		
 		this.endRGBAVar = endRGBAVar;
 		this.endRGBA = endRGBA;

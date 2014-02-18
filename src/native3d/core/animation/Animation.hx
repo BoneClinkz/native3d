@@ -87,7 +87,6 @@ class Animation
 			while (i < skin.daeIndexs.length) {
 				var indexs = skin.daeIndexs[i];
 				var uvs = skin.daeUVIndexs[i];
-				trace(skin.daeIndexs[0].length,skin.daeUVIndexs[0].length);
 				var mimap = new Map<Int,Bool>();
 				var count = 0;
 				for (j in i + 1...skin.daeIndexs.length) {//判断下一个skin数据可不可以合并
