@@ -23,6 +23,7 @@ package native3d.core ;
 		public static inline var JOINT_TYPE:String = "JOINT";
 		public var name:String;
 		public var type:String;
+		public var castShadow:Bool = false;
 		
 		private static var ID:Int = 0;
 		public static var NODES:Map<Int,Node3D> = new Map<Int,Node3D>();
@@ -345,6 +346,13 @@ package native3d.core ;
 		
 		public function update():Void {
 			
+		}
+		
+		public function setAttribValueDepth(name:String, value:Dynamic):Void {
+			Reflect.setProperty(this, name, value);
+			for (c in children) {
+				c.setAttribValueDepth(name, value);
+			}
 		}
 	}
 

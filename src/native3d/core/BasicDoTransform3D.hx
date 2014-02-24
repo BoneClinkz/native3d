@@ -48,6 +48,7 @@ import flash.Vector;
 				#else
 				node.worldRawData = node.worldMatrix.rawData;
 				#end
+
 				
 				node.worldVersion++;
 				if (node.matrixVersion == node.compsVersion) {

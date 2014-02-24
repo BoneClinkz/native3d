@@ -7,6 +7,7 @@ package native3d.core ;
 	import flash.display3D.Context3D;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.Lib;
 	import flash.Vector;
 	#if !flash
 	using OpenFLStage3D;
@@ -37,7 +38,11 @@ package native3d.core ;
 			
 			resize(width, height);
 			this.autoSize = autoSize;
-			addEventListener(Event.ADDED_TO_STAGE, addedToStage);
+			if (stage!=null) {
+				addedToStage(null);
+			}else {
+				addEventListener(Event.ADDED_TO_STAGE, addedToStage);
+			}
 		}
 		
 		private function addedToStage(e:Event):Void 
@@ -58,14 +63,14 @@ package native3d.core ;
 		private function stage3Ds_context3dCreate(e:Event):Void 
 		{
 			for (i in 0...numInstance3d) {
-				var stage3d = getStage3d(i);
-				if (stage3d.context3D==null) {
+				var stage3d = getStage3d(0);
+				if (stage3d.context3D == null) {
 					return;
 				}
 			}
 			for (i in 0...numInstance3d) {
 				var stage3d = getStage3d(i);
-				var i3d:Instance3D = instance3Ds[i];
+				var i3d:Instance3D = instance3Ds[0];
 				i3d.init(stage3d.context3D);
 				i3d.resize(width3d, height3d);
 			}

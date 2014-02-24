@@ -198,6 +198,10 @@ class PhongMaterial extends MaterialBase
 					}
 				}
 			}
+		}else {
+			if (!node.castShadow) {
+				return;
+			}
 		}
 		node.worldMatrix.copyRawDataTo(vertex, 0, true);
 		pass.camera.perspectiveProjectionMatirx.copyRawDataTo(vertex, 16, true);

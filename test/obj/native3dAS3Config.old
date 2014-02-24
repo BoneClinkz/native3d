@@ -8,15 +8,15 @@
   <compiler>
     <define append="true">
       <name>CONFIG::debug</name>
-      <value>true</value>
-    </define>
-    <define append="true">
-      <name>CONFIG::release</name>
       <value>false</value>
     </define>
     <define append="true">
+      <name>CONFIG::release</name>
+      <value>true</value>
+    </define>
+    <define append="true">
       <name>CONFIG::timeStamp</name>
-      <value>'2014/1/20'</value>
+      <value>'2014/2/24'</value>
     </define>
     <define append="true">
       <name>CONFIG::air</name>
@@ -30,22 +30,24 @@
       <name>CONFIG::desktop</name>
       <value>false</value>
     </define>
-    <verbose-stacktraces>true</verbose-stacktraces>
+    <optimize>true</optimize>
+    <omit-trace-statements>true</omit-trace-statements>
+    <verbose-stacktraces>false</verbose-stacktraces>
     <source-path append="true">
-      <path-element>E:\project\native3d\test\src</path-element>
-      <path-element>E:\project\native3d\out</path-element>
-      <path-element>D:\Program Files\FlashDevelop\Library\AS3\classes</path-element>
+      <path-element>C:\Users\Administrator\Documents\GitHub\native3d\test\src</path-element>
+      <path-element>C:\Users\Administrator\Documents\GitHub\native3d\out</path-element>
+      <path-element>D:\Program Files (x86)\FlashDevelop\Library\AS3\classes</path-element>
     </source-path>
     <library-path append="true">
-      <path-element>E:\project\native3d\test\lib\Bullet.swc</path-element>
-      <path-element>E:\project\native3d\out\native3d.swc</path-element>
+      <path-element>C:\Users\Administrator\Documents\GitHub\native3d\test\lib\Bullet.swc</path-element>
+      <path-element>C:\Users\Administrator\Documents\GitHub\native3d\out\native3d.swc</path-element>
     </library-path>
   </compiler>
   <file-specs>
-    <path-element>E:\project\native3d\test\src\BulletTest.as</path-element>
+    <path-element>C:\Users\Administrator\Documents\GitHub\native3d\test\src\BulletTest.as</path-element>
   </file-specs>
   <default-background-color>#FFFFFF</default-background-color>
-  <default-frame-rate>30</default-frame-rate>
+  <default-frame-rate>60</default-frame-rate>
   <default-size>
     <width>800</width>
     <height>600</height>

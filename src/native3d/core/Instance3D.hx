@@ -25,6 +25,7 @@ package native3d.core ;
 	import flash.geom.Matrix3D;
 	import flash.geom.Rectangle;
 	import flash.geom.Vector3D;
+	import flash.Lib;
 	import flash.utils.ByteArray;
 	import flash.Vector;
 	import native3d.core.animation.Skin;
@@ -63,6 +64,8 @@ package native3d.core ;
 		public var shape:Sprite;
 		
 		public var frame:Int = 0;
+		
+		public var widthHeightVersion:Int = 1;
 		public function new() 
 		{
 			super();
@@ -121,6 +124,7 @@ package native3d.core ;
 		public function resize(width:Int, height:Int):Void {
 			this.width = width;
 			this.height = height;
+			widthHeightVersion++;
 			if (context!=null) {
 				configureBackBuffer(width, height, antiAlias);
 				for (i in 0...passs.length) {

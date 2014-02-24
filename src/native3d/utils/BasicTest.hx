@@ -11,6 +11,7 @@ import native3d.core.BasicLight3D;
 import native3d.core.BasicView;
 import native3d.core.Drawable3D;
 import native3d.core.Node3D;
+import native3d.core.Rect2D;
 import native3d.core.TextureSet;
 import native3d.ctrls.FirstPersonCtrl;
 import native3d.materials.PhongMaterial;
@@ -44,19 +45,18 @@ class BasicTest extends Sprite
 	}
 	
 	public function init():Void {
-		//bv = new BasicView(150, 150, false);
-		bv = new BasicView(500, 500, true);
+		bv = new BasicView(100, 100, true);
 		bv.instance3Ds[0].addEventListener(Event.CONTEXT3D_CREATE, context3dCreate);
 		addChild(bv);
-		#if flash
-			addChild(new Stats());
+		//#if flash
+			//addChild(new Stats());
 		loading = new TextField();
 		loading.autoSize = TextFieldAutoSize.LEFT;
 		addChild(loading);
 		loading.x = 200;
 		loading.textColor = 0xff0000;
 		
-		#end
+		//#end
 	}
 	
 	private function context3dCreate(e:Event):Void 
@@ -92,12 +92,15 @@ class BasicTest extends Sprite
 		var c = numLight;
 		while(c-->0){
 			light = new BasicLight3D(BasicLight3D.TYPE_DISTANT);
-			//light.shadowMapEnabled = true;
+			light.shadowMapEnabled = true;
 			bv.instance3Ds[0].addLight(light);
 			light.setPosition(-10000,10000);
 			light.color[0] = 1;
 			light.color[1] = 1;
 			light.color[2] = 1;
+		}
+		if (bv.instance3Ds[0].shadowLight!=null) {
+			root3d.add(new Rect2D(150, 150, bv.instance3Ds[0].shadowLightPass.target.texture));
 		}
 	}
 	
@@ -111,6 +114,9 @@ class BasicTest extends Sprite
 			cubeDrawable=MeshUtils.createCube(1);
 		}
 		var node:Node3D = new Node3D();
+		if (bv.instance3Ds[0].shadowLightPass!=null) {
+			node.castShadow = true;
+		}
 		node.setPosition(x, y, z);
 		node.setRotation(rotationX, rotationY, rotationZ);
 		node.setScale(scaleX, scaleY, scaleZ);
@@ -188,19 +194,27 @@ class BasicTest extends Sprite
 	public function addDae():Void {
 		var parser = new ColladaParser(null);
 		parser.addEventListener(Event.COMPLETE, dae_parser_complete);
+		//parser.fromUrl("10_box_still.dae", "yellow.jpg");
+		//parser.fromUrl("42_box_rigid_member_rotate.dae", "yellow.jpg");
+		//parser.fromUrl("monster.dae", "monster.jpg");
 		parser.fromUrlZip("../assets/model/astroBoy_walk_Max.zip", "astroBoy_walk_Max.xml","boy_10.jpg");
 	}
 	
 	private function dae_parser_complete(e:Event):Void 
 	{
 		var parser = untyped e.currentTarget;
-		var c:Int = 1;
+		var c:Int = 4;
 		for (x in 0...c ) {
 			for(y in 0...c){
 				var clone:Node3D = parser.node.clone();
+				if (bv.instance3Ds[0].shadowLightPass!=null) {
+					clone.setAttribValueDepth( "castShadow", true);
+					
+				}
 				var d:Int = 60;
 				clone.setPosition(d * (x / c - .5), 0 , d * (y / c - .5));
-				clone.setRotation(-90);
+				clone.setRotation( -90);
+				//clone.setScale(.003, .003, .003);
 				root3d.add(clone);
 			}
 		}

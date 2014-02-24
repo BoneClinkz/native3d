@@ -1,87 +1,37 @@
 package ;
+import aglsl.AGALTokenizer;
+import aglsl.AGLSLParser;
 import flash.display.Sprite;
 import flash.events.Event;
-import flash.geom.Vector3D;
 import flash.Lib;
 import flash.utils.ByteArray;
-import haxe.io.Bytes;
-import haxe.io.BytesInput;
-import haxe.Json;
-import haxe.zip.Entry;
-import haxe.zip.Reader;
-import native3d.core.BasicLight3D;
-import native3d.core.BasicView;
-import native3d.core.Node3D;
 import native3d.materials.PhongMaterial;
-import native3d.parsers.AbsParser;
-import native3d.parsers.BSP30Parser;
-import native3d.parsers.ColladaParser;
-import native3d.utils.Stats;
-import net.LoaderBat;
-import xml.XPath;
+import native3d.materials.PhongShader;
+import net.LoaderCell;
 
 /**
  * ...
- * @author lizhi http://matrix3d.github.io/
+ * @author lizhi
  */
 class Test extends Sprite
 {
-	private var bv:BasicView;
-	private var parser:BSP30Parser;
-	private var node:Node3D;
+	var loader:LoaderCell;
+
 	public function new() 
 	{
 		super();
-		
-		var obj:Dynamic = [];
-		untyped obj.push(3);
-		untyped obj.push(.3);
-		untyped obj.a = 1;
-		untyped obj.b = "a";
-		for (c in Reflect.fields(obj)) {
-			trace(untyped obj[c]);
-		}
-		
-		
-		var xml = Xml.parse("<x><n id='2'>a<a>av</a></n></x>");
-		trace(XPath.xpath(xml,"x.n@id=2.a"));//[<a>av</a>]
-		return;
-		bv = new BasicView(400, 400, false);
-		addChild(bv);
-		bv.instance3Ds[0].addEventListener(Event.CONTEXT3D_CREATE, bv_context3dCreate);
-		addChild(new Stats());
-		
+		var shader:PhongShader = new PhongShader();
+		var agal:AGALTokenizer = new AGALTokenizer();
+		var bytes:ByteArray = shader.getInstance().vertexBytes.getData();
+		bytes.position = 0;
+		var parser : AGLSLParser = new AGLSLParser();
+		trace( parser.parse(agal.decribeAGALByteArray(bytes)));
 	}
 	
-	private function bv_context3dCreate(e:Event):Void 
-	{
-		parser = new BSP30Parser(null);
-		parser.addEventListener(Event.COMPLETE, parser_complete);
-		parser.fromUrlZip("../assets/model/es_iceworld.zip", "es_iceworld.bsp");
-		//rootNode.add(parser.node);
-		addEventListener(Event.ENTER_FRAME, enterFrame);
-		bv.instance3Ds[0].camera.z = -1500;
-		
-	}
-	
-	private function parser_complete(e:Event):Void 
-	{
-		node = new Node3D();
-		node.drawable = parser.drawable;
-		node.material = new PhongMaterial([1,1,1],[1,1,1],[1,1,1]);// new ColorMaterial(Std.random(0xffffff), Std.random(0xffffff), new BasicLight3D());
-		bv.instance3Ds[0].root.add(node);
-	}
-	
-	private function enterFrame(e:Event):Void 
-	{
-		if (node!=null) {
-			node.rotationX++;
-			node.rotationY++;
-		}
-		bv.instance3Ds[0].render();
-	}
-	public static function main() {
+	static function main():Void {
 		Lib.current.addChild(new Test());
 	}
-	
 }
+
+
+

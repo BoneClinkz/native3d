@@ -25,7 +25,7 @@ package
 			addSky();
 			
 			ctrl.position.z = -1300;
-			addChild(new Stats);
+			//addChild(new Stats);
 		}
 		
 	}

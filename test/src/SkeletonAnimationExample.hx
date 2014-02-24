@@ -8,6 +8,7 @@ import flash.Lib;
 import native2d.Layer2D;
 import native2d.Node2D;
 import native3d.core.Instance3D;
+import native3d.core.Rect2D;
 import native3d.meshs.MeshUtils;
 import native3d.utils.BasicTest;
 import native3d.core.TextureSet;
@@ -27,7 +28,7 @@ class SkeletonAnimationExample extends BasicTest
 	{
 		addDae();
 		#if flash
-		//addSky();
+		addSky();
 		#end	
 		ctrl.position.setTo( 8, 22, 42);
 		ctrl.rotation.setTo(24, 190, 0);
@@ -36,7 +37,7 @@ class SkeletonAnimationExample extends BasicTest
 		var layer = new Layer2D(true, null);
 		//bv.instance3Ds[0].setProgram(layer.material.progrom);
 		
-		var cube = addCube(null,0,-20,0,0,0,0,100,1,100);
+		//var cube = addCube(null,0,-20,0,0,0,0,100,1,100);
 	}
 	
 	override public function enterFrame(e:Event):Void 

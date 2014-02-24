@@ -103,7 +103,7 @@ package
 			var s:Number = 4.0;
 			
 			var boxShape:btBoxShape = btBoxShape.create(vector(w , w, w));
-			for(var i:int=0; i<1200; i++) {
+			for(var i:int=0; i<120; i++) {
 				//spawnCube(((i%numCols)) * 10  - 30, 10.0 + ((i/numCols) * s), 0, 10, w*2, w*2, w*2)
 				spawnRigidBody(
 					boxShape,

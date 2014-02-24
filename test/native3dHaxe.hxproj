@@ -5,7 +5,7 @@
     <movie outputType="Application" />
     <movie input="" />
     <movie path="bin\native3dHaxe.swf" />
-    <movie fps="30" />
+    <movie fps="60" />
     <movie width="800" />
     <movie height="600" />
     <movie version="11" />
@@ -25,7 +25,7 @@
     <option noInlineOnDebug="False" />
     <option mainClass="SkeletonAnimationExample" />
     <option enabledebug="True" />
-    <option additional="" />
+    <option additional="--no-inline" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

@@ -51,11 +51,10 @@ class ParticleExample extends Sprite
 		shadow.draw(pen);
 		var texture = new TextureSet();
 		texture.setBmd(shadow, Context3DTextureFormat.BGRA, false, 0);
-		pw.material = new ParticleMaterial( texture.texture,1000,0,null,[0,0,0],null,[10,10,0],1,0,1,0,[1,1,1,1]);
+		pw.material = new ParticleMaterial( texture.texture,1000,0,null,[0,0,0],null,[10,10,0],1,0,1,0,[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1]);
 		
 		pw.init();
 		pw.update();
-		
 		bv.instance3Ds[0].root.add(pw);
 		bv.instance3Ds[0].camera.z = -10;
 		addEventListener(Event.ENTER_FRAME, enterFrame);
