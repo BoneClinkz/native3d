@@ -110,9 +110,8 @@ class PhongShader extends Shader
 					var shadowLightXY:Float2 = shadowLightPos.xy / shadowLightPos.w * [.5, -.5] + .5;
 					var lightPackedDepth:Float4 = shadowMap.get(shadowLightXY,clamp);
 					var lightDepth:Float = dot(lightPackedDepth, [1 / 0x1000000, 1 / 0x10000, 1 / 0x100, 1]);
-					lightDepth+=lightDepth == 0;
 					var curDepth:Float = shadowLightPos.z/shadowLightPos.w;
-					color *= lt(curDepth,lightDepth+0.08*128/512)*.8+.2;
+					color *= gt(curDepth,lightDepth+0.08*128/1024)*.8+.2;
 				}
 				if (hasDiffuseMap) {
 					color *=diffuseMap.get(uv, wrap);

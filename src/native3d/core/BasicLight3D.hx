@@ -14,7 +14,7 @@ class BasicLight3D extends Node3D
 	public var lightType:Int;
 	public var color:Array<Float>;
 	public var shadowMapEnabled:Bool = false;
-	public var shadowMapSize:Int = 512;
+	public var shadowMapSize:Int = 1024;
 	public var distance:Float = 1000;
 	public var innerConeAngle:Float = 3.14 / 6;
 	public var outerConeAngle:Float = 3.14 / 3;

@@ -49,7 +49,7 @@ class BasicTest extends Sprite
 		bv.instance3Ds[0].addEventListener(Event.CONTEXT3D_CREATE, context3dCreate);
 		addChild(bv);
 		//#if flash
-			//addChild(new Stats());
+			addChild(new Stats());
 		loading = new TextField();
 		loading.autoSize = TextFieldAutoSize.LEFT;
 		addChild(loading);
@@ -203,7 +203,7 @@ class BasicTest extends Sprite
 	private function dae_parser_complete(e:Event):Void 
 	{
 		var parser = untyped e.currentTarget;
-		var c:Int = 4;
+		var c:Int = 5;
 		for (x in 0...c ) {
 			for(y in 0...c){
 				var clone:Node3D = parser.node.clone();
