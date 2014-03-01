@@ -12,7 +12,7 @@ package native3d.core;
 		private var _fieldOfViewY:Float;
 		private var _aspectRatio:Float;
 		private var _zNear:Float;
-		private var _zFar:Float=400000;
+		private var _zFar:Float=4000;
 		public var invert:Matrix3D;// = new Matrix3D();
 		public var perspectiveProjection:Matrix3D;// = new Matrix3D();
 		
