@@ -141,6 +141,7 @@ package native3d.core ;
 			if (light != null) {
 				if(shadowLight==null&&light.shadowMapEnabled){
 					var pass = new BasicPass3D();
+					pass.clearR = pass.clearG = pass.clearB = pass.clearA = 1;
 					pass.cnodes = root.children;
 					pass.camera = new Camera3D(400, 400);
 					pass.camera.perspectiveFieldOfViewLH(Math.PI / 4, 1, 1, 4000);

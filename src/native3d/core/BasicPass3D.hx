@@ -33,6 +33,11 @@ package native3d.core ;
 		public var present:Bool = true;
 		public var customDraw:Function;
 		public var target:PassTarget;
+		
+		public var clearR:Float=0;
+		public var clearG:Float=0;
+		public var clearB:Float=0;
+		public var clearA:Float=0;
 		public function new() 
 		{
 			camera = Instance3D.current.camera;
@@ -46,7 +51,7 @@ package native3d.core ;
 			}else {
 				i3d.setRenderToBackBuffer();
 			}
-			if (clear) i3d.clear(0, 0, 0, 0);
+			if (clear) i3d.clear(clearR, clearG, clearB, clearA);
 			if (customDraw==null) {
 				drawScene();
 			}else {
