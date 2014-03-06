@@ -75,7 +75,6 @@ package native3d.core ;
 				pass2d.camera = new Camera3D(i3d.width, i3d.height, true);
 				root2d = new Node3D();
 				layer = new Layer2D(true, texture);
-				
 				root2d.add(layer);
 				image2d = new Image2D(texture, new Point(width, height));
 				layer.add(image2d);

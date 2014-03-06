@@ -108,12 +108,11 @@ class PhongShader extends Shader
 				}
 				if (shadowProjectonMatrix != null) {
 					var shadowColor:Float = 1;
-					
 					var shadowLightXY:Float2 = shadowLightPos.xy / shadowLightPos.w * [.5, -.5] + .5;
 					var lightPackedDepth:Float4 = shadowMap.get(shadowLightXY,clamp);
 					var lightDepth:Float = dot(lightPackedDepth, [1 / 0x1000000, 1 / 0x10000, 1 / 0x100, 1]);
-					var curDepth:Float = shadowLightPos.z/shadowLightPos.w;
-					shadowColor -=  gt(curDepth, lightDepth) * .4;
+					var curDepth:Float = sat(shadowLightPos.z/shadowLightPos.w);
+					shadowColor -=  gt(curDepth, lightDepth+.002) * .6;
 					
 					color *= shadowColor;
 				}
@@ -125,7 +124,7 @@ class PhongShader extends Shader
 				//pack
 				var bitSh:Float4 = [0x1000000, 0x10000, 0x100, 1];
 				var bitMsk:Float4 = [0, 1 / 0x100, 1 / 0x100, 1 / 0x100];
-				var comp:Float4 = frc((shadowDepthZW.x/shadowDepthZW.y)* bitSh);
+				var comp:Float4 = frc(shadowDepthZW.x/shadowDepthZW.y* bitSh);
 				out = comp- comp.xxyz* bitMsk;
 			}
 		}

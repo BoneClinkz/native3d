@@ -74,7 +74,7 @@ package native3d.core;
 			invertVersion = -3;
 		}
 		
-		public function orthoLH(width:Float, height:Float, zNear:Float, zFar:Float,scale:Vector3D,pos:Vector3D):Void {
+		public function orthoLH(width:Float, height:Float, zNear:Float, zFar:Float, scale:Vector3D = null,pos:Vector3D=null):Void {
 			_zFar = zFar;
 			_zNear = zNear;
 			cscale = scale;
@@ -90,9 +90,123 @@ package native3d.core;
 			#else
 			perspectiveProjection.rawData = rawData;
 			#end
+			if(scale!=null)
 			perspectiveProjection.appendScale(scale.x, scale.y, scale.z);
+			if(cpos!=null)
 			perspectiveProjection.appendTranslation(cpos.x, cpos.y, cpos.z);
 			invertVersion = -3;
+		}
+		
+		public function orthoOffCenterLH(left:Float, 
+										 right:Float,
+										 bottom:Float,
+									     top:Float,
+										 zNear:Float, 
+										 zFar:Float):Void {
+			perspectiveProjection.copyRawDataFrom(Vector.ofArray([
+				2.0/(right-left), 0.0, 0.0, 0.0,
+				0.0, 2.0/(top-bottom), 0.0, 0.0,
+				0, 0, 1.0/(zNear-zFar), 0.0,
+				(right+left)/(left-right),(top+bottom)/(bottom-top), zNear/(zNear-zFar), 1.0
+			]));
+			invertVersion = -3;
+		}
+		
+		public function lookat( position:Vector3D, target:Vector3D, up:Vector3D ):Void
+		{
+			var uli:Float;
+			
+			var px:Float = position.x;
+			var py:Float = position.y;
+			var pz:Float = position.z;
+			
+			var ux:Float = up.x;
+			var uy:Float = up.y;
+			var uz:Float = up.z;
+			
+			var fx:Float = target.x - px;
+			var fy:Float = target.y - py;
+			var fz:Float = target.z - pz;
+			
+			// normalize front
+			var fls:Float = fx*fx + fy*fy + fz*fz;
+			if ( fls == 0 )
+				fx = fy = fz = 0;
+			else
+			{
+				var fli:Float = 1 / Math.sqrt( fls ) ;
+				fx *= fli;
+				fy *= fli;
+				fz *= fli;
+			}
+			
+			// normalize up
+			var uls:Float = ux*ux + uy*uy + uz*uz;
+			if ( uls == 0 )
+				ux = uy = uz = 0;
+			else
+			{
+				uli = 1 / Math.sqrt( uls ) ;
+				ux *= uli;
+				uy *= uli;
+				uz *= uli;
+			}
+			
+			// side = front cross up
+			var sx:Float = fy * uz - fz * uy;
+			var sy:Float = fz * ux - fx * uz;
+			var sz:Float = fx * uy - fy * ux;
+			
+			// normalize side
+			var sls:Float = sx*sx + sy*sy + sz*sz;
+			if ( sls == 0 )
+				sx = sy = sz = 0;
+			else
+			{
+				var sli:Float = 1 / Math.sqrt( sls ) ;
+				sx *= sli;
+				sy *= sli;
+				sz *= sli;
+			}
+			
+			// up = side cross front
+			ux = sy * fz - sz * fy;
+			uy = sz * fx - sx * fz;
+			uz = sx * fy - sy * fx;
+			
+			// normalize up
+			uls = ux*ux + uy*uy + uz*uz;
+			if ( uls == 0 )
+				ux = uy = uz = 0;
+			else
+			{
+				uli = 1 / Math.sqrt( uls ) ;
+				ux *= uli;
+				uy *= uli;
+				uz *= uli;
+			}
+			
+			var _rawData_ = new Vector<Float>(16);
+			_rawData_[ 0 ] = sx;
+			_rawData_[ 1 ] = sy;
+			_rawData_[ 2 ] = sz;
+			_rawData_[ 3 ] = 0;
+			
+			_rawData_[ 4 ] = ux;
+			_rawData_[ 5 ] = uy;
+			_rawData_[ 6 ] = uz;
+			_rawData_[ 7 ] = 0;
+			
+			_rawData_[ 8 ] = -fx;
+			_rawData_[ 9 ] = -fy;
+			_rawData_[ 10 ] = -fz;
+			_rawData_[ 11 ] = 0;
+			
+			_rawData_[ 12 ] = px;
+			_rawData_[ 13 ] = py;
+			_rawData_[ 14 ] = pz;
+			_rawData_[ 15 ] = 1;
+			matrix.rawData = _rawData_;
 		}
 		
 		public function resize(width:Int, height:Int):Void {

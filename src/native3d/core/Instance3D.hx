@@ -102,15 +102,49 @@ package native3d.core ;
 			}
 			drawCounter = drawTriangleCounter = 0;
 			
-			if (shadowLight != null) {
-				shadowLightPass.camera.matrix.identity();
-				shadowLightPass.camera.matrix.appendTranslation(.000001,100,0);
-				shadowLightPass.camera.matrix.pointAt(new Vector3D(),Vector3D.Z_AXIS,new Vector3D(0,-1,0));
-				shadowLightPass.camera.matrixVersion++;
-			}
 			nodess = new Vector<Vector<Node3D>>();
 			for (r in roots) {
 				nodess.push(doTransform.doTransform(r.children));
+			}
+			if (shadowLight != null) {
+				//compute circle bound
+				var minx = .0;
+				var miny = .0;
+				var minz = .0;
+				var maxx = .0;
+				var maxy = .0;
+				var maxz = .0;
+				for (node in nodess[passs[0].rootIndex]) {
+					if (node.castShadow&&node.drawable!=null) {
+						var r = node.drawable.radius;
+						var x = node.worldRawData[12];
+						var y = node.worldRawData[13];
+						var z = node.worldRawData[14];
+						var minx1 = x - r;
+						var miny1 = y - r;
+						var minz1 = z - r;
+						var maxx1 = x + r;
+						var maxy1 = y + r;
+						var maxz1 = z + r;
+						if (minx1 < minx) minx = minx1;
+						if (miny1 < miny) miny = miny1;
+						if (minz1 < minz) minz = minz1;
+						if (maxx1 > maxx) maxx = maxx1;
+						if (maxy1 > maxy) maxy = maxy1;
+						if (maxz1 > maxz) maxz = maxz1;
+					}
+				}
+				var r = Math.sqrt(Math.max(
+					minx*minx+miny*miny+minz*minz,
+					maxx*maxx+maxy*maxy+maxz*maxz
+				));
+				shadowLightPass.camera.orthoOffCenterLH(-r, r, -r, r, -r, r);
+				var sx= shadowLight.worldRawData[12];
+				var sy= shadowLight.worldRawData[13];
+				var sz= shadowLight.worldRawData[14];
+				shadowLightPass.camera.matrix.identity();
+				shadowLightPass.camera.matrix.pointAt(new Vector3D(sx,sy,sz),Vector3D.Z_AXIS,new Vector3D(0,-1,0));
+				shadowLightPass.camera.matrixVersion++;
 			}
 			for (i in 0...passs.length) {
 				var pass:BasicPass3D = passs[i];
@@ -142,7 +176,7 @@ package native3d.core ;
 				if(shadowLight==null&&light.shadowMapEnabled){
 					var pass = new BasicPass3D();
 					pass.clearR = pass.clearG = pass.clearB = pass.clearA = 1;
-					pass.cnodes = root.children;
+					//pass.cnodes = root.children;
 					pass.camera = new Camera3D(400, 400);
 					pass.camera.perspectiveFieldOfViewLH(Math.PI / 4, 1, 1, 4000);
 					pass.target = new PassTarget(light.shadowMapSize);
