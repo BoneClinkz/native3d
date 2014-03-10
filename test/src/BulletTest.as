@@ -131,6 +131,7 @@ package
                 }
             }
 			var node:Node3D = new Node3D;
+			node.castShadow = false;
 			node.frustumCulling = null;
 			var drawable:Drawable3D = new Drawable3D;
 			drawable.indexBufferSet = new IndexBufferSet(ins.length, ins, 0);

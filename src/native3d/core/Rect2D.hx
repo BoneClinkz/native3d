@@ -16,6 +16,7 @@ class Rect2D extends Node3D
 		this.width = width;
 		this.height = height;
 		drawable = new Drawable3D();
+		frustumCulling = null;
 		material = new Rect2DMatchMaterial(texture);
 	}
 	

@@ -96,7 +96,6 @@ package native3d.core;
 			perspectiveProjection.appendTranslation(cpos.x, cpos.y, cpos.z);
 			invertVersion = -3;
 		}
-		
 		public function orthoOffCenterLH(left:Float, 
 										 right:Float,
 										 bottom:Float,
@@ -111,7 +110,6 @@ package native3d.core;
 			]));
 			invertVersion = -3;
 		}
-		
 		public function lookat( position:Vector3D, target:Vector3D, up:Vector3D ):Void
 		{
 			var uli:Float;

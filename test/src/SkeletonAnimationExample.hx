@@ -37,7 +37,7 @@ class SkeletonAnimationExample extends BasicTest
 		var layer = new Layer2D(true, null);
 		//bv.instance3Ds[0].setProgram(layer.material.progrom);
 		
-		var cube = addCube(null, 0, -20, 0, 0, 0, 0, 100, 1, 100);
+		var cube = addCube(null, 0, -1, 0, 0, 0, 0, 100, 1, 100);
 		cube.castShadow = false;
 	}
 	

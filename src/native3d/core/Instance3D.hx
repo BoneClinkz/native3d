@@ -108,6 +108,16 @@ package native3d.core ;
 			}
 			if (shadowLight != null) {
 				//compute circle bound
+				var sx= shadowLight.worldRawData[12];
+				var sy= shadowLight.worldRawData[13];
+				var sz= shadowLight.worldRawData[14];
+				shadowLightPass.camera.matrix.identity();
+				shadowLightPass.camera.matrix.pointAt(new Vector3D(sx,sy,sz),Vector3D.Z_AXIS,new Vector3D(0,-1,0));
+				shadowLightPass.camera.matrixVersion++;
+				
+				var tempMatr:Matrix3D = shadowLightPass.camera.matrix.clone();
+				tempMatr.invert();
+				
 				var minx = .0;
 				var miny = .0;
 				var minz = .0;
@@ -134,17 +144,29 @@ package native3d.core ;
 						if (maxz1 > maxz) maxz = maxz1;
 					}
 				}
-				var r = Math.sqrt(Math.max(
-					minx*minx+miny*miny+minz*minz,
-					maxx*maxx+maxy*maxy+maxz*maxz
-				));
-				shadowLightPass.camera.orthoOffCenterLH(-r, r, -r, r, -r, r);
-				var sx= shadowLight.worldRawData[12];
-				var sy= shadowLight.worldRawData[13];
-				var sz= shadowLight.worldRawData[14];
-				shadowLightPass.camera.matrix.identity();
-				shadowLightPass.camera.matrix.pointAt(new Vector3D(sx,sy,sz),Vector3D.Z_AXIS,new Vector3D(0,-1,0));
-				shadowLightPass.camera.matrixVersion++;
+				
+				var vs = [];
+				vs.push(new Vector3D(minx,miny,minz));
+				vs.push(new Vector3D(maxx, maxy, maxz));
+				
+				vs.push(new Vector3D(minx, miny, maxz));
+				vs.push(new Vector3D(minx, maxy, maxz));
+				vs.push(new Vector3D(minx, maxy, minz));
+				vs.push(new Vector3D(maxx, miny, minz));
+				vs.push(new Vector3D(maxx, maxy, minz));
+				vs.push(new Vector3D(maxx, miny, maxz));
+				
+				minx = miny = minz = maxx = maxy = maxz = 0;
+				for (v in vs) {
+					var v2 = tempMatr.transformVector(v);
+					if (v2.x < minx) minx = v2.x;
+					else if (v2.x > maxx) maxx = v2.x;
+					if (v2.y < miny) miny = v2.y;
+					else if (v2.y > maxy) maxy = v2.y;
+					if (v2.z < minz) minz = v2.z;
+					else if (v2.z > maxz) maxz = v2.z;
+				}
+				shadowLightPass.camera.orthoOffCenterLH(minx, maxx, miny, maxy, -maxz, -minz);
 			}
 			for (i in 0...passs.length) {
 				var pass:BasicPass3D = passs[i];
@@ -176,7 +198,6 @@ package native3d.core ;
 				if(shadowLight==null&&light.shadowMapEnabled){
 					var pass = new BasicPass3D();
 					pass.clearR = pass.clearG = pass.clearB = pass.clearA = 1;
-					//pass.cnodes = root.children;
 					pass.camera = new Camera3D(400, 400);
 					pass.camera.perspectiveFieldOfViewLH(Math.PI / 4, 1, 1, 4000);
 					pass.target = new PassTarget(light.shadowMapSize);

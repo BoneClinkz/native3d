@@ -55,7 +55,7 @@ class MagicCube extends BasicTest
 			}
 		}
 		addSky();
-		ctrl.position.z = -30;
+		//ctrl.position.z = -30;
 	}
 	
 	private function stage_keyDown(e:KeyboardEvent):Void 
