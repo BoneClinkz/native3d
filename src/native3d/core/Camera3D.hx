@@ -24,6 +24,7 @@ package native3d.core;
 		public var is2d:Bool = false;
 		public var cscale:Vector3D;
 		public var cpos:Vector3D;
+		public var frustumVertices:Vector<Vector3D>;
 		public function new(width:Int,height:Int,is2d:Bool=false,index2d:Float=0) 
 		{
 			super();
@@ -48,6 +49,27 @@ package native3d.core;
 			if(!is2d)
 			frustumPlanes = Vector.ofArray([new Vector3D(), new Vector3D(), new Vector3D(), new Vector3D(), new Vector3D(), new Vector3D()]);
 		}
+		
+		public function calcFrustumVertices():Void {
+			var angle = _fieldOfViewY * 0.5;
+			var tang  = Math.tan(angle);
+			var nh  = _zNear * tang;
+			var nw  = nh * _aspectRatio;
+			var fh  = _zFar * tang;
+			var fw  = fh * _aspectRatio;
+			
+			var ntl = new Vector3D(-nw * 0.5,  nh * 0.5, _zNear);
+			var nbl = new Vector3D(-nw * 0.5, -nh * 0.5, _zNear);
+			var nbr = new Vector3D( nw * 0.5, -nh * 0.5, _zNear);
+			var ntr = new Vector3D( nw * 0.5,  nh * 0.5, _zNear);
+			
+			var ftl = new Vector3D(-fw * 0.5,  fh * 0.5, _zFar);
+			var fbl = new Vector3D(-fw * 0.5, -fh * 0.5, _zFar);
+			var fbr = new Vector3D( fw * 0.5, -fh * 0.5, _zFar);
+			var ftr = new Vector3D( fw * 0.5,  fh * 0.5, _zFar);
+			frustumVertices = Vector.ofArray([ntl,nbl,nbr,ntr,ftl,fbl,fbr,ftr]);
+		}
+		
 		public function perspectiveFieldOfViewLH(fieldOfViewY:Float, 
 												 aspectRatio:Float, 
 												 zNear:Float, 
@@ -72,6 +94,7 @@ package native3d.core;
 			#end
 			
 			invertVersion = -3;
+			calcFrustumVertices();
 		}
 		
 		public function orthoLH(width:Float, height:Float, zNear:Float, zFar:Float, scale:Vector3D = null,pos:Vector3D=null):Void {

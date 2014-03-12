@@ -148,7 +148,6 @@ package native3d.core ;
 				var vs = [];
 				vs.push(new Vector3D(minx,miny,minz));
 				vs.push(new Vector3D(maxx, maxy, maxz));
-				
 				vs.push(new Vector3D(minx, miny, maxz));
 				vs.push(new Vector3D(minx, maxy, maxz));
 				vs.push(new Vector3D(minx, maxy, minz));
@@ -166,6 +165,29 @@ package native3d.core ;
 					if (v2.z < minz) minz = v2.z;
 					else if (v2.z > maxz) maxz = v2.z;
 				}
+				
+				//shadowLightPass.camera.orthoOffCenterLH(minx, maxx, miny, maxy, -maxz, -minz);
+				var minx2 = .0;
+				var miny2 = .0;
+				var minz2 = .0;
+				var maxx2 = .0;
+				var maxy2 = .0;
+				var maxz2 = .0;
+				for (v in camera.frustumVertices) {
+					var v2 = tempMatr.transformVector(camera.worldMatrix.transformVector(v));
+					if (v2.x < minx2) minx2 = v2.x;
+					else if (v2.x > maxx2) maxx2 = v2.x;
+					if (v2.y < miny2) miny2 = v2.y;
+					else if (v2.y > maxy2) maxy2 = v2.y;
+					//if (v2.z < minz2) minz2 = v2.z;
+					//else if (v2.z > maxz2) maxz2 = v2.z;
+				}
+				if (minx2 > minx) minx = minx2;
+				if (miny2 > miny) miny = miny2;
+				//if (minz2 > minz) minz = minz2;
+				if (maxx2 < maxx) maxx = maxx2;
+				if (maxy2 < maxy) maxy = maxy2;
+				//if (maxz2 < maxz) maxz = maxz2;
 				shadowLightPass.camera.orthoOffCenterLH(minx, maxx, miny, maxy, -maxz, -minz);
 			}
 			for (i in 0...passs.length) {
