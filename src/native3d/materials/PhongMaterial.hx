@@ -12,6 +12,7 @@ import flash.geom.Vector3D;
 import flash.Lib;
 import flash.Vector;
 import hxsl.Shader.ShaderInstance;
+import native3d.core.animation.Animation;
 import native3d.core.animation.Skin;
 import native3d.core.BasicLight3D;
 import native3d.core.BasicPass3D;
@@ -80,6 +81,7 @@ class PhongMaterial extends MaterialBase
 		this.skin = skin;
 		if (skin != null) shader.anmMats = [];
 		shader.hasAnm = skin != null;
+		shader.useQuas = Animation.useQuas;
 		build();
 		//trace(shader.getDebugShaderCode(true));
 		
@@ -268,8 +270,15 @@ class PhongMaterial extends MaterialBase
 					i3d.setVertexBufferAt(2, matrixBuff.vertexBuff, 0, matrixBuff.format);
 				}
 				
-				var byteSet = drawable.cacheBytes[node.frame];
-				i3d.setProgramConstantsFromByteArray(Context3DProgramType.VERTEX, skinConstIndex,byteSet.numRegisters,byteSet.data,0);
+				if (shader.useQuas) {
+					var byteSetQ = drawable.cacheQuasBytes[node.frame];
+					var byteSetT = drawable.cacheQuasTransBytes[node.frame];
+					i3d.setProgramConstantsFromByteArray(Context3DProgramType.VERTEX, skinConstIndex,byteSetQ.numRegisters,byteSetQ.data,0);
+					i3d.setProgramConstantsFromByteArray(Context3DProgramType.VERTEX, skinConstIndex+Animation.maxQuatJoint,byteSetT.numRegisters,byteSetT.data,0);
+				}else {
+					var byteSet = drawable.cacheBytes[node.frame];
+					i3d.setProgramConstantsFromByteArray(Context3DProgramType.VERTEX, skinConstIndex,byteSet.numRegisters,byteSet.data,0);
+				}
 				i3d.drawTriangles(drawable.indexBufferSet.indexBuff); 
 			}
 		}

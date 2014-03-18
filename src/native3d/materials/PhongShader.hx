@@ -34,7 +34,10 @@ class PhongShader extends Shader
 		var shadowMap:Texture;
 		
 		var anmMats:M34<38>;
+		var anmQuas:Float4<57>;
+		var anmTrans:Float3<57>;
 		var hasAnm:Bool;
+		var useQuas:Bool;//使用四元树
 		
 		//texture
 		var diffuseMap:Texture;
@@ -58,10 +61,60 @@ class PhongShader extends Shader
 			var wpos:Float4 = input.xyz.xyzw;
 			//wpos.xyz += input.normal * .7;
 			if (hasAnm != null) {
-				wpos.xyz = 
-					wpos * input.weight.x * anmMats[input.matrixIndex.x ] 
+				if (useQuas) {
+					var result = wpos.xyz;
+					var target = wpos.xyz;
+					
+					var q = anmQuas[input.matrixIndex.x-1];
+					var t = anmTrans[input.matrixIndex.x-1];
+					
+					var w1 = -q.x*wpos.x - q.y*wpos.y - q.z*wpos.z;
+					var x1 = q.w*wpos.x + q.y*wpos.z - q.z*wpos.y;
+					var y1 = q.w*wpos.y - q.x*wpos.z + q.z*wpos.x;
+					var z1 = q.w*wpos.z + q.x*wpos.y - q.y*wpos.x;
+					
+					target.x = -w1*q.x + x1*q.w - y1*q.z + z1*q.y+t.x;
+					target.y = -w1*q.y + x1*q.z + y1*q.w - z1*q.x+t.y;
+					target.z = -w1 * q.z - x1 * q.y + y1 * q.x + z1 * q.w + t.z;
+					target *= input.weight.x;
+					result = target;
+					
+					q = anmQuas[input.matrixIndex.y-1];
+					t = anmTrans[input.matrixIndex.y-1];
+					
+					w1 = -q.x*wpos.x - q.y*wpos.y - q.z*wpos.z;
+					x1 = q.w*wpos.x + q.y*wpos.z - q.z*wpos.y;
+					y1 = q.w*wpos.y - q.x*wpos.z + q.z*wpos.x;
+					z1 = q.w*wpos.z + q.x*wpos.y - q.y*wpos.x;
+					
+					target.x = -w1*q.x + x1*q.w - y1*q.z + z1*q.y+t.x;
+					target.y = -w1*q.y + x1*q.z + y1*q.w - z1*q.x+t.y;
+					target.z = -w1*q.z - x1*q.y + y1*q.x + z1*q.w+t.z;
+					target *= input.weight.y;
+					result += target;
+					
+					q = anmQuas[input.matrixIndex.z-1];
+					t = anmTrans[input.matrixIndex.z-1];
+					
+					w1 = -q.x*wpos.x - q.y*wpos.y - q.z*wpos.z;
+					x1 = q.w*wpos.x + q.y*wpos.z - q.z*wpos.y;
+					y1 = q.w*wpos.y - q.x*wpos.z + q.z*wpos.x;
+					z1 = q.w*wpos.z + q.x*wpos.y - q.y*wpos.x;
+					
+					target.x = -w1*q.x + x1*q.w - y1*q.z + z1*q.y+t.x;
+					target.y = -w1*q.y + x1*q.z + y1*q.w - z1*q.x+t.y;
+					target.z = -w1*q.z - x1*q.y + y1*q.x + z1*q.w+t.z;
+					target *= input.weight.z;
+					result += target;
+					
+					wpos.xyz = result.xyz;
+				}else {
+					wpos.xyz = 
+					wpos * input.weight.x * anmMats[input.matrixIndex.x] 
 					+ wpos * input.weight.y * anmMats[input.matrixIndex.y] 
 					+ wpos * input.weight.z * anmMats[input.matrixIndex.z];
+				}
+				
 			}
 			if (isShadowDepth) {
 				wpos = wpos * modelViewMatrix * projectionMatrix;

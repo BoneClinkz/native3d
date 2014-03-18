@@ -11,8 +11,12 @@ import native3d.materials.MaterialBase;
  */
 class SkinDrawable extends Drawable3D
 {
-	
+	//matrix3d
 	public var cacheBytes:Vector<ByteArraySet>;
+	
+	//quaternion
+	public var cacheQuasBytes:Vector<ByteArraySet>;
+	public var cacheQuasTransBytes:Vector<ByteArraySet>;
 	
 	public var weightBuff:VertexBufferSet;
 	public var matrixBuff:VertexBufferSet;

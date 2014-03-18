@@ -1,6 +1,7 @@
 package native3d.core.animation;
 import flash.display3D.Context3DVertexBufferFormat;
 import flash.geom.Matrix3D;
+import flash.geom.Orientation3D;
 import flash.geom.Vector3D;
 import flash.utils.ByteArray;
 import flash.utils.Endian;
@@ -21,6 +22,10 @@ import native3d.meshs.MeshUtils;
  */
 class Animation
 {
+	public static var useQuas:Bool = false;
+	public static var maxMatrixJoint:Int = 38;
+	public static var maxQuatJoint:Int = 57;
+	
 	public var parts:Vector<AnimationPart>;
 	public var jointRoot:Node3D;
 	public var maxTime:Float = 0;
@@ -83,7 +88,7 @@ class Animation
 			var daeIndexs =new Vector<Vector<Int>>();//顶点索引
 			var daeUVIndexs =new Vector<Vector<Int>>();//uv顶点索引
 			var i = 0;
-			var maxn = 38;
+			var maxn = useQuas?maxQuatJoint:maxMatrixJoint;
 			while (i < skin.daeIndexs.length) {
 				var indexs = skin.daeIndexs[i];
 				var uvs = skin.daeUVIndexs[i];
@@ -193,29 +198,68 @@ class Animation
 					continue;
 				}
 				skin.draws.push(skinDrawable);
-				skinDrawable.cacheBytes = new Vector<ByteArraySet>();
-				var temp = new Matrix3D();
-				for (cmatrixs in skin.cacheMatrixs) {
-					var catchVector = new Vector<Float>(16);
-					var catchByte = new ByteArray();
-					catchByte.endian = Endian.LITTLE_ENDIAN;
-					temp.copyRawDataTo(catchVector, 0, true);
-					for (j in 0...12) {
-						catchByte.writeFloat(catchVector[j]);
-					}
-					for (i in 0...newMatrixs.length) {
-						cmatrixs[newMatrixs[i]].copyRawDataTo(catchVector,0, true);
-						for (j in 0...12) {
-							catchByte.writeFloat(catchVector[j]);
+				
+				if(useQuas){
+					skinDrawable.cacheQuasBytes = new Vector<ByteArraySet>();
+					skinDrawable.cacheQuasTransBytes = new Vector<ByteArraySet>();
+					for (cmatrixs in skin.cacheMatrixs) {
+						var catchQuasByte = new ByteArray();
+						catchQuasByte.endian = Endian.LITTLE_ENDIAN;
+						//catchQuasByte.position = 48;
+						var catchQuasTransByte = new ByteArray();
+						catchQuasTransByte.endian = Endian.LITTLE_ENDIAN;
+						//catchQuasTransByte.position = 48;
+						for (i in 0...newMatrixs.length) {
+							var matr:Matrix3D = cmatrixs[newMatrixs[i]];
+							var comp= matr.decompose(Orientation3D.QUATERNION);
+							var quas = comp[1];
+							var tran = comp[2];
+							catchQuasByte.writeFloat(quas.x);
+							catchQuasByte.writeFloat(quas.y);
+							catchQuasByte.writeFloat(quas.z);
+							catchQuasByte.writeFloat(quas.w);
+							catchQuasTransByte.writeFloat(tran.x);
+							catchQuasTransByte.writeFloat(tran.y);
+							catchQuasTransByte.writeFloat(tran.z);
+							catchQuasTransByte.writeFloat(0);
 						}
+						catchQuasByte.position = 0;
+						catchQuasTransByte.position = 0;
+						
+						var byteSet = new ByteArraySet();
+						skinDrawable.cacheQuasBytes.push(byteSet);
+						byteSet.byteArrayOffset = 0;
+						byteSet.data = catchQuasByte;
+						byteSet.numRegisters = Std.int(byteSet.data.bytesAvailable / 16);
+						
+						
+						var byteSet = new ByteArraySet();
+						skinDrawable.cacheQuasTransBytes.push(byteSet);
+						byteSet.byteArrayOffset = 0;
+						byteSet.data = catchQuasTransByte;
+						byteSet.numRegisters = Std.int(byteSet.data.bytesAvailable/16);
 					}
-					catchByte.position = 0;
-					
-					var byteSet = new ByteArraySet();
-					skinDrawable.cacheBytes.push(byteSet);
-					byteSet.byteArrayOffset = 0;
-					byteSet.data = catchByte;
-					byteSet.numRegisters = Std.int((newMatrixs.length + 1) * 3);
+				}else {
+					skinDrawable.cacheBytes = new Vector<ByteArraySet>();
+					var catchVector = new Vector<Float>(16);
+					for (cmatrixs in skin.cacheMatrixs) {
+						var catchByte = new ByteArray();
+						catchByte.endian = Endian.LITTLE_ENDIAN;
+						catchByte.position = 48;
+						for (i in 0...newMatrixs.length) {
+							cmatrixs[newMatrixs[i]].copyRawDataTo(catchVector,0, true);
+							for (j in 0...12) {
+								catchByte.writeFloat(catchVector[j]);
+							}
+						}
+						catchByte.position = 0;
+						
+						var byteSet = new ByteArraySet();
+						skinDrawable.cacheBytes.push(byteSet);
+						byteSet.byteArrayOffset = 0;
+						byteSet.data = catchByte;
+						byteSet.numRegisters = Std.int(catchByte.bytesAvailable/16);
+					}
 				}
 				
 				newWeights.length = newMatrixIndexs.length = newVs.length = (maxNowi + 1) * 3;
