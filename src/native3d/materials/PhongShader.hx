@@ -12,8 +12,10 @@ class PhongShader extends Shader
 		var input: {
 			xyz:Float3,
 			normal:Float3,
-			weight:Float3,
+			weight:Float4,
 			matrixIndex:Float4,
+			weight2:Float4,
+			matrixIndex2:Float4,
 			uv:Float2
 		}
 		
@@ -36,6 +38,13 @@ class PhongShader extends Shader
 		var anmMats:M34<38>;
 		var anmQuas:Float4<57>;
 		var anmTrans:Float3<57>;
+		var hasWeight1:Bool;
+		var hasWeight2:Bool;
+		var hasWeight3:Bool;
+		var hasWeight4:Bool;
+		var hasWeight5:Bool;
+		var hasWeight6:Bool;
+		var hasWeight7:Bool;
 		var hasAnm:Bool;
 		var useQuas:Bool;//使用四元树
 		
@@ -65,8 +74,8 @@ class PhongShader extends Shader
 					var result = wpos.xyz;
 					var target = wpos.xyz;
 					
-					var q = anmQuas[input.matrixIndex.x-1];
-					var t = anmTrans[input.matrixIndex.x-1];
+					var q = anmQuas[input.matrixIndex.x];
+					var t = anmTrans[input.matrixIndex.x];
 					
 					var w1 = -q.x*wpos.x - q.y*wpos.y - q.z*wpos.z;
 					var x1 = q.w*wpos.x + q.y*wpos.z - q.z*wpos.y;
@@ -79,8 +88,8 @@ class PhongShader extends Shader
 					target *= input.weight.x;
 					result = target;
 					
-					q = anmQuas[input.matrixIndex.y-1];
-					t = anmTrans[input.matrixIndex.y-1];
+					q = anmQuas[input.matrixIndex.y];
+					t = anmTrans[input.matrixIndex.y];
 					
 					w1 = -q.x*wpos.x - q.y*wpos.y - q.z*wpos.z;
 					x1 = q.w*wpos.x + q.y*wpos.z - q.z*wpos.y;
@@ -93,8 +102,8 @@ class PhongShader extends Shader
 					target *= input.weight.y;
 					result += target;
 					
-					q = anmQuas[input.matrixIndex.z-1];
-					t = anmTrans[input.matrixIndex.z-1];
+					q = anmQuas[input.matrixIndex.z];
+					t = anmTrans[input.matrixIndex.z];
 					
 					w1 = -q.x*wpos.x - q.y*wpos.y - q.z*wpos.z;
 					x1 = q.w*wpos.x + q.y*wpos.z - q.z*wpos.y;
@@ -109,10 +118,16 @@ class PhongShader extends Shader
 					
 					wpos.xyz = result.xyz;
 				}else {
-					wpos.xyz = 
-					wpos * input.weight.x * anmMats[input.matrixIndex.x] 
-					+ wpos * input.weight.y * anmMats[input.matrixIndex.y] 
-					+ wpos * input.weight.z * anmMats[input.matrixIndex.z];
+					var result = wpos.xyz;
+					result = wpos * input.weight.x * anmMats[input.matrixIndex.x];
+					if (hasWeight1) result.xyz += wpos * input.weight.y * anmMats[input.matrixIndex.y] ;
+					if (hasWeight2) result.xyz += wpos * input.weight.z * anmMats[input.matrixIndex.z] ;
+					if (hasWeight3) result.xyz += wpos * input.weight.w * anmMats[input.matrixIndex.w] ;
+					if (hasWeight4) result.xyz += wpos * input.weight2.x * anmMats[input.matrixIndex2.x] ;
+					if (hasWeight5) result.xyz += wpos * input.weight2.y * anmMats[input.matrixIndex2.y] ;
+					if (hasWeight6) result.xyz += wpos * input.weight2.z * anmMats[input.matrixIndex2.z] ;
+					if (hasWeight7) result.xyz += wpos * input.weight2.w * anmMats[input.matrixIndex2.w] ;
+					wpos.xyz = result;
 				}
 				
 			}

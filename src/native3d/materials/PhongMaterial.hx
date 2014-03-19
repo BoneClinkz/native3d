@@ -4,6 +4,7 @@ import flash.display3D.Context3D;
 import flash.display3D.Context3DBlendFactor;
 import flash.display3D.Context3DCompareMode;
 import flash.display3D.Context3DProgramType;
+import flash.display3D.Context3DTriangleFace;
 import flash.display3D.Program3D;
 import flash.display3D.textures.TextureBase;
 import flash.errors.Error;
@@ -18,10 +19,10 @@ import native3d.core.BasicLight3D;
 import native3d.core.BasicPass3D;
 import native3d.core.ByteArraySet;
 import native3d.core.Drawable3D;
+import native3d.core.FrustumCulling;
 import native3d.core.Instance3D;
 import native3d.core.Node3D;
 import native3d.core.VertexBufferSet;
-
 /**
  * ...
  * @author lizhi
@@ -38,10 +39,16 @@ class PhongMaterial extends MaterialBase
 	
 	public var diffuseTex:TextureBase;
 	public var skin:Skin;
-	public var skinConstIndex:Int = 8;
+	public var skinConstIndex:Int;
+	public var skinConstIndex2:Int;
 	public function new(ambient:Array<Float>=null,diffuse:Array<Float>=null,specular:Array<Float>=null,specularExponent:Float=200,diffuseTex:TextureBase=null,skin:Skin=null,isShadowDepth:Bool=false) 
 	{
 		super();
+		if (!isShadowDepth) {
+			depthMaterial = new PhongMaterial(null, null, null, 200, null, skin, true);
+			depthMaterial.culling=Context3DTriangleFace.BACK;
+		}
+		
 		var shader = new PhongShader();
 		this.shader = shader;
 		
@@ -58,7 +65,6 @@ class PhongMaterial extends MaterialBase
 			shader.specular = arr2ve3(specular == null?defSpecular:specular);
 			if (i3d.shadowLight!=null) {
 				shader.shadowProjectonMatrix = i3d.shadowLightPass.camera.perspectiveProjectionMatirx;
-				skinConstIndex = 12;
 			}
 			var lights = { ambientLights:[],distantLights:[],pointLights:[],spotLights:[]};
 			for (light in i3d.lights) {
@@ -79,11 +85,30 @@ class PhongMaterial extends MaterialBase
 		}
 		
 		this.skin = skin;
-		if (skin != null) shader.anmMats = [];
-		shader.hasAnm = skin != null;
-		shader.useQuas = Animation.useQuas;
+		if (skin != null) {
+			shader.anmMats = [];
+			shader.hasAnm = true;
+			shader.useQuas = Animation.useQuas;
+			shader.hasWeight1 = skin.maxWeightLen > 1;
+			shader.hasWeight2 = skin.maxWeightLen > 2;
+			shader.hasWeight3 = skin.maxWeightLen > 3;
+			shader.hasWeight4 = skin.maxWeightLen > 4;
+			shader.hasWeight5 = skin.maxWeightLen > 5;
+			shader.hasWeight6 = skin.maxWeightLen > 6;
+			shader.hasWeight7 = skin.maxWeightLen > 7;
+		}
+		
 		build();
 		//trace(shader.getDebugShaderCode(true));
+		if (skin!=null) {
+			if (shader.useQuas) {
+				skinConstIndex = Std.int(shaderInstance.vertexMap[4] / 4);
+				skinConstIndex2 = Std.int(shaderInstance.vertexMap[5] / 4);
+			}else {
+				skinConstIndex = Std.int(shaderInstance.vertexMap[3] / 4);
+			}
+			vertex.length = skinConstIndex * 4;
+		}
 		
 		if(!isShadowDepth){
 			var i = 12;
@@ -218,6 +243,8 @@ class PhongMaterial extends MaterialBase
 		var norm=null;
 		var weightBuff = null;
 		var matrixBuff = null;
+		var weightBuff2 = null;
+		var matrixBuff2 = null;
 		var uv = null;
 		if(skin==null){
 			var drawable = node.drawable;
@@ -249,6 +276,8 @@ class PhongMaterial extends MaterialBase
 				xyz = drawable.xyz;
 				weightBuff = drawable.weightBuff;
 				matrixBuff = drawable.matrixBuff;
+				weightBuff2 = drawable.weightBuff2;
+				matrixBuff2 = drawable.matrixBuff2;
 				i3d.setVertexBufferAt(0, xyz.vertexBuff, 0, xyz.format);
 				if (!isShadowDepth) {
 					var ti = 0;
@@ -261,13 +290,24 @@ class PhongMaterial extends MaterialBase
 					
 					norm = drawable.norm;
 					uv = drawable.uv;
-					i3d.setVertexBufferAt(1, norm.vertexBuff, 0, norm.format);
-					i3d.setVertexBufferAt(2, weightBuff.vertexBuff, 0, weightBuff.format);
-					i3d.setVertexBufferAt(3, matrixBuff.vertexBuff, 0, matrixBuff.format);
-					i3d.setVertexBufferAt(4, uv.vertexBuff, 0, uv.format);
+					
+					var bufi:Int = 1;
+					i3d.setVertexBufferAt(bufi++, norm.vertexBuff, 0, norm.format);
+					i3d.setVertexBufferAt(bufi++, weightBuff.vertexBuff, 0, weightBuff.format);
+					i3d.setVertexBufferAt(bufi++, matrixBuff.vertexBuff, 0, matrixBuff.format);
+					if (skin.maxWeightLen>4) {
+						i3d.setVertexBufferAt(bufi++, weightBuff2.vertexBuff, 0, weightBuff2.format);
+						i3d.setVertexBufferAt(bufi++, matrixBuff2.vertexBuff, 0, matrixBuff2.format);
+					}
+					i3d.setVertexBufferAt(bufi, uv.vertexBuff, 0, uv.format);
 				}else {
-					i3d.setVertexBufferAt(1, weightBuff.vertexBuff, 0, weightBuff.format);
-					i3d.setVertexBufferAt(2, matrixBuff.vertexBuff, 0, matrixBuff.format);
+					var bufi:Int = 1;
+					i3d.setVertexBufferAt(bufi++, weightBuff.vertexBuff, 0, weightBuff.format);
+					i3d.setVertexBufferAt(bufi++, matrixBuff.vertexBuff, 0, matrixBuff.format);
+					if (skin.maxWeightLen>4) {
+						i3d.setVertexBufferAt(bufi++, weightBuff2.vertexBuff, 0, weightBuff2.format);
+						i3d.setVertexBufferAt(bufi, matrixBuff2.vertexBuff, 0, matrixBuff2.format);
+					}
 				}
 				
 				if (shader.useQuas) {

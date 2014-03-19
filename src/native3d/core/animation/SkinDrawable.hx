@@ -20,6 +20,8 @@ class SkinDrawable extends Drawable3D
 	
 	public var weightBuff:VertexBufferSet;
 	public var matrixBuff:VertexBufferSet;
+	public var weightBuff2:VertexBufferSet;
+	public var matrixBuff2:VertexBufferSet;
 	public var material:MaterialBase;
 	public function new() 
 	{

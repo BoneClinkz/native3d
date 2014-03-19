@@ -106,6 +106,8 @@ package native3d.core ;
 			for (r in roots) {
 				nodess.push(doTransform.doTransform(r.children));
 			}
+			
+			// TODO : xxx
 			if (shadowLight != null) {
 				//compute circle bound
 				var sx= shadowLight.worldRawData[12];
@@ -126,7 +128,19 @@ package native3d.core ;
 				var maxz = .0;
 				for (node in nodess[passs[0].rootIndex]) {
 					if (node.castShadow&&node.drawable!=null) {
-						var r = node.drawable.radius;
+						var VONE:Vector3D = new Vector3D(1, 1, 1, 1);
+						var temp = node.worldMatrix.transformVector(VONE);
+						temp.x -= node.worldRawData[12];
+						temp.y -= node.worldRawData[13];
+						temp.z -= node.worldRawData[14];
+						if (temp.x < 0) temp.x *= -1;
+						if (temp.y < 0) temp.y *= -1;
+						if (temp.z < 0) temp.z *= -1;
+						var maxs = temp.x;
+						if (maxs < temp.y) maxs = temp.y;
+						if (maxs < temp.z) maxs = temp.z;
+						var r = node.drawable.radius*maxs;
+						
 						var x = node.worldRawData[12];
 						var y = node.worldRawData[13];
 						var z = node.worldRawData[14];
@@ -166,7 +180,7 @@ package native3d.core ;
 					else if (v2.z > maxz) maxz = v2.z;
 				}
 				
-				//shadowLightPass.camera.orthoOffCenterLH(minx, maxx, miny, maxy, -maxz, -minz);
+				shadowLightPass.camera.orthoOffCenterLH(minx, maxx, miny, maxy, -maxz, -minz);
 				var minx2 = .0;
 				var miny2 = .0;
 				var minz2 = .0;
@@ -188,7 +202,7 @@ package native3d.core ;
 				if (maxx2 < maxx) maxx = maxx2;
 				if (maxy2 < maxy) maxy = maxy2;
 				//if (maxz2 < maxz) maxz = maxz2;
-				shadowLightPass.camera.orthoOffCenterLH(minx, maxx, miny, maxy, -maxz, -minz);
+				//shadowLightPass.camera.orthoOffCenterLH(minx, maxx, miny, maxy, -maxz, -minz);
 			}
 			for (i in 0...passs.length) {
 				var pass:BasicPass3D = passs[i];
@@ -219,14 +233,11 @@ package native3d.core ;
 			if (light != null) {
 				if(shadowLight==null&&light.shadowMapEnabled){
 					var pass = new BasicPass3D();
+					pass.depth = true;
 					pass.clearR = pass.clearG = pass.clearB = pass.clearA = 1;
 					pass.camera = new Camera3D(400, 400);
 					pass.camera.perspectiveFieldOfViewLH(Math.PI / 4, 1, 1, 4000);
 					pass.target = new PassTarget(light.shadowMapSize);
-					pass.material = new PhongMaterial(null, null, null, 200, null, null, true);
-					pass.material.culling = Context3DTriangleFace.BACK;
-					pass.skinMaterial=new PhongMaterial(null, null, null, 200, null,new Skin(), true);
-					pass.skinMaterial.culling = Context3DTriangleFace.BACK;
 					passs.unshift(pass);
 					shadowLight = light;
 					shadowLightPass = pass;

@@ -27,6 +27,7 @@ import flash.display3D.Context3DCompareMode;
 	public var passCompareMode:#if flash Context3DCompareMode #else Int #end;// = Context3DCompareMode.LESS;
 	public var culling:#if flash Context3DTriangleFace #else Int #end;// = Context3DCompareMode.LESS;
 	public var i3d:Instance3D;
+	public var depthMaterial:MaterialBase;
 	public function new() 
 	{
 		#if flash

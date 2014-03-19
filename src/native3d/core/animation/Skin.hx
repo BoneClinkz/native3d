@@ -38,7 +38,7 @@ class Skin
 	public var uvOffset:Int;
 	
 	public var draws:Vector<SkinDrawable>;
-	
+	public var maxWeightLen:Int = 1;
 	public var texture:TextureSet;
 	public function new() 
 	{

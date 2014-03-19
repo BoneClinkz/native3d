@@ -26,13 +26,12 @@ package native3d.core ;
 		public var nodes:Vector<Node3D>;
 		public var cnodes:Vector<Node3D>;
 		public var camera:Camera3D;
-		public var material:MaterialBase;
-		public var skinMaterial:MaterialBase;
 		public var rootIndex:Int = 0;
 		public var clear:Bool = true;
 		public var present:Bool = true;
 		public var customDraw:Function;
 		public var target:PassTarget;
+		public var depth:Bool = false;
 		
 		public var clearR:Float=0;
 		public var clearG:Float=0;
@@ -97,16 +96,15 @@ package native3d.core ;
 		}
 		
 		inline public function doPass(node:Node3D):Void {
-			var m = null;
-			if (node.skin == null) {
-				m=material;
-			}else{
-				m = skinMaterial;
-				if(m!=null)
-				untyped skinMaterial.skin = node.skin;
+			var  m = null;
+			if (depth) {
+				if(node.material!=null)
+				m=node.material.depthMaterial;
+			}else {
+				m=node.material;
 			}
-			if (m == null) m = node.material;
 			var i3d = Instance3D.current;
+			if(m!=null)
 			if (camera.frustumPlanes == null || node.frustumCulling == null || node.frustumCulling.culling(camera)) {
 				i3d.drawCounter++;
 				if(node.drawable.indexBufferSet!=null)

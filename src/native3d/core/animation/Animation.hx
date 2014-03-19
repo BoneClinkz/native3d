@@ -66,6 +66,8 @@ class Animation
 			
 			skin.bindShapeMatrix.transformVectors(skin.daeXyz, skin.daeXyz);
 			var maxWeightLen = 0.0;
+			var maxWeightLen0:Int = 0;
+			var maxWeightLen1:Int = 0;
 			var weights = new Vector<Vector<Float>>();
 			var matrixIndexs = new Vector<Vector<Int>>();
 			var j:Int = 0;
@@ -82,8 +84,13 @@ class Animation
 				}
 				maxWeightLen = Math.max(maxWeightLen, matrixIndex.length);
 			}
-			// TODO : maxWeightLen
-			maxWeightLen = 3;
+			if (maxWeightLen<=4) {
+				maxWeightLen0 = Std.int(maxWeightLen);
+			}else {
+				maxWeightLen0 = 4;
+				maxWeightLen1 = Std.int(maxWeightLen - 4);
+			}
+			skin.maxWeightLen = Std.int(maxWeightLen);
 			skin.draws = new Vector<SkinDrawable>();//分解动画
 			var daeIndexs =new Vector<Vector<Int>>();//顶点索引
 			var daeUVIndexs =new Vector<Vector<Int>>();//uv顶点索引
@@ -139,6 +146,12 @@ class Animation
 				var newUVs  = new Vector<Float>(vs.length);
 				var newWeights  = new Vector<Float>();
 				var newMatrixIndexs  = new Vector<Float>();
+				var newWeights2=null;
+				var newMatrixIndexs2=null;
+				if (maxWeightLen > 4) {
+					newWeights2  = new Vector<Float>();
+					newMatrixIndexs2  = new Vector<Float>();
+				}
 				var newi = 0;
 				var maxNowi = 0;
 				
@@ -171,11 +184,20 @@ class Animation
 						newUVs[nowi * 2 + 1] = 1 - uvs[oldUVI * (skin.maxOffset + 1) + 1];
 							
 						for (j in 0...weights[oldi].length) {
-							var wi = Std.int(nowi * maxWeightLen + j);
-							if (wi>=newWeights.length) {
-								newWeights.length = wi;
+							if (j<4) {
+								var wi = Std.int(nowi * maxWeightLen0 + j);
+								if (wi>=newWeights.length) {
+									newWeights.length = wi;
+								}
+								newWeights[wi] = weights[oldi][j];
+							}else {
+								var wi = Std.int(nowi * maxWeightLen1 + j-4);
+								if (wi>=newWeights2.length) {
+									newWeights2.length = wi;
+								}
+								newWeights2[wi] = weights[oldi][j];
 							}
-							newWeights[wi] = weights[oldi][j];
+							
 						}
 						for (j in 0...matrixIndexs[oldi].length) {
 							var mi = matrixIndexs[oldi][j];
@@ -186,11 +208,19 @@ class Animation
 							}
 							var nowiM = i2newiM.get(mi);
 							
-							var wi = Std.int(nowi * maxWeightLen + j);
-							if (wi>=newMatrixIndexs.length) {
-								newMatrixIndexs.length = wi;
+							if(j<4){
+								var wi = Std.int(nowi * maxWeightLen0 + j);
+								if (wi>=newMatrixIndexs.length) {
+									newMatrixIndexs.length = wi;
+								}
+								newMatrixIndexs[wi] = nowiM * (useQuas?1:3) ;
+							}else {
+								var wi = Std.int(nowi * maxWeightLen1 + j-4);
+								if (wi>=newMatrixIndexs2.length) {
+									newMatrixIndexs2.length = wi;
+								}
+								newMatrixIndexs2[wi] = nowiM * (useQuas?1:3) ;
 							}
-							newMatrixIndexs[wi] = nowiM * 3 + 3;
 						}
 					}
 				}
@@ -205,10 +235,10 @@ class Animation
 					for (cmatrixs in skin.cacheMatrixs) {
 						var catchQuasByte = new ByteArray();
 						catchQuasByte.endian = Endian.LITTLE_ENDIAN;
-						//catchQuasByte.position = 48;
+						//catchQuasByte.position = 16;
 						var catchQuasTransByte = new ByteArray();
 						catchQuasTransByte.endian = Endian.LITTLE_ENDIAN;
-						//catchQuasTransByte.position = 48;
+						//catchQuasTransByte.position = 16;
 						for (i in 0...newMatrixs.length) {
 							var matr:Matrix3D = cmatrixs[newMatrixs[i]];
 							var comp= matr.decompose(Orientation3D.QUATERNION);
@@ -245,7 +275,6 @@ class Animation
 					for (cmatrixs in skin.cacheMatrixs) {
 						var catchByte = new ByteArray();
 						catchByte.endian = Endian.LITTLE_ENDIAN;
-						catchByte.position = 48;
 						for (i in 0...newMatrixs.length) {
 							cmatrixs[newMatrixs[i]].copyRawDataTo(catchVector,0, true);
 							for (j in 0...12) {
@@ -262,13 +291,21 @@ class Animation
 					}
 				}
 				
-				newWeights.length = newMatrixIndexs.length = newVs.length = (maxNowi + 1) * 3;
+				newVs.length = (maxNowi + 1) * 3;
 				newUVs.length = (maxNowi + 1) * 2;
-				
-				skinDrawable.weightBuff = new VertexBufferSet(Std.int(newWeights.length/maxWeightLen), Std.int(maxWeightLen), newWeights, 0);
-				skinDrawable.matrixBuff = new VertexBufferSet(Std.int(newWeights.length / maxWeightLen), Std.int(maxWeightLen), newMatrixIndexs, 0);
+				newWeights.length = newMatrixIndexs.length = (maxNowi + 1) * maxWeightLen0;
+				skinDrawable.weightBuff = new VertexBufferSet(Std.int(newWeights.length / maxWeightLen0), Std.int(maxWeightLen0), newWeights, 0);
+				skinDrawable.matrixBuff = new VertexBufferSet(Std.int(newWeights.length / maxWeightLen0), Std.int(maxWeightLen0), newMatrixIndexs, 0);
+				if(maxWeightLen>4){
+					newWeights2.length = newMatrixIndexs2.length = (maxNowi + 1) * maxWeightLen1;
+					skinDrawable.weightBuff2 = new VertexBufferSet(Std.int(newWeights2.length / maxWeightLen1), Std.int(maxWeightLen1), newWeights2, 0);
+					skinDrawable.matrixBuff2 = new VertexBufferSet(Std.int(newWeights2.length / maxWeightLen1), Std.int(maxWeightLen1), newMatrixIndexs2, 0);
+					skinDrawable.weightBuff2.init();
+					skinDrawable.matrixBuff2.init();
+				}
 				skinDrawable.xyz = new VertexBufferSet(Std.int(newVs.length/3), 3, newVs, 0);
-				skinDrawable.uv = new VertexBufferSet(Std.int(newUVs.length/2), 2, newUVs, 0);
+				skinDrawable.uv = new VertexBufferSet(Std.int(newUVs.length / 2), 2, newUVs, 0);
+				
 				skinDrawable.indexBufferSet = new IndexBufferSet(newIndexs.length, newIndexs, 0);
 				
 				MeshUtils.computeNorm(skinDrawable);
