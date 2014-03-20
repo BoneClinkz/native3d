@@ -41,11 +41,11 @@ class PhongMaterial extends MaterialBase
 	public var skin:Skin;
 	public var skinConstIndex:Int;
 	public var skinConstIndex2:Int;
-	public function new(ambient:Array<Float>=null,diffuse:Array<Float>=null,specular:Array<Float>=null,specularExponent:Float=200,diffuseTex:TextureBase=null,skin:Skin=null,isShadowDepth:Bool=false) 
+	public function new(ambient:Array<Float>=null,diffuse:Array<Float>=null,specular:Array<Float>=null,specularExponent:Float=200,diffuseTex:TextureBase=null,skin:Skin=null,isShadowDepth:Bool=false,useQuas:Bool=false) 
 	{
 		super();
 		if (!isShadowDepth) {
-			depthMaterial = new PhongMaterial(null, null, null, 200, null, skin, true);
+			depthMaterial = new PhongMaterial(null, null, null, 200, null, skin, true,useQuas);
 			depthMaterial.culling=Context3DTriangleFace.BACK;
 		}
 		
@@ -88,7 +88,7 @@ class PhongMaterial extends MaterialBase
 		if (skin != null) {
 			shader.anmMats = [];
 			shader.hasAnm = true;
-			shader.useQuas = Animation.useQuas;
+			shader.useQuas = useQuas;
 			shader.hasWeight1 = skin.maxWeightLen > 1;
 			shader.hasWeight2 = skin.maxWeightLen > 2;
 			shader.hasWeight3 = skin.maxWeightLen > 3;
@@ -98,8 +98,8 @@ class PhongMaterial extends MaterialBase
 			shader.hasWeight7 = skin.maxWeightLen > 7;
 		}
 		
+		trace(shader.getDebugShaderCode(true).split("\n").length);
 		build();
-		//trace(shader.getDebugShaderCode(true));
 		if (skin!=null) {
 			if (shader.useQuas) {
 				skinConstIndex = Std.int(shaderInstance.vertexMap[4] / 4);

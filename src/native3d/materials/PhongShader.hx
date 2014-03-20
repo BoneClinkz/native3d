@@ -71,55 +71,18 @@ class PhongShader extends Shader
 			//wpos.xyz += input.normal * .7;
 			if (hasAnm != null) {
 				if (useQuas) {
-					var result = wpos.xyz;
-					var target = wpos.xyz;
-					
-					var q = anmQuas[input.matrixIndex.x];
-					var t = anmTrans[input.matrixIndex.x];
-					
-					var w1 = -q.x*wpos.x - q.y*wpos.y - q.z*wpos.z;
-					var x1 = q.w*wpos.x + q.y*wpos.z - q.z*wpos.y;
-					var y1 = q.w*wpos.y - q.x*wpos.z + q.z*wpos.x;
-					var z1 = q.w*wpos.z + q.x*wpos.y - q.y*wpos.x;
-					
-					target.x = -w1*q.x + x1*q.w - y1*q.z + z1*q.y+t.x;
-					target.y = -w1*q.y + x1*q.z + y1*q.w - z1*q.x+t.y;
-					target.z = -w1 * q.z - x1 * q.y + y1 * q.x + z1 * q.w + t.z;
-					target *= input.weight.x;
-					result = target;
-					
-					q = anmQuas[input.matrixIndex.y];
-					t = anmTrans[input.matrixIndex.y];
-					
-					w1 = -q.x*wpos.x - q.y*wpos.y - q.z*wpos.z;
-					x1 = q.w*wpos.x + q.y*wpos.z - q.z*wpos.y;
-					y1 = q.w*wpos.y - q.x*wpos.z + q.z*wpos.x;
-					z1 = q.w*wpos.z + q.x*wpos.y - q.y*wpos.x;
-					
-					target.x = -w1*q.x + x1*q.w - y1*q.z + z1*q.y+t.x;
-					target.y = -w1*q.y + x1*q.z + y1*q.w - z1*q.x+t.y;
-					target.z = -w1*q.z - x1*q.y + y1*q.x + z1*q.w+t.z;
-					target *= input.weight.y;
-					result += target;
-					
-					q = anmQuas[input.matrixIndex.z];
-					t = anmTrans[input.matrixIndex.z];
-					
-					w1 = -q.x*wpos.x - q.y*wpos.y - q.z*wpos.z;
-					x1 = q.w*wpos.x + q.y*wpos.z - q.z*wpos.y;
-					y1 = q.w*wpos.y - q.x*wpos.z + q.z*wpos.x;
-					z1 = q.w*wpos.z + q.x*wpos.y - q.y*wpos.x;
-					
-					target.x = -w1*q.x + x1*q.w - y1*q.z + z1*q.y+t.x;
-					target.y = -w1*q.y + x1*q.z + y1*q.w - z1*q.x+t.y;
-					target.z = -w1*q.z - x1*q.y + y1*q.x + z1*q.w+t.z;
-					target *= input.weight.z;
-					result += target;
-					
+					var result = transformVectorByQuas(wpos.xyz, anmQuas[input.matrixIndex.x], anmTrans[input.matrixIndex.x], input.weight.x);
+					if (hasWeight1) result.xyz +=transformVectorByQuas(wpos.xyz, anmQuas[input.matrixIndex.y], anmTrans[input.matrixIndex.y], input.weight.y);
+					if (hasWeight2) result.xyz +=transformVectorByQuas(wpos.xyz, anmQuas[input.matrixIndex.z], anmTrans[input.matrixIndex.z], input.weight.z);
+					if (hasWeight3) result.xyz +=transformVectorByQuas(wpos.xyz, anmQuas[input.matrixIndex.w], anmTrans[input.matrixIndex.w], input.weight.w);
+					if (hasWeight4) result.xyz +=transformVectorByQuas(wpos.xyz, anmQuas[input.matrixIndex2.x], anmTrans[input.matrixIndex2.x], input.weight2.x);
+					if (hasWeight5) result.xyz +=transformVectorByQuas(wpos.xyz, anmQuas[input.matrixIndex2.y], anmTrans[input.matrixIndex2.y], input.weight2.y);
+					if (hasWeight6) result.xyz +=transformVectorByQuas(wpos.xyz, anmQuas[input.matrixIndex2.z], anmTrans[input.matrixIndex2.z], input.weight2.z);
+					if (hasWeight7) result.xyz +=transformVectorByQuas(wpos.xyz, anmQuas[input.matrixIndex2.w], anmTrans[input.matrixIndex2.w], input.weight2.w);
 					wpos.xyz = result.xyz;
 				}else {
 					var result = wpos.xyz;
-					result = wpos * input.weight.x * anmMats[input.matrixIndex.x];
+					result= wpos * input.weight.x * anmMats[input.matrixIndex.x];
 					if (hasWeight1) result.xyz += wpos * input.weight.y * anmMats[input.matrixIndex.y] ;
 					if (hasWeight2) result.xyz += wpos * input.weight.z * anmMats[input.matrixIndex.z] ;
 					if (hasWeight3) result.xyz += wpos * input.weight.w * anmMats[input.matrixIndex.w] ;
@@ -151,6 +114,25 @@ class PhongShader extends Shader
 			if (hasDiffuseMap) {
 				uv = input.uv;
 			}
+		}
+		
+		function transformVectorByQuas(pos:Float3, quas:Float4, tran:Float3, weight:Float):Float3 {
+			var z1 = quas.w*pos.z + quas.x*pos.y - quas.y*pos.x;
+			
+			var t = [0,0,0,0];
+			t.x = quas.w*pos.x + quas.y*pos.z - quas.z*pos.y;
+			t.y = quas.w*pos.y - quas.x*pos.z + quas.z*pos.x;
+			t.z = z1;
+			t.w = dot(quas.xyz , pos.xyz);
+			
+			/*tran.x += t.w*quas.x + t.x*quas.w - t.y*quas.z + t.z*quas.y;
+			tran.y += t.w*quas.y + t.x*quas.z + t.y*quas.w - t.z*quas.x;
+			tran.z += t.w * quas.z - t.x * quas.y + t.y * quas.x + t.z * quas.w;*/
+			tran.x += t.w *quas.x + t.x*quas.w - t.y*quas.z + t.z*quas.y;
+			tran.y += t.w*quas.y + t.x*quas.z + t.y*quas.w - t.z*quas.x;
+			tran.z += t.w * quas.z - t.x * quas.y + t.y * quas.x + t.z * quas.w;
+			tran *= weight;
+			return tran;
 		}
 		
 		function fragment() {

@@ -22,7 +22,7 @@ import native3d.meshs.MeshUtils;
  */
 class Animation
 {
-	public static var useQuas:Bool = false;
+	public var useQuas:Bool = true;
 	public static var maxMatrixJoint:Int = 38;
 	public static var maxQuatJoint:Int = 57;
 	
@@ -243,7 +243,8 @@ class Animation
 							var matr:Matrix3D = cmatrixs[newMatrixs[i]];
 							var comp= matr.decompose(Orientation3D.QUATERNION);
 							var quas = comp[1];
-							var tran = comp[2];
+							//var quas = comp[1];
+							var tran = comp[0];
 							catchQuasByte.writeFloat(quas.x);
 							catchQuasByte.writeFloat(quas.y);
 							catchQuasByte.writeFloat(quas.z);
@@ -323,7 +324,9 @@ class Animation
 				skin.node.material = new PhongMaterial(null,null,null,
 										200,
 										skin.texture.texture,
-										skin
+										skin,
+										false,
+										useQuas
 										);
 			}
 		}
