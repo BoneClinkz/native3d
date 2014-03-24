@@ -243,7 +243,6 @@ class Animation
 							var matr:Matrix3D = cmatrixs[newMatrixs[i]];
 							var comp= matr.decompose(Orientation3D.QUATERNION);
 							var quas = comp[1];
-							//var quas = comp[1];
 							var tran = comp[0];
 							catchQuasByte.writeFloat(quas.x);
 							catchQuasByte.writeFloat(quas.y);
@@ -252,7 +251,7 @@ class Animation
 							catchQuasTransByte.writeFloat(tran.x);
 							catchQuasTransByte.writeFloat(tran.y);
 							catchQuasTransByte.writeFloat(tran.z);
-							catchQuasTransByte.writeFloat(0);
+							catchQuasTransByte.writeFloat(tran.w);
 						}
 						catchQuasByte.position = 0;
 						catchQuasTransByte.position = 0;

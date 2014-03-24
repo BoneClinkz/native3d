@@ -116,23 +116,35 @@ class PhongShader extends Shader
 			}
 		}
 		
+		//http://molecularmusings.wordpress.com/2013/05/24/a-faster-quaternion-vector-multiplication/
+		//t = 2 * cross(q.xyz, v)
+		//v' = v + q.w * t + cross(q.xyz, t)
 		function transformVectorByQuas(pos:Float3, quas:Float4, tran:Float3, weight:Float):Float3 {
-			var z1 = quas.w*pos.z + quas.x*pos.y - quas.y*pos.x;
-			
-			var t = [0,0,0,0];
-			t.x = quas.w*pos.x + quas.y*pos.z - quas.z*pos.y;
-			t.y = quas.w*pos.y - quas.x*pos.z + quas.z*pos.x;
+			/*var t = 2 * cross(quas.xyz, pos);
+			var v1 = tran+ pos + quas.w * t + cross(quas.xyz, t);
+			return v1 * weight;*/
+			var t2 = quas.wxy;
+			t2.z = -t2.z;
+			var z1 = dot(t2,pos.zyx);
+			var t = [0, 0, 0, 0];
+			t2 = quas.wyz;
+			t2.z = -t2.z;
+			t.x = dot(t2, pos.xzy);
+			t2 = quas.wxz;
+			t2.y = -t2.y;
+			t.y = dot(t2,pos.yzx);
 			t.z = z1;
 			t.w = dot(quas.xyz , pos.xyz);
-			
-			/*tran.x += t.w*quas.x + t.x*quas.w - t.y*quas.z + t.z*quas.y;
-			tran.y += t.w*quas.y + t.x*quas.z + t.y*quas.w - t.z*quas.x;
-			tran.z += t.w * quas.z - t.x * quas.y + t.y * quas.x + t.z * quas.w;*/
-			tran.x += t.w *quas.x + t.x*quas.w - t.y*quas.z + t.z*quas.y;
-			tran.y += t.w*quas.y + t.x*quas.z + t.y*quas.w - t.z*quas.x;
-			tran.z += t.w * quas.z - t.x * quas.y + t.y * quas.x + t.z * quas.w;
-			tran *= weight;
-			return tran;
+			var t3 = quas.xwzy;
+			t3.z = -t3.z;
+			tran.x += dot(t.wxyz, t3);
+			t3 = quas.yzwx;
+			t3.w = -t3.w;
+			tran.y += dot(t.wxyz,t3);
+			t3 = quas.zyxw;
+			t3.y = -t3.y;
+			tran.z += dot(t.wxyz, t3);
+			return tran*weight;
 		}
 		
 		function fragment() {
