@@ -98,8 +98,8 @@ class PhongMaterial extends MaterialBase
 			shader.hasWeight7 = skin.maxWeightLen > 7;
 		}
 		
-		trace(shader.getDebugShaderCode(true).split("\n").length);
-		trace(shader.getDebugShaderCode(true));
+		//trace(shader.getDebugShaderCode(true).split("\n").length);
+		//trace(shader.getDebugShaderCode(true));
 		build();
 		if (skin!=null) {
 			if (shader.useQuas) {

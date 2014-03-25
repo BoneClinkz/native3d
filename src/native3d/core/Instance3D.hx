@@ -27,6 +27,7 @@ package native3d.core ;
 	import flash.geom.Vector3D;
 	import flash.Lib;
 	import flash.utils.ByteArray;
+	import flash.utils.Function;
 	import flash.Vector;
 	import native3d.core.animation.Skin;
 	import native3d.materials.PhongMaterial;
@@ -66,6 +67,7 @@ package native3d.core ;
 		public var frame:Int = 0;
 		
 		public var widthHeightVersion:Int = 1;
+		public var sorter:Function;
 		public function new() 
 		{
 			super();
@@ -104,7 +106,11 @@ package native3d.core ;
 			
 			nodess = new Vector<Vector<Node3D>>();
 			for (r in roots) {
-				nodess.push(doTransform.doTransform(r.children));
+				var nodes = doTransform.doTransform(r.children);
+				if (sorter!=null) {
+					sorter(nodes);
+				}
+				nodess.push(nodes);
 			}
 			
 			// TODO : xxx

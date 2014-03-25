@@ -32,6 +32,7 @@ package native3d.core ;
 		public var customDraw:Function;
 		public var target:PassTarget;
 		public var depth:Bool = false;
+		public var material:MaterialBase;
 		
 		public var clearR:Float=0;
 		public var clearG:Float=0;
@@ -96,12 +97,14 @@ package native3d.core ;
 		}
 		
 		inline public function doPass(node:Node3D):Void {
-			var  m = null;
-			if (depth) {
-				if(node.material!=null)
-				m=node.material.depthMaterial;
-			}else {
-				m=node.material;
+			var  m = material;
+			if (m == null){
+				if (depth) {
+					if(node.material!=null)
+					m=node.material.depthMaterial;
+				}else {
+					m=node.material;
+				}
 			}
 			var i3d = Instance3D.current;
 			if(m!=null)
