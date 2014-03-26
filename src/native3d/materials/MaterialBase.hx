@@ -1,4 +1,5 @@
 package native3d.materials ;
+import flash.display.BlendMode;
 import flash.display3D.Context3D;
 import flash.display3D.Context3DBlendFactor;
 import flash.display3D.Context3DProgramType;
@@ -55,6 +56,26 @@ import flash.display3D.Context3DCompareMode;
 		i3d.setDepthTest(true, passCompareMode);
 		i3d.setBlendFactors(sourceFactor, destinationFactor);
 		i3d.setCulling(culling);
+	}
+	
+	public function setBlendModel(value:BlendMode):Void {
+		switch (value) {
+			case BlendMode.NORMAL:
+				sourceFactor = Context3DBlendFactor.ONE;
+				destinationFactor = Context3DBlendFactor.ZERO;
+			case BlendMode.LAYER:
+				sourceFactor = Context3DBlendFactor.SOURCE_ALPHA;
+				destinationFactor = Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
+			case BlendMode.MULTIPLY:
+				sourceFactor = Context3DBlendFactor.ZERO;
+				destinationFactor = Context3DBlendFactor.SOURCE_COLOR;
+			case BlendMode.ADD:
+				sourceFactor = Context3DBlendFactor.SOURCE_ALPHA;
+				destinationFactor = Context3DBlendFactor.ONE;
+			case BlendMode.ALPHA:
+				sourceFactor = Context3DBlendFactor.ZERO;
+				destinationFactor = Context3DBlendFactor.SOURCE_ALPHA;
+		}
 	}
 	
 	public function init(node:Node3D):Void {

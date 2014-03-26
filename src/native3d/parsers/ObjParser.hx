@@ -204,14 +204,14 @@ class ObjParser extends AbsParser
 			}
 			var set:TextureSet = new TextureSet();
 			set.setBmd(image, Context3DTextureFormat.BGRA);
-			 cast(mit2node.get(key).node.material, PhongMaterial).diffuseTex = set.texture;
+			 cast(mit2node.get(key).node.material, PhongMaterial).diffuseTex = set;
 		}
 	}
 	
-	private function getTexture(mtl:String):TextureBase {
+	private function getTexture(mtl:String):TextureSet {
 		return TextureSet.getTempTexture();
 		var texture:TextureSet = new TextureSet();
-		return texture.texture;
+		return texture;
 	}
 	
 }

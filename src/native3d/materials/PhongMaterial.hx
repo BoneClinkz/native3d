@@ -22,6 +22,7 @@ import native3d.core.Drawable3D;
 import native3d.core.FrustumCulling;
 import native3d.core.Instance3D;
 import native3d.core.Node3D;
+import native3d.core.TextureSet;
 import native3d.core.VertexBufferSet;
 /**
  * ...
@@ -37,11 +38,11 @@ class PhongMaterial extends MaterialBase
 	public static var defDiffuse:Array<Float>=[.8,.8,.8];
 	public static var defSpecular:Array<Float>=[.8,.8,.8,200];
 	
-	public var diffuseTex:TextureBase;
+	public var diffuseTex:TextureSet;
 	public var skin:Skin;
 	public var skinConstIndex:Int;
 	public var skinConstIndex2:Int;
-	public function new(ambient:Array<Float>=null,diffuse:Array<Float>=null,specular:Array<Float>=null,specularExponent:Float=200,diffuseTex:TextureBase=null,skin:Skin=null,isShadowDepth:Bool=false,useQuas:Bool=false) 
+	public function new(ambient:Array<Float>=null,diffuse:Array<Float>=null,specular:Array<Float>=null,specularExponent:Float=200,diffuseTex:TextureSet=null,skin:Skin=null,isShadowDepth:Bool=false,useQuas:Bool=false) 
 	{
 		super();
 		if (!isShadowDepth) {
@@ -80,7 +81,7 @@ class PhongMaterial extends MaterialBase
 			}
 			shader.lights =  lights;
 			this.diffuseTex = diffuseTex;
-			if(diffuseTex!=null)shader.diffuseMap = diffuseTex;
+			if(diffuseTex!=null)shader.diffuseMap = diffuseTex.texture;
 			shader.hasDiffuseMap = diffuseTex != null;
 		}
 		
@@ -97,7 +98,10 @@ class PhongMaterial extends MaterialBase
 			shader.hasWeight6 = skin.maxWeightLen > 6;
 			shader.hasWeight7 = skin.maxWeightLen > 7;
 		}
-		
+		if (diffuseTex!=null) {
+			shader.isDXT1 = diffuseTex.isDXT1;
+			shader.isDXT5 = diffuseTex.isDXT5;
+		}
 		//trace(shader.getDebugShaderCode(true).split("\n").length);
 		//trace(shader.getDebugShaderCode(true));
 		build();
@@ -264,7 +268,7 @@ class PhongMaterial extends MaterialBase
 				}
 				if(diffuseTex!=null){
 					i3d.setVertexBufferAt(2, uv.vertexBuff, 0, uv.format);
-					i3d.setTextureAt(ti, diffuseTex);
+					i3d.setTextureAt(ti, diffuseTex.texture);
 				}
 			}
 			//draw
@@ -286,7 +290,7 @@ class PhongMaterial extends MaterialBase
 						i3d.setTextureAt(ti++, i3d.shadowLightPass.target.texture);
 					}
 					if(diffuseTex!=null){
-						i3d.setTextureAt(ti, diffuseTex);
+						i3d.setTextureAt(ti, diffuseTex.texture);
 					}
 					
 					norm = drawable.norm;

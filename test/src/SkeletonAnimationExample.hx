@@ -33,10 +33,6 @@ class SkeletonAnimationExample extends BasicTest
 		ctrl.position.setTo( 8, 22, 42);
 		ctrl.rotation.setTo(24, 190, 0);
 		ctrl.speed = 1;
-		
-		var layer = new Layer2D(true, null);
-		//bv.instance3Ds[0].setProgram(layer.material.progrom);
-		
 		var cube = addCube(null, 0, -1, 0, 0, 0, 0, 100, 1, 100);
 		cube.castShadow = false;
 	}

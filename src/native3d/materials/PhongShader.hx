@@ -52,6 +52,8 @@ class PhongShader extends Shader
 		var diffuseMap:Texture;
 		var hasDiffuseMap:Bool;
 		var isShadowDepth:Bool;
+		var isDXT1:Bool;
+		var isDXT5:Bool;
 		
 		//fragment parameter
 		var	ambient:Float3;
@@ -179,7 +181,13 @@ class PhongShader extends Shader
 					color *= shadowColor;
 				}
 				if (hasDiffuseMap) {
-					color = diffuseMap.get(uv, nearest)*color;
+					if (isDXT1) {
+						color = diffuseMap.get(uv, nearest,dxt1)*color;
+					}else if (isDXT5) {
+						color = diffuseMap.get(uv, nearest,dxt5)*color;
+					}else {
+						color = diffuseMap.get(uv, nearest)*color;
+					}
 				}
 				out =  color;
 			}else {

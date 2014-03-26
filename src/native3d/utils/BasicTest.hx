@@ -204,7 +204,7 @@ class BasicTest extends Sprite
 	private function dae_parser_complete(e:Event):Void 
 	{
 		var parser = untyped e.currentTarget;
-		var c:Int = 4;
+		var c:Int = 5;
 		for (x in 0...c ) {
 			for(y in 0...c){
 				var clone:Node3D = parser.node.clone();

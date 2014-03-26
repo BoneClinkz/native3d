@@ -6,7 +6,9 @@ package native3d.core ;
 	import flash.display3D.textures.CubeTexture;
 	import flash.display3D.textures.Texture;
 	import flash.display3D.textures.TextureBase;
+	import flash.errors.Error;
 	import flash.geom.Matrix;
+	import flash.utils.ByteArray;
 	/**
 	 * ...
 	 * @author lizhi http://matrix3d.github.io/
@@ -19,17 +21,62 @@ package native3d.core ;
 		private var _bmd:BitmapData;
 		private var ttexture:Texture;
 		
-		private static var tempTexture:TextureBase;
+		private static var tempTexture:TextureSet;
 		public var width:Int;
 		public var height:Int;
+		public var isDXT1:Bool;
+		public var isDXT5:Bool;
 		public function new() 
 		{
 		}
 		
-		/*public function get bmd():BitmapData 
-		{
-			return _bmd;
-		}*/
+		public function setAtf(data:ByteArray, optimizeForRenderToTexture:Bool = false,streamingLevels:Int=0):Void {
+			var sign:String = data.readUTFBytes(3);
+			if (sign != "ATF")
+				throw "ATF parsing error, unknown format " + sign;
+			
+			if (data[6] == 255)
+				data.position = 12; // new file version
+			else
+				data.position = 6; // old file version
+			
+			var tdata:UInt = data.readUnsignedByte();
+			var _type:Int = tdata >> 7; // UB[1]
+			var _format:Int = tdata & 0x7f; // UB[7]
+			var format=null;
+			switch (_format) {
+				case 0:
+				case 1:
+					format = Context3DTextureFormat.BGRA;
+				case 2:
+				case 3:
+					format = Context3DTextureFormat.COMPRESSED;
+					isDXT1 = true;
+				case 4:
+				case 5:
+					format = Context3DTextureFormat.COMPRESSED_ALPHA;
+					isDXT5 = true;
+					// explicit string to stay compatible 
+				// with older versions
+				default:
+					throw "Invalid ATF format";
+			}
+			
+			var type;
+			switch (_type) {
+				case 0:
+					type = "ATFData.TYPE_NORMAL";
+				case 1:
+					type = "ATFData.TYPE_CUBE";
+			}
+			
+			width = Std.int(Math.pow(2, data.readUnsignedByte()));
+			height = Std.int(Math.pow(2, data.readUnsignedByte()));
+			var numTextures = data.readUnsignedByte();
+			texture = Instance3D.current.createTexture(width, height, format, optimizeForRenderToTexture,streamingLevels);
+			ttexture = cast( texture, Texture);
+			ttexture.uploadCompressedTextureFromByteArray(data, 0);
+		}
 		
 		public function setBmd(bmd:BitmapData,format:Context3DTextureFormat, optimizeForRenderToTexture:Bool=false, streamingLevels:Int=0):Void 
 		{
@@ -116,13 +163,12 @@ package native3d.core ;
 		}
 		
 		
-		public static function getTempTexture():TextureBase {
+		public static function getTempTexture():TextureSet {
 			if (tempTexture == null) {
 				var bmd:BitmapData = new BitmapData(128, 128, false);
 				bmd.perlinNoise(100, 100, 3, 1, true, true);
-				var tb:TextureSet = new TextureSet();
-				tb.setBmd(bmd, Context3DTextureFormat.BGRA);
-				tempTexture = tb.texture;
+				tempTexture = new TextureSet();
+				tempTexture.setBmd(bmd, Context3DTextureFormat.BGRA);
 			}
 			return tempTexture;
 		}

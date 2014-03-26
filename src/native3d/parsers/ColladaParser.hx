@@ -127,7 +127,7 @@ class ColladaParser extends AbsParser
 				drawable.uv = new VertexBufferSet(untyped(uv.length / 2), 2, uv, 0);
 				drawable.indexBufferSet = new IndexBufferSet(indexs.length, indexs, 0);
 				MeshUtils.computeNorm(drawable);
-				drawableNode.material = new PhongMaterial(null,null,null,200,texture.texture);
+				drawableNode.material = new PhongMaterial(null,null,null,200,texture);
 				node.add(drawableNode);
 			}
 		}

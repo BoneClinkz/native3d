@@ -322,7 +322,7 @@ class Animation
 				skin.node.skin = skin;
 				skin.node.material = new PhongMaterial(null,null,null,
 										200,
-										skin.texture.texture,
+										skin.texture,
 										skin,
 										false,
 										useQuas

@@ -52,7 +52,7 @@ class ParticleExample2 extends Sprite
 		pw = new ParticleWrapper(bv.instance3Ds[0]);
 		pw.updater = new FollowUpdater(node);
 		var d = 10;
-		for (i in 0...100) {
+		for (i in 0...10000) {
 			var p:Particle = new Particle();
 			pw.particles.push(p);
 		}
