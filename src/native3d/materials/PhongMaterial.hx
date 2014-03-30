@@ -49,7 +49,6 @@ class PhongMaterial extends MaterialBase
 			depthMaterial = new PhongMaterial(null, null, null, 200, null, skin, true,useQuas);
 			depthMaterial.culling=Context3DTriangleFace.BACK;
 		}
-		
 		var shader = new PhongShader();
 		this.shader = shader;
 		
@@ -107,10 +106,10 @@ class PhongMaterial extends MaterialBase
 		build();
 		if (skin!=null) {
 			if (shader.useQuas) {
-				skinConstIndex = Std.int(shaderInstance.vertexMap[4] / 4);
-				skinConstIndex2 = Std.int(shaderInstance.vertexMap[5] / 4);
+				skinConstIndex = Std.int(shaderInstance.vertexMap[5] / 4);
+				skinConstIndex2 = Std.int(shaderInstance.vertexMap[6] / 4);
 			}else {
-				skinConstIndex = Std.int(shaderInstance.vertexMap[3] / 4);
+				skinConstIndex = Std.int(shaderInstance.vertexMap[4] / 4);
 			}
 			vertex.length = skinConstIndex * 4;
 		}
@@ -239,6 +238,11 @@ class PhongMaterial extends MaterialBase
 		pass.camera.perspectiveProjectionMatirx.copyRawDataTo(vertex, 16, true);
 		if (i3d.shadowLight != null) {
 			i3d.shadowLightPass.camera.perspectiveProjectionMatirx.copyRawDataTo(vertex, 32, true);
+			if(!isShadowDepth)
+			pass.camera.invert.copyRawDataTo(vertex, 48, true);
+		}else {
+			if(!isShadowDepth)
+			pass.camera.invert.copyRawDataTo(vertex, 32, true);
 		}
 		i3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 0, vertex);
 		i3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, fragment);

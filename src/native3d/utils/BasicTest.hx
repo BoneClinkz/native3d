@@ -93,7 +93,7 @@ class BasicTest extends Sprite
 		var c = numLight;
 		while(c-->0){
 			light = new BasicLight3D(BasicLight3D.TYPE_DISTANT);
-			light.shadowMapEnabled = true;
+			//light.shadowMapEnabled = true;
 			bv.instance3Ds[0].addLight(light);
 			light.setPosition(-10000,10000);
 			light.color[0] = 1;

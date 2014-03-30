@@ -16,7 +16,6 @@ package native3d.core;
 		public var invert:Matrix3D;// = new Matrix3D();
 		public var perspectiveProjection:Matrix3D;// = new Matrix3D();
 		
-		public var viewMatrix:Matrix3D;// = new Matrix3D();
 		public var perspectiveProjectionMatirx:Matrix3D;// = new Matrix3D();
 		public var invertVersion:Int = -212;
 		public var frustumPlanes:Vector<Vector3D>;
@@ -31,7 +30,6 @@ package native3d.core;
 			this.is2d = is2d;
 			invert = new Matrix3D();
 			perspectiveProjection = new Matrix3D();
-			viewMatrix = new Matrix3D();
 			perspectiveProjectionMatirx = new Matrix3D();
 			add(new Node3D());
 			

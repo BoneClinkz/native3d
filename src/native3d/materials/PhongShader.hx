@@ -28,16 +28,17 @@ class PhongShader extends Shader
 		var shadowLightPos:Float4;
 		
 		//vertex parameter
-		var modelViewMatrix:M44;
+		var modelMatrix:M44;
 		var projectionMatrix:M44;
 		
 		//bcs the haxe array not support texture,so make a shadow light out the lights
 		var shadowProjectonMatrix:M44;
+		var viewMatrix:M44;
 		var shadowMap:Texture;
 		
-		var anmMats:M34<38>;
-		var anmQuas:Float4<57>;
-		var anmTrans:Float3<57>;
+		var anmMats:M34<37>;
+		var anmQuas:Float4<55>;
+		var anmTrans:Float3<55>;
 		var hasWeight1:Bool;
 		var hasWeight2:Bool;
 		var hasWeight3:Bool;
@@ -94,24 +95,24 @@ class PhongShader extends Shader
 					if (hasWeight7) result.xyz += wpos * input.weight2.w * anmMats[input.matrixIndex2.w] ;
 					wpos.xyz = result;
 				}
-				
 			}
+			var worldPos = wpos * modelMatrix;
 			if (isShadowDepth) {
-				wpos = wpos * modelViewMatrix * projectionMatrix;
-				out = wpos;
-				shadowDepthZW = wpos.zw;
+				var viewPos = worldPos * projectionMatrix;
+				out = viewPos;
+				shadowDepthZW = viewPos.zw;
 			}else {
-				out = wpos * modelViewMatrix * projectionMatrix;
+				out = worldPos * projectionMatrix;
 			}
 			if (shadowProjectonMatrix != null) {
-				shadowLightPos = wpos * modelViewMatrix * shadowProjectonMatrix;
+				shadowLightPos = worldPos * shadowProjectonMatrix;
 			}
 			
 			if(diffuse!=null||specular!=null){
-				var eyespacePosTemp = (wpos.xyz * modelViewMatrix).xyz;
+				var eyespacePosTemp = (worldPos*viewMatrix).xyz;
 				eyespacePos = eyespacePosTemp;
 				viewVec = normalize( -eyespacePosTemp);
-				surfaceNormal = normalize(input.normal * modelViewMatrix);
+				surfaceNormal = normalize(input.normal * modelMatrix);
 			}
 			if (hasDiffuseMap) {
 				uv = input.uv;

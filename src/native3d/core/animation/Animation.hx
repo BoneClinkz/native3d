@@ -22,9 +22,9 @@ import native3d.meshs.MeshUtils;
  */
 class Animation
 {
-	public var useQuas:Bool = true;
-	public static var maxMatrixJoint:Int = 38;
-	public static var maxQuatJoint:Int = 57;
+	public var useQuas:Bool = false;
+	public static var maxMatrixJoint:Int = 37;
+	public static var maxQuatJoint:Int = 55;
 	
 	public var parts:Vector<AnimationPart>;
 	public var jointRoot:Node3D;
@@ -52,8 +52,8 @@ class Animation
 				for (i in 0...skin.joints.length) {
 					var joint = skin.joints[i];
 					var matrix:Matrix3D = new Matrix3D();
-					matrix.copyFrom(joint.worldMatrix);
-					matrix.prepend(skin.invBindMatrixs[i]);
+					matrix.append(skin.invBindMatrixs[i]);
+					matrix.append(joint.worldMatrix);
 					matrixs.push(matrix);
 				}
 			}
@@ -63,7 +63,6 @@ class Animation
 		
 		for (skin in skins) {
 			skin.numFrame = numFrame;
-			
 			skin.bindShapeMatrix.transformVectors(skin.daeXyz, skin.daeXyz);
 			var maxWeightLen = 0.0;
 			var maxWeightLen0:Int = 0;

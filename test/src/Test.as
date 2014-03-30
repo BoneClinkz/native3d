@@ -28,7 +28,7 @@ package
 				for (var y:int = 0; y < h;y++ ) {
 					for (var z:int = 0; z < d;z++ ) {
 						var cube:Node3D = addCube(null, (x - w / 2) * gap, (y - h / 2) * gap, (z - d / 2) * gap, 0, 0, 0, scale, scale, scale);
-						cube.material = new GraphicsMaterial(graphics);
+						//cube.material = new GraphicsMaterial(graphics);
 					}
 				}
 			}
@@ -41,6 +41,12 @@ package
 		override public function enterFrame (e:Event) : void {
 			graphics.clear();
 			super.enterFrame(e);
+		}
+		
+		override public function initLight () : void {
+			var l:BasicLight3D = new BasicLight3D(BasicLight3D.TYPE_DISTANT);
+			root3d.add(l);
+			l.z = -10000;
 		}
 	}
 
