@@ -18,6 +18,9 @@ import flash.display3D.Context3DCompareMode;
  */
  class MaterialBase 
 {
+	public static var LAST:MaterialBase;
+	public var isLastMe:Bool = false;//上个材质是否自身
+	
 	public var shader:Shader;
 	public var shaderInstance:ShaderInstance;
 	public var vertex:Vector<Float>;
@@ -45,6 +48,10 @@ import flash.display3D.Context3DCompareMode;
 		if (shaderInstance.program==null) {
 			shaderInstance.program = i3d.createProgram();
 			shaderInstance.program.upload(shaderInstance.vertexBytes.getData(), shaderInstance.fragmentBytes.getData());
+			/*i3d.context.enableErrorChecking = true;
+			trace("\n\n"+shader);
+			trace("\n"+shader.getDebugShaderCode(true).split("\n").length);
+			trace("\n"+shader.getDebugShaderCode(true));*/
 		}
 		vertex = shaderInstance.vertexVars.toData().concat();
 		fragment = shaderInstance.fragmentVars.toData().concat();
@@ -56,6 +63,8 @@ import flash.display3D.Context3DCompareMode;
 		i3d.setDepthTest(true, passCompareMode);
 		i3d.setBlendFactors(sourceFactor, destinationFactor);
 		i3d.setCulling(culling);
+		isLastMe = LAST == this;
+		LAST = this;
 	}
 	
 	public function setBlendModel(value:BlendMode):Void {

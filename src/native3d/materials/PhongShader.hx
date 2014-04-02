@@ -154,7 +154,10 @@ class PhongShader extends Shader
 			if(!isShadowDepth){
 				var color:Float4 = [0,0,0,1.];
 				for (light in lights.ambientLights) {
-					color.xyz += ambient*diffuse.xyz*light.color;
+					if(ambient!=null)
+					color.xyz += ambient * diffuse.xyz * light.color;
+					else
+					color.xyz += diffuse.xyz * light.color;
 				}
 				for (light in lights.distantLights) {
 					color.xyz += getPhongColor(light.position)
@@ -201,14 +204,20 @@ class PhongShader extends Shader
 		}
 		
 		function getPhongColor(position:Float3):Float3 {
-			var lightVec:Float3 = normalize(position - eyespacePos);
-			var color:Float3 = ambient;
-			if (diffuse!=null) {
-				color += diffuse.xyz * max(0, dot(lightVec, surfaceNormal));
-			}
-			if(specular!=null){
-				var reflectedLightVec:Float3  = normalize(2* dot(lightVec, surfaceNormal)* surfaceNormal-lightVec);
-				color += specular.xyz * pow(max(0, dot(reflectedLightVec, viewVec)), specular.w);
+			var color:Float3;
+			if(ambient!=null)
+			color = ambient;
+			else
+			color = [1.,1,1];
+			if(diffuse!=null||specular!=null){
+				var lightVec:Float3 = normalize(position - eyespacePos);
+				if (diffuse!=null) {
+					color += diffuse.xyz * max(0, dot(lightVec, surfaceNormal));
+				}
+				if(specular!=null){
+					var reflectedLightVec:Float3  = normalize(2* dot(lightVec, surfaceNormal)* surfaceNormal-lightVec);
+					color += specular.xyz * pow(max(0, dot(reflectedLightVec, viewVec)), specular.w);
+				}
 			}
 			return color;
 		}
