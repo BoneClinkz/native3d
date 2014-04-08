@@ -56,12 +56,18 @@ package native3d.core ;
 		public var height:Int = 400;
 		public var  antiAlias:Int = 0;
 		
-		public var lastBuffs:Array<VertexBuffer3D>;
-		public var nowBuffs:Array<VertexBuffer3D>;
-		public var buffsFormats:Array<Context3DVertexBufferFormat>;
-		public var buffsOffsets:Array<Int>;
-		public var lastTextures:Array<TextureBase>;
-		public var nowTextures:Array<TextureBase>;
+		//public var lastBuffs:Array<VertexBuffer3D>;
+		//public var nowBuffs:Array<VertexBuffer3D>;
+		//public var buffsFormats:Array<Context3DVertexBufferFormat>;
+		//public var buffsOffsets:Array<Int>;
+		//public var lastTextures:Array<TextureBase>;
+		//public var nowTextures:Array<TextureBase>;
+		public var lastBuffMaxIndex:Int = 0;
+		public var nowBuffMaxIndex:Int = 0;
+		public var lastTexMaxIndex:Int = 0;
+		public var nowTexMaxIndex:Int = 0;
+		
+		
 		public var shape:Sprite;
 		
 		public var frame:Int = 0;
@@ -72,12 +78,12 @@ package native3d.core ;
 		{
 			super();
 			current = this;
-			lastBuffs = new Array<VertexBuffer3D>();
+			/*lastBuffs = new Array<VertexBuffer3D>();
 			nowBuffs = new Array<VertexBuffer3D>();
 			buffsFormats=new Array<Context3DVertexBufferFormat>();
 			buffsOffsets=new Array<Int>();
 			lastTextures = new Array<TextureBase>();
-			nowTextures = new Array<TextureBase>();
+			nowTextures = new Array<TextureBase>();*/
 			root = new Node3D();
 			camera = new Camera3D(width,height);
 			 doTransform = new BasicDoTransform3D();
@@ -299,7 +305,7 @@ package native3d.core ;
 			context.drawTriangles(indexBuffer, firstIndex, numTriangles);
 		}
 		public inline function beginDraw():Void {
-			var len = lastBuffs.length;
+			/*var len = lastBuffs.length;
 			if (nowBuffs.length > len) len = nowBuffs.length;
 			for (i in 0...len) {
 				var lastBuff = lastBuffs[i];
@@ -320,7 +326,16 @@ package native3d.core ;
 			lastBuffs = nowBuffs;
 			lastTextures = nowTextures;
 			nowBuffs = new Array<VertexBuffer3D>();
-			nowTextures = new Array<TextureBase>();
+			nowTextures = new Array<TextureBase>();*/
+			while (nowBuffMaxIndex < lastBuffMaxIndex ) {
+				context.setVertexBufferAt(++nowBuffMaxIndex, null);
+			}
+			while (nowTexMaxIndex < lastTexMaxIndex ) {
+				context.setTextureAt(++nowTexMaxIndex, null);
+			}
+			lastBuffMaxIndex = nowBuffMaxIndex;
+			lastTexMaxIndex = nowTexMaxIndex;
+			nowBuffMaxIndex = nowTexMaxIndex = 0;
 		}
 		
 		public inline function present() : Void {
@@ -369,14 +384,16 @@ package native3d.core ;
 			context.setStencilReferenceValue(referenceValue, readMask, writeMask);
 		}
 		public inline function setTextureAt(sampler : Int, texture : TextureBase) : Void {
-			//context.setTextureAt(sampler, texture);
-			nowTextures[sampler] = texture;
+			context.setTextureAt(sampler, texture);
+			if (nowTexMaxIndex < sampler) nowTexMaxIndex = sampler;
+			//nowTextures[sampler] = texture;
 		}
 		public inline function setVertexBufferAt(index : Int, buffer : VertexBuffer3D, bufferOffset : Int = 0, format : Context3DVertexBufferFormat) : Void {
-			//context.setVertexBufferAt(index, buffer, bufferOffset, format);
-			nowBuffs[index] = buffer;
-			buffsOffsets[index] = bufferOffset;
-			buffsFormats[index] = format;
+			context.setVertexBufferAt(index, buffer, bufferOffset, format);
+			if (nowBuffMaxIndex < index) nowBuffMaxIndex = index;
+			//nowBuffs[index] = buffer;
+			//buffsOffsets[index] = bufferOffset;
+			//buffsFormats[index] = format;
 		}
 		
 	}
