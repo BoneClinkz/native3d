@@ -12,6 +12,9 @@ import flash.Vector;
 	{
 		public var passNodes:Vector<Node3D>;
 		private var rawData:Vector<Float> ;
+		
+		private static var VONE:Vector<Float> = Vector.ofArray([1., 1, 1]);
+		private static var TEMP:Vector<Float> = Vector.ofArray([0.0,0,0]);
 		public function new() 
 		{
 			passNodes = new Vector<Node3D>();
@@ -57,7 +60,19 @@ import flash.Vector;
 					node.compsVersion = node.worldVersion - 1;
 				}
 				node.matrixVersion = node.worldVersion;
-				
+				if(node.drawable!=null){
+					node.worldMatrix.transformVectors(VONE, TEMP);
+					TEMP[0] -= node.worldRawData[12];
+					TEMP[1] -= node.worldRawData[13];
+					TEMP[2] -= node.worldRawData[14];
+					if (TEMP[0] < 0) TEMP[0] *= -1;
+					if (TEMP[1] < 0) TEMP[1] *= -1;
+					if (TEMP[2] < 0) TEMP[2] *= -1;
+					var max = TEMP[0];
+					if (max < TEMP[1]) max = TEMP[1];
+					if (max < TEMP[2]) max = TEMP[2];
+					node.radius=max*node.drawable.radius;
+				}
 			}
 			if (node.drawable != null) {
 				passNodes.push(node);

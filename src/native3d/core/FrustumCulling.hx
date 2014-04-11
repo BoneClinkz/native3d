@@ -1,5 +1,6 @@
 package native3d.core;
 import flash.geom.Vector3D;
+import flash.Vector.Vector;
 
 /**
  * ...
@@ -11,13 +12,14 @@ class FrustumCulling
 	public var node:Node3D;
 	public var nodeVersion:Int = -100;
 	private var help:Bool;
-	private static var VONE:Vector3D = new Vector3D(1, 1, 1, 1);
+	private static var VONE:Vector<Float> = Vector.ofArray([1., 1, 1]);
+	private static var TEMP:Vector<Float> = Vector.ofArray([0.0,0,0]);
 	public function new() 
 	{
 		cameraMap = new Map<Camera3D, CullingData>();
 	}
 	
-	public function culling(camera:Camera3D):Bool { //return true;
+	public function culling(camera:Camera3D):Bool {
 		help = false;
 		var cd:CullingData = cameraMap.get(camera);
 		if (cd == null) {
@@ -33,17 +35,7 @@ class FrustumCulling
 			help = true;
 		}
 		if (help) {
-			var temp = node.worldMatrix.transformVector(VONE);
-			temp.x -= node.worldRawData[12];
-			temp.y -= node.worldRawData[13];
-			temp.z -= node.worldRawData[14];
-			if (temp.x < 0) temp.x *= -1;
-			if (temp.y < 0) temp.y *= -1;
-			if (temp.z < 0) temp.z *= -1;
-			var max = temp.x;
-			if (max < temp.y) max = temp.y;
-			if (max < temp.z) max = temp.z;
-			cd.culling = camera.isPointInFrustum(node.worldRawData,max*node.drawable.radius);
+			cd.culling = camera.isPointInFrustum(node.worldRawData,node.radius);
 		}
 		return cd.culling;
 	}

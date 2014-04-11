@@ -24,6 +24,7 @@ package native3d.core ;
 		public var name:String;
 		public var type:String;
 		public var castShadow:Bool = false;
+		public var radius:Float = 0;
 		
 		private static var ID:Int = 0;
 		public static var NODES:Map<Int,Node3D> = new Map<Int,Node3D>();

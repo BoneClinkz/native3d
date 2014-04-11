@@ -140,18 +140,7 @@ package native3d.core ;
 				var maxz = .0;
 				for (node in nodess[passs[0].rootIndex]) {
 					if (node.castShadow&&node.drawable!=null) {
-						var VONE:Vector3D = new Vector3D(1, 1, 1, 1);
-						var temp = node.worldMatrix.transformVector(VONE);
-						temp.x -= node.worldRawData[12];
-						temp.y -= node.worldRawData[13];
-						temp.z -= node.worldRawData[14];
-						if (temp.x < 0) temp.x *= -1;
-						if (temp.y < 0) temp.y *= -1;
-						if (temp.z < 0) temp.z *= -1;
-						var maxs = temp.x;
-						if (maxs < temp.y) maxs = temp.y;
-						if (maxs < temp.z) maxs = temp.z;
-						var r = node.drawable.radius*maxs;
+						var r = node.radius;
 						
 						var x = node.worldRawData[12];
 						var y = node.worldRawData[13];
@@ -335,7 +324,7 @@ package native3d.core ;
 			}
 			lastBuffMaxIndex = nowBuffMaxIndex;
 			lastTexMaxIndex = nowTexMaxIndex;
-			nowBuffMaxIndex = nowTexMaxIndex = 0;
+			nowBuffMaxIndex = nowTexMaxIndex = -1;
 		}
 		
 		public inline function present() : Void {
