@@ -1,9 +1,12 @@
 package native3d.parsers;
+import flash.display.BitmapData;
+import flash.display3D.Context3DTextureFormat;
 import flash.geom.Vector3D;
 import flash.utils.ByteArray;
 import flash.Vector;
 import native3d.core.Drawable3D;
 import native3d.core.IndexBufferSet;
+import native3d.core.math.Quaternion;
 import native3d.core.Node3D;
 import native3d.core.TextureSet;
 import native3d.core.VertexBufferSet;
@@ -18,9 +21,10 @@ class MD5MeshParser extends AbsParser
 {
 	public var joints:Array<MD5Joint>;
 	public var meshs:Array<MD5Mesh>;
-	public function new() 
+	public function new(bmd:BitmapData) 
 	{
 		super(null);
+		this.bmd = bmd;
 		joints = [];
 		meshs = [];
 	}
@@ -45,8 +49,9 @@ class MD5MeshParser extends AbsParser
 					joint.name = result.matched(1);
 					joint.parent = Std.parseInt(result.matched(2));
 					joint.pos = new Vector3D(Std.parseFloat(result.matched(3)), Std.parseFloat(result.matched(4)), Std.parseFloat(result.matched(5)));
-					joint.quat = new Vector3D(Std.parseFloat(result.matched(6)), Std.parseFloat(result.matched(7)), Std.parseFloat(result.matched(8)));
-					Quat.computeW(joint.quat);
+					joint.quat = new Quaternion(Std.parseFloat(result.matched(6)), Std.parseFloat(result.matched(7)), Std.parseFloat(result.matched(8)));
+					joint.quat.computeW();
+					joint.toMatrix();
 					joints.push(joint);
 				}
 			}else if ((result =~/mesh {/).match(line)) {
@@ -62,12 +67,12 @@ class MD5MeshParser extends AbsParser
 					}else if ((result =~/numweights (\d+)/).match(line)) {
 					}else if ((result =~/vert\s+(\d+)\s*\(\s*(\S+)\s+(\S+)\s*\)\s+(\d+)\s+(\d+)/).match(line)) {
 						var  vert:MD5Vertex = new MD5Vertex();
-						vert.uv = new Vector3D(Std.parseFloat(result.matched(2)), 1-Std.parseFloat(result.matched(3)));
+						vert.uv = new Vector3D(Std.parseFloat(result.matched(2)), Std.parseFloat(result.matched(3)));
 						vert.start = Std.parseInt(result.matched(4));
 						vert.count = Std.parseInt(result.matched(5));
 						mesh.vs2[Std.parseInt(result.matched(1))] = vert;
 					}else if ((result =~/vert\s+(\d+)\s*\(\s*(\S+)\s+(\S+)\s*\)\s+(\S+)\s+(\S+)\s+(\S+)/).match(line)) {
-						mesh.vs[Std.parseInt(result.matched(1))] = [Std.parseFloat(result.matched(2)), 1 - Std.parseFloat(result.matched(3)), Std.parseFloat(result.matched(4)), Std.parseFloat(result.matched(5)), Std.parseFloat(result.matched(6))];
+						mesh.vs[Std.parseInt(result.matched(1))] = [Std.parseFloat(result.matched(2)), Std.parseFloat(result.matched(3)), Std.parseFloat(result.matched(4)), Std.parseFloat(result.matched(5)), Std.parseFloat(result.matched(6))];
 					}else if ((result =~/tri\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/).match(line)) {
 						mesh.ins[Std.parseInt(result.matched(1))] = [Std.parseInt(result.matched(2)), Std.parseInt(result.matched(3)), Std.parseInt(result.matched(4)) ];
 					}else if ((result =~/weight\s+(\d+)\s+(\d+)\s+(\S+)\s*\(\s*(\S+)\s+(\S+)\s+(\S+)\s*\)/).match(line)) {
@@ -85,7 +90,7 @@ class MD5MeshParser extends AbsParser
 		createNode3D();
 	}
 	
-	private function prepareMesh():Void {
+	public function prepareMesh():Void {
 		for (mesh in meshs) {
 			for ( i in 0...mesh.vs2.length) {
 				var vert:MD5Vertex = mesh.vs2[i];
@@ -94,8 +99,9 @@ class MD5MeshParser extends AbsParser
 					for (j in 0...vert.count) {
 						var weight:MD5Weight = mesh.weights[vert.start + j];
 						var joint:MD5Joint = joints[weight.joint];
-						var pvert:Vector3D = Quat.rotatePoint(joint.quat, weight.pos);
-						pvert = pvert.add(joint.pos);
+						/*var pvert:Vector3D = joint.quat.rotatePoint(weight.pos);
+						pvert = pvert.add(joint.pos);*/
+						var pvert:Vector3D=joint.matr.transformVector(weight.pos);
 						pvert.scaleBy(weight.bias);
 						fvert = fvert.add(pvert);
 					}
@@ -105,7 +111,7 @@ class MD5MeshParser extends AbsParser
 		}
 	}
 	
-	private function createNode3D():Void {
+	public function createNode3D():Void {
 		var vsCounter:Int = 0;
 		var xyz:Array<Float> = [];
 		var uv:Array<Float> = [];
@@ -125,35 +131,40 @@ class MD5MeshParser extends AbsParser
 			}
 			vsCounter += mesh.vs.length;
 		}
+		var drawable:Drawable3D;
+		var node;
+		if (this.node.children.length == 0) {
+			node = new Node3D();
+			this.node.add(node);
+			drawable = new Drawable3D();
+			drawable.indexBufferSet = new IndexBufferSet(ins.length, Vector.ofArray(ins), 0);
+			drawable.xyz = new VertexBufferSet(Std.int(xyz.length/3), 3, Vector.ofArray(xyz), 0);
+			drawable.uv = new VertexBufferSet(Std.int(uv.length/2), 2, Vector.ofArray(uv), 0);
+			node.drawable = drawable;
+			node.setRotation(-90,180, 0);
+			var texture:TextureSet = new TextureSet();
+			texture.setBmd(bmd,Context3DTextureFormat.BGRA);
+			MeshUtils.computeNorm(drawable);
+			MeshUtils.computeRadius(drawable);
+			node.material = 
+			new PhongMaterial(
+				[.5, .5, .5],//AmbientColor
+				[.5,.5,.5],//DiffuseColor
+				[.8,.8,.8],//SpecularColor
+				200,
+				texture
+				);
+		}else {
+			node = this.node.children[0];
+			drawable = node.drawable;
+			drawable.xyz.data = Vector.ofArray(xyz);
+			drawable.xyz.upload();
+		}
 		
-		var node = new Node3D();
-		var drawable:Drawable3D = new Drawable3D();
-		drawable.indexBufferSet = new IndexBufferSet(ins.length, Vector.ofArray(ins), 0);
-		drawable.xyz = new VertexBufferSet(Std.int(xyz.length/3), 3, Vector.ofArray(xyz), 0);
-		drawable.uv = new VertexBufferSet(Std.int(uv.length/2), 2, Vector.ofArray(uv), 0);
-		MeshUtils.computeNorm(drawable);
-		MeshUtils.computeRadius(drawable);
-		node.drawable = drawable;
-		node.setRotation(-90,180, 0);
-		node.material = 
-		new PhongMaterial(
-			[.2, .2, .2],//AmbientColor
-			[.5,.5,.5],//DiffuseColor
-			[.8,.8,.8],//SpecularColor
-			200,
-			TextureSet.getTempTexture()
-			);
-		this.node.add(node);
+		
 	}
 }
 
-class MD5Joint {
-	public var name:String;
-	public var parent:Int;
-	public var pos:Vector3D;
-	public var quat:Vector3D;
-	public function new() {}
-}
 class MD5Weight {
 	public var joint:Int;
 	public var bias:Float;
@@ -166,29 +177,6 @@ class MD5Vertex {
 	public var start:Int;
 	public var count:Int;
 	public function new() {}
-}
-
-class Quat {
-	public static function computeW (q:Vector3D):Void{
-		var t:Float = 1 - q.x * q.x - q.y * q.y - q.z * q.z;
-		q.w = t < 0?0: -Math.sqrt(t);
-	}
-	
-	public static function rotatePoint(quat:Vector3D,vector:Vector3D):Vector3D {
-		var t:Vector3D = cross(quat, vector);
-		t.scaleBy(2);
-		var t2:Vector3D = t.clone();
-		t2.scaleBy(quat.w);
-		return vector.add(t2).add(cross(quat,t));
-	}
-	
-	private static function cross(v1:Vector3D, v2:Vector3D):Vector3D {
-		return new Vector3D(
-		v1.y * v2.z - v1.z * v2.y,
-		v1.z * v2.x - v1.x * v2.z,
-		v1.x * v2.y - v1.y * v2.x
-		);
-	}
 }
 
 class MD5Mesh {

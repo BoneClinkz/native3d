@@ -29,7 +29,6 @@ class Stats extends Sprite
 		tf.mouseEnabled=tf.selectable = false;
 		buttonMode = true;
 		tf.defaultTextFormat = new TextFormat("Verdana");
-		tf.text = "stats3d";
 		addChild(tf);
 		tf.autoSize = TextFieldAutoSize.LEFT;
 		tf.textColor = 0xffffff;
@@ -64,23 +63,23 @@ class Stats extends Sprite
 		var text = "";
 		if (Instance3D._instances!=null) {
 			for (i3d in Instance3D._instances) {
-				text +="num:\t"+ i3d.drawCounter+" / "+i3d.doTransform.passNodes.length ;
-				text += "\ntri:\t" + i3d.drawTriangleCounter;
-				var info = i3d.context.driverInfo;
+				text +="num : "+ i3d.drawCounter+" / "+i3d.doTransform.passNodes.length ;
+				text += "\ntri : " + i3d.drawTriangleCounter;
+				var info =i3d.context==null?"null": i3d.context.driverInfo;
 				var indexS = info.indexOf(" ");
 				if (indexS!=-1) {
 					info = info.substr(0, indexS);
 				}
-				text += "\ndriver:\t" + info;
+				text += "\ndriver : " + info;
 			}
 		}
-		text += "\nfps:\t" + fps + " / " ;
+		text += "\nfps : " + fps + " / " ;
 		if (stage!=null) {
 			text +=  stage.frameRate;
 		}
 		var mem = Std.int(System.totalMemoryNumber / 1024 / 1024);
 		if (mem > maxMem) maxMem = mem;
-		text += "\nmem:\t" + mem+" / "+maxMem;
+		text += "\nmem : " + mem+" / "+maxMem;
 		tf.text = text;
 		
 		graphics.clear();
