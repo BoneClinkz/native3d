@@ -1,6 +1,7 @@
 package native3d.parsers;
 import flash.geom.Vector3D;
 import flash.utils.ByteArray;
+import native3d.core.animation.AnimationItem;
 import native3d.core.math.Quaternion;
 
 /**
@@ -9,10 +10,14 @@ import native3d.core.math.Quaternion;
  */
 class MD5AnimParser extends AbsParser
 {
+	public var aname:String;
 	public var md5anim:MD5Anim;
-	public function new() 
+	public var item:AnimationItem;
+	public function new(aname:String) 
 	{
 		super(null);
+		this.aname = aname;
+		
 	}
 	override public function parser():Void {
 		md5anim = new MD5Anim();
@@ -30,7 +35,8 @@ class MD5AnimParser extends AbsParser
 				numFrames = Std.parseInt(result.matched(1));
 			}else if ((result = ~/numJoints (\d+)/).match(line)) {
 				numJoints = Std.parseInt(result.matched(1));
-			}else if ((result =~/frameRate (\d+)/).match(line)) {
+			}else if ((result = ~/frameRate (\d+)/).match(line)) {
+				md5anim.frameRate = Std.parseInt(result.matched(1));
 			}else if ((result =~/numAnimatedComponents (\d+)/).match(line)) {
 				numAnimatedComponents = Std.parseInt(result.matched(1));
 			}else if ((result=~/hierarchy {/).match(line)) {
@@ -80,10 +86,15 @@ class MD5AnimParser extends AbsParser
 	}
 	
 	private function prepare():Void {
+		item = new AnimationItem();
+		item.name = aname;
+		item.frames = [];
 		for (i in 0...md5anim.components.length) {
 			var component = md5anim.components[i];
 			var frame = new MD5Frame();
 			md5anim.frames.push(frame);
+			var iframe = [];
+			item.frames.push(iframe);
 			for (j in 0...md5anim.jointInfos.length) {
 				var info = md5anim.jointInfos[j];
 				var baseframe = md5anim.baseFrameJoints[j];
@@ -112,6 +123,7 @@ class MD5AnimParser extends AbsParser
 				}
 				joint.quat.computeW();
 				joint.toMatrix();
+				iframe.push(joint.matr.clone());
 				if (info.parent!=-1) {
 					var parent = frame.joints[info.parent];
 					joint.matr.append(parent.matr);
@@ -148,6 +160,7 @@ class MD5Anim {
 	public var baseFrameJoints:Array<MD5BaseFrameJoint>;
 	public var components:Array<Array<Float>>;
 	public var frames:Array<MD5Frame>;
+	public var frameRate:Int=60;
 	public function new() {
 		jointInfos = [];
 		baseFrameJoints = [];

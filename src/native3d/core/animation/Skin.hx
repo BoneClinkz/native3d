@@ -14,76 +14,39 @@ import native3d.core.VertexBufferSet;
  */
 class Skin
 {
-	public var jointNames:Array<String>;
-	public var joints:Vector<Node3D>;
-	public var vin:Vector<Float>;
-	public var vout:Vector<Float>;
+	public var node:Node3D;
+	public var jointRoot:Node3D;
+	public var anims:Map<String,AnimationItem>;
+	public var currentAnim:AnimationItem;
+	
 	public var bindShapeMatrix:Matrix3D;
 	public var invBindMatrixs:Vector<Matrix3D>;
-	public var vcount:Vector<UInt>;
-	public var v:Vector<UInt>;
-	public var weights:Vector<Float>;
-	public var node:Node3D;
 	
-	public var cacheMatrixs:Vector<Vector<Matrix3D>>;
-	public var frame:Int;
-	public var numFrame:Int;
+	public var joints:Array<Node3D>;
 	
-	public var daeIndexs:Vector<Vector<Int>>;
-	public var daeUVIndexs:Vector<Vector<Int>>;
-	public var daeXyz:Vector<Float>;
-	public var daeUV:Vector<Float>;
-	public var maxOffset:Int;
-	public var vertexOffset:Int;
-	public var uvOffset:Int;
+	public var vertexs:Array<Vertex>;
+	public var indexss:Array<Array<Int>>;
 	
-	public var draws:Vector<SkinDrawable>;
-	public var maxWeightLen:Int = 1;
 	public var texture:TextureSet;
+	
+	public var draws:Array<SkinDrawable>;
+	public var maxWeightLen:Int = 0;
+	public var  useQuas:Bool = false;
 	public function new() 
 	{
-		
+		anims = new Map();
 	}
 	
-	public function doSkin(frame:Int):Void {
-		this.frame = frame;
-		return;
-		var matrixs:Vector<Matrix3D> = cacheMatrixs[frame];
-		if(vin==null){
-			vin = new Vector<Float>(#if flash node.drawable.xyz.data.length #end);
-			bindShapeMatrix.transformVectors(node.drawable.xyz.data, vin);
-			vout = new Vector<Float>(#if flash vin.length #end);
-		}else {
-			//return;
-		}
-		
-		#if flash
-		vout.length = 0;
-		vout.length = vin.length;
-		#end 
-		
-		var j:UInt = 0;
-		var len2:UInt;
-		var pos = new Vector3D();
-		for (i in 0...vcount.length) {
-			var ix:Int = i * 3;
-			var iy:Int = ix + 1;
-			var iz:Int = iy + 1;
-			pos.x = vin[ix];
-			pos.y = vin[iy];
-			pos.z = vin[iz];
-			len2 = vcount[i] * 2 + j;
-			while(j < len2 ) {
-				var m = matrixs[v[j]];
-				var w = weights[v[j + 1]];
-				var pos2 = m.transformVector(pos);
-				vout[ix] += pos2.x * w;
-				vout[iy] += pos2.y * w;
-				vout[iz] += pos2.z * w;
-				j += 2;
+	public function play(name:String):Void {
+		var item = anims.get(name);
+		if (item!=null) {
+			for (i in 0...draws.length) {
+				var draw = draws[i];
+				draw.cacheBytes = item.cacheBytess[i];
+				draw.cacheQuasBytes = item.cacheQuasBytess[i];
+				draw.cacheQuasTransBytes = item.cacheQuasTransBytess[i];
 			}
 		}
-		node.drawable.xyz.vertexBuff.uploadFromVector(vout, 0, untyped(vout.length / 3));
 	}
 	
 }

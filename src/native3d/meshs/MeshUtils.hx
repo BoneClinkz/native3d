@@ -5,8 +5,10 @@ package native3d.meshs ;
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	import flash.Vector;
+	import native3d.core.animation.Skin;
 	import native3d.core.Drawable3D;
 	import native3d.core.Instance3D;
+	import native3d.core.Vertex;
 	//import native3d.ns.native3d;
 	import native3d.core.IndexBufferSet;
 	import native3d.core.Node3D;
@@ -165,7 +167,39 @@ package native3d.meshs ;
 			drawable.norm = new VertexBufferSet(Std.int(norm.length / 3), 3, norm, 0);
 		}
 		
-		
+		public static function mergePosUV(skin:Skin, uvIndexss:Vector<Vector<Int>>, uvs:Vector<Float>):Void {
+			var newIndexss = [];
+			var newVers = [];
+			var map = new Map<String,Int>();
+			for (i in 0...skin.indexss.length) {
+				var indexs = skin.indexss[i];
+				var uvIndexs = uvIndexss[i];
+				var newIndexs = [];
+				newIndexss.push(newIndexs);
+				for (j in 0...indexs.length) {
+					var index = indexs[j];
+					var uvIndex = uvIndexs[j];
+					var id = index + "," + uvIndex;
+					var nowI;
+					if (!map.exists(id)) {
+						nowI = newVers.length;
+						map.set(id, newVers.length);
+						var ver = new Vertex();
+						newVers.push(ver);
+						var oldVer = skin.vertexs[index];
+						ver.pos = oldVer.pos;
+						ver.weights = oldVer.weights;
+						ver.norm = oldVer.norm;
+						ver.uv = new Vector3D(uvs[uvIndex*2],uvs[uvIndex*2+1]);
+					}else {
+						nowI = map.get(id);
+					}
+					newIndexs.push(nowI);
+				}
+			}
+			skin.indexss = newIndexss;
+			skin.vertexs = newVers;
+		}
 		
 	}
 

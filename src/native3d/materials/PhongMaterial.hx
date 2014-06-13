@@ -13,7 +13,6 @@ import flash.geom.Vector3D;
 import flash.Lib;
 import flash.Vector;
 import hxsl.Shader.ShaderInstance;
-import native3d.core.animation.Animation;
 import native3d.core.animation.Skin;
 import native3d.core.BasicLight3D;
 import native3d.core.BasicPass3D;
@@ -266,7 +265,7 @@ class PhongMaterial extends MaterialBase
 			i3d.drawTriangles(drawable.indexBufferSet.indexBuff);
 		}else {
 			if (node.playing) {
-				node.frame = (node.startFrame+i3d.frame) % skin.numFrame;
+				node.frame = (node.startFrame+i3d.frame) % skin.currentAnim.numFrame;
 			}
 			for(drawable in skin.draws){
 				xyz = drawable.xyz;

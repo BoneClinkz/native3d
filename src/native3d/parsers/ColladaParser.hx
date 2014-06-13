@@ -4,11 +4,11 @@ import flash.display3D.Context3DTextureFormat;
 import flash.display3D.Context3DVertexBufferFormat;
 import flash.events.Event;
 import flash.geom.Matrix3D;
+import flash.geom.Vector3D;
 import flash.utils.ByteArray;
 import flash.Vector;
-import native3d.core.animation.Animation;
-import native3d.core.animation.AnimationPart;
-import native3d.core.animation.Channel;
+import native3d.core.animation.AnimationItem;
+import native3d.core.animation.AnimationUtils;
 import native3d.core.animation.Skin;
 import native3d.core.BasicLight3D;
 import native3d.core.Drawable3D;
@@ -16,7 +16,9 @@ import native3d.core.IndexBufferSet;
 import native3d.core.Instance3D;
 import native3d.core.Node3D;
 import native3d.core.TextureSet;
+import native3d.core.Vertex;
 import native3d.core.VertexBufferSet;
+import native3d.core.Weight;
 import native3d.materials.PhongMaterial;
 import native3d.meshs.MeshUtils;
 import xml.XPath;
@@ -32,10 +34,10 @@ import xml.XPath;
 class ColladaParser extends AbsParser
 {
 	private var dae:Xml;
-	public var anms:Animation;
-	public var skins:Vector<Skin>;
+	public var skins:Array<Skin>;
 	public var id2node:Map<String,Node3D>;
 	public var sid2node:Map<String,Node3D>;
+	public var skin2jointnames:Map<Skin,Array<String>>;
 	public var jointRoot:Node3D;
 	public var texture:TextureSet;
 	public function new(data:Dynamic) 
@@ -51,14 +53,17 @@ class ColladaParser extends AbsParser
 		var xml:Xml = Xml.parse(cast(cast(data,ByteArray).toString(),String));
 		dae = XPath.xpath(xml, "*")[0];
 		var root:Xml = XPath.xpath(dae, "scene/instance_visual_scene")[0];
-		id2node = new Map<String, Node3D>();
-		sid2node = new Map<String, Node3D>();
-		skins = new Vector<Skin>();
+		id2node = new Map();
+		sid2node = new Map();
+		skin2jointnames = new Map();
+		skins = [];
 		node.type = Node3D.NODE_TYPE;
 		buildNode(root, node);
+		var aitem:AnimationItem = new AnimationItem();
 		for (skin in skins) {
-			skin.joints = new Vector<Node3D>();
-			for (name in skin.jointNames) {
+			skin.joints = [];
+			var jointNames = skin2jointnames.get(skin);
+			for (name in jointNames) {
 				skin.joints.push(sid2node.get(name));
 			}
 		}
@@ -81,21 +86,23 @@ class ColladaParser extends AbsParser
 						node.add(meshNode);
 						var source = skin.get("source").substr(1);
 						var dskin = buildGeometry(source);
-						var drawableNode = new Node3D();
-						meshNode.add(drawableNode);
-						
-						dskin.node = drawableNode;
-						skins.push(dskin);
 						dskin.bindShapeMatrix = str2Matrix(XPath.xpathNodeValue(skin, "bind_shape_matrix"));
 						var vertexWeights =XPath.xpathNode(skin, "vertex_weights");
-						var jointId = XPath.xpathNode(vertexWeights,"input@semantic=JOINT").get("source").substr(1);
-						dskin.jointNames = str2Strs(XPath.xpathNodeValue(skin, "source@id=" + jointId+"/Name_array"));
+						var jointId = XPath.xpathNode(vertexWeights, "input@semantic=JOINT").get("source").substr(1);
 						var weightId = XPath.xpathNode(vertexWeights,"input@semantic=WEIGHT").get("source").substr(1);
 						dskin.weights = str2Floats(XPath.xpathNodeValue(skin, "source@id="+weightId+"/float_array"));
 						dskin.vcount = str2Ints(XPath.xpathNodeValue(vertexWeights, "vcount"));
 						dskin.v = str2Ints(XPath.xpathNodeValue(vertexWeights, "v"));
 						var invBindMatrixId = XPath.xpathNode(skin,"joints/input@semantic=INV_BIND_MATRIX").get("source").substr(1);
-						dskin.invBindMatrixs = str2Matrixs(XPath.xpathNodeValue(skin,"source@id="+invBindMatrixId+"/float_array"));
+						dskin.invBindMatrixs = str2Matrixs(XPath.xpathNodeValue(skin, "source@id=" + invBindMatrixId + "/float_array"));
+						
+						var drawableNode = new Node3D();
+						meshNode.add(drawableNode);
+						var dskin2 = prepareGeometry(dskin);
+						skin2jointnames.set(dskin2,str2Strs(XPath.xpathNodeValue(skin, "source@id=" + jointId+"/Name_array")));
+						dskin2.node = drawableNode;
+						dskin2.jointRoot = jointRoot;
+						skins.push(dskin2);
 					}
 				}
 			}
@@ -110,7 +117,7 @@ class ColladaParser extends AbsParser
 				var indexs = new Vector<UInt>();
 				var ci = 0;
 				for (i in 0...nskin.daeIndexs.length) {
-					var daeIndexs:Vector<Int> = nskin.daeIndexs[i];
+					var daeIndexs:Array<Int> = nskin.daeIndexs[i];
 					var daeUVIndexs:Vector<Int> = nskin.daeUVIndexs[i];
 					for (j in 0...daeIndexs.length) {
 						indexs.push(ci++);
@@ -159,18 +166,55 @@ class ColladaParser extends AbsParser
 		}
 	}
 	
-	private function buildGeometry(source:String):Skin {
+	private function prepareGeometry(daeSkin:DaeSkin):Skin {
+		var skin = new Skin();
+		skin.texture = texture;
+		skin.bindShapeMatrix = daeSkin.bindShapeMatrix;
+		skin.invBindMatrixs = daeSkin.invBindMatrixs;
+		var i = 0;
+		var posVertexs = [];
+		var vs = daeSkin.daeXyz;
+		var j:Int = 0;
+		for (i in 0...Std.int(vs.length/3)) {
+			var ver = new Vertex();
+			posVertexs.push(ver);
+			ver.pos = new Vector3D(vs[i * 3], vs[i * 3 + 1], vs[i * 3 + 2]);
+			ver.weights = [];
+			var len:Int = daeSkin.vcount[i] * 2 + j;
+			while (j<len) {
+				var weight = new Weight();
+				weight.joint = daeSkin.v[j++];
+				weight.bias = daeSkin.weights[daeSkin.v[j++]];
+				ver.weights.push(weight);
+			}
+			if(skin.maxWeightLen<ver.weights.length)
+			skin.maxWeightLen = ver.weights.length;
+		}
+		skin.vertexs = posVertexs;
+		skin.indexss = daeSkin.daeIndexs;
+		var daeUV = new Vector<Float>();
+		i = 0;
+		while (i < Std.int(daeSkin.daeUV.length/(daeSkin.maxOffset+1))) {
+			daeUV.push(daeSkin.daeUV[i*(daeSkin.maxOffset+1)]);
+			daeUV.push(1-daeSkin.daeUV[i*(daeSkin.maxOffset+1)+1]);
+			i++;
+		}
+		MeshUtils.mergePosUV(skin, daeSkin.daeUVIndexs, daeUV);
+		return skin;
+	}
+	
+	private function buildGeometry(source:String):DaeSkin {
 		var geometry = XPath.xpathNode(dae, "library_geometries/geometry@id="+source);
 		var mesh = XPath.xpathNode(geometry, "mesh");
 		var vertices = XPath.xpathNode(mesh, "vertices");
 		var vlib = getVerticesById(vertices.get("id"), mesh);
 		
-		var dskin = new Skin();
-		dskin.texture = texture;
+		var dskin = new DaeSkin();
 		var vs = str2Floats(XPath.xpathNodeValue(vlib, "float_array"));
 		dskin.daeXyz = vs;
-		dskin.daeIndexs = new Vector<Vector<Int>>();
+		dskin.daeIndexs = [];
 		dskin.daeUVIndexs = new Vector<Vector<Int>>();
+		
 		for (triangle in mesh.elements()) {
 			// TODO : polylist
 			if (triangle.nodeName == "triangles") {
@@ -179,7 +223,7 @@ class ColladaParser extends AbsParser
 						XPath.xpathNode(triangle, "input@semantic=TEXCOORD").get("source").substr(1), mesh)
 						,"float_array"));
 				}
-				var inc:Vector<Int> = new Vector<Int>();
+				var inc:Array<Int> = [];
 				var uv:Vector<Int> = new Vector<Int>();
 				dskin.daeIndexs.push(inc);
 				dskin.daeUVIndexs.push(uv);
@@ -203,8 +247,6 @@ class ColladaParser extends AbsParser
 				}
 				var adder = maxOffset + 1;
 				dskin.maxOffset = maxOffset;
-				dskin.vertexOffset = vertexOffset;
-				dskin.uvOffset = uvOffset;
 				while (i < len) {
 					inc.push(parray[i+vertexOffset]);
 					inc.push(parray[i  +vertexOffset +adder*2]);
@@ -217,20 +259,22 @@ class ColladaParser extends AbsParser
 				}
 			}
 		}
+		
 		return dskin;
 	}
 	
 	private function buildAnimation():Void {
 		var areg = ~/(.+)\/(.+)\((\d+)\)\((\d+)\)/;
 		var areg2 = ~/(.+)\/(.+)/;
-		anms = new Animation();
-		anms.jointRoot = jointRoot;
+		var item = new AnimationItem();
+		var parts = new Vector();
+		var maxTime = .0;
 		for (child in dae.elements()) {
 			if (child.nodeName == "library_animations") {
 				for (xa in child.elements()) {
 					if (xa.nodeName=="animation") {
 						var anm = new AnimationPart();
-						anms.parts.push(anm);
+						parts.push(anm);
 						for (channel in xa.elements()) {
 							if (channel.nodeName == "channel") {
 								var sourceId = channel.get("source").substr(1);
@@ -240,7 +284,7 @@ class ColladaParser extends AbsParser
 								var input = str2Floats(XPath.xpathNodeValue(xa, "source@id=" + inputId + "/float_array"));
 								var output = str2Floats(XPath.xpathNodeValue(xa, "source@id=" + outputId + "/float_array"));
 								for (tt in input) {
-									if (anms.maxTime < tt) anms.maxTime = tt;
+									if (maxTime < tt) maxTime = tt;
 								}
 								var target = channel.get("target");
 								var can = new Channel();
@@ -281,6 +325,106 @@ class ColladaParser extends AbsParser
 			}
 		}
 		
-		anms.startCache(skins);
+		var time = .0;
+		while(time<=maxTime){//缓存动画矩阵
+			for (anm in parts) {//cpu做动画
+				anm.doAnimation(time,maxTime);
+			}
+			for (skin in skins) {//缓存所有动画矩阵
+				var matrixs = [];
+				item.frames.push(matrixs);
+				for (i in 0...skin.joints.length) {
+					var joint = skin.joints[i];
+					matrixs.push(joint.matrix.clone());
+				}
+			}
+			time += 1 / 60;
+		}
+		AnimationUtils.startCache(skins[0]);
+		AnimationUtils.startCacheAnim(skins[0], item);
 	}
+}
+
+class DaeSkin {
+	public var node:Node3D;
+	
+	public var joints:Vector<Node3D>;
+	public var bindShapeMatrix:Matrix3D;
+	public var invBindMatrixs:Vector<Matrix3D>;
+	
+	public var cacheMatrixs:Vector<Vector<Matrix3D>>;
+	public var numFrame:Int;
+	
+	public var vcount:Vector<UInt>;
+	public var v:Vector<UInt>;
+	public var weights:Vector<Float>;
+	
+	public var daeIndexs:Array<Array<Int>>;
+	public var daeUVIndexs:Vector<Vector<Int>>;
+	public var daeXyz:Vector<Float>;
+	public var daeUV:Vector<Float>;
+	public var maxOffset:Int;
+	public function new() 
+	{
+		
+	}
+}
+
+class AnimationPart
+{
+	public var channels:Vector<Channel>;
+	public var target:Node3D;
+	public function new() 
+	{
+		channels = new Vector<Channel>();
+	}
+	
+	public function doAnimation(time:Float, maxTime:Float):Void {
+		var rd:Vector<Float> = target.matrix.rawData;
+		for (channel in channels) {
+			var i = 0;
+			var len = channel.input.length;
+			while (i < len) {
+				if (channel.input[i] > time) {
+					break;
+				}
+				i++;
+			}
+			var j = i - 1;
+			var v:Float = 0;
+			if (j < 0) {
+				j = len - 1;
+				v =(time-channel.input[j]+maxTime) / (channel.input[i] - channel.input[j]+maxTime);
+			}else if (i>=len) {
+				i = 0;
+				v = (time-channel.input[j]) / (channel.input[i]+maxTime - channel.input[j]);
+			}else {
+				v = (time-channel.input[j]) / (channel.input[i] - channel.input[j]);
+			}
+			if (channel.index == -1) {
+				var mj:Matrix3D = channel.outputMatrix3Ds[j];
+				var mi:Matrix3D = channel.outputMatrix3Ds[i];
+				mj.interpolateTo(mi, v);
+				mj.copyRawDataTo(rd);
+			}else {
+				rd[channel.index] = channel.output[j] + (channel.output[i] - channel.output[j]) * v;
+			}
+		}
+		target.matrix.copyRawDataFrom(rd); 
+		target.matrixVersion++;
+	}
+}
+
+class Channel
+{
+	//public var target:Node3D;
+	public var index:Int;
+	public var input:Vector<Float>;
+	public var output:Vector<Float>;
+	public var outputMatrix3Ds:Vector<Matrix3D>;
+	public function new() 
+	{
+		
+	}
+	
 }

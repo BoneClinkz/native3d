@@ -14,6 +14,8 @@ class MD5Joint
 	public var pos:Vector3D;
 	public var quat:Quaternion;
 	public var matr:Matrix3D;
+	public var matrInv:Matrix3D;
+	public var matr2:Matrix3D;
 	public function new() 
 	{
 		
@@ -22,6 +24,8 @@ class MD5Joint
 	public function toMatrix():Void {
 		matr = quat.toMatrix();
 		matr.appendTranslation(pos.x, pos.y, pos.z);
+		matrInv = matr.clone();
+		matrInv.invert();
 	}
 	
 }

@@ -4,23 +4,30 @@ import flash.display3D.Context3DTextureFormat;
 import flash.geom.Vector3D;
 import flash.utils.ByteArray;
 import flash.Vector;
+import native3d.core.animation.AnimationUtils;
+import native3d.core.animation.Skin;
 import native3d.core.Drawable3D;
 import native3d.core.IndexBufferSet;
 import native3d.core.math.Quaternion;
 import native3d.core.Node3D;
 import native3d.core.TextureSet;
+import native3d.core.Vertex;
 import native3d.core.VertexBufferSet;
+import native3d.core.Weight;
 import native3d.materials.PhongMaterial;
 import native3d.meshs.MeshUtils;
 
 /**
- * ...
+ * http://tfc.duke.free.fr/coding/md5-specs-en.html
+ * http://www.zwqxin.com/archives/opengl/model-md5-format-import-animation-1.html
+ * http://www.zwqxin.com/archives/opengl/model-md5-format-import-animation-2.html
  * @author lizhi
  */
 class MD5MeshParser extends AbsParser
 {
 	public var joints:Array<MD5Joint>;
 	public var meshs:Array<MD5Mesh>;
+	public var skin:Skin;
 	public function new(bmd:BitmapData) 
 	{
 		super(null);
@@ -85,12 +92,12 @@ class MD5MeshParser extends AbsParser
 				}
 			}
 		}
-		
 		prepareMesh();
+		//prepareMesh2();
 		createNode3D();
 	}
 	
-	public function prepareMesh():Void {
+	private function prepareMesh():Void {
 		for (mesh in meshs) {
 			for ( i in 0...mesh.vs2.length) {
 				var vert:MD5Vertex = mesh.vs2[i];
@@ -99,8 +106,6 @@ class MD5MeshParser extends AbsParser
 					for (j in 0...vert.count) {
 						var weight:MD5Weight = mesh.weights[vert.start + j];
 						var joint:MD5Joint = joints[weight.joint];
-						/*var pvert:Vector3D = joint.quat.rotatePoint(weight.pos);
-						pvert = pvert.add(joint.pos);*/
 						var pvert:Vector3D=joint.matr.transformVector(weight.pos);
 						pvert.scaleBy(weight.bias);
 						fvert = fvert.add(pvert);
@@ -112,56 +117,58 @@ class MD5MeshParser extends AbsParser
 	}
 	
 	public function createNode3D():Void {
-		var vsCounter:Int = 0;
-		var xyz:Array<Float> = [];
-		var uv:Array<Float> = [];
-		var ins:Array<UInt> = [];
-		for (mesh in meshs) {
-			for (v in mesh.vs) {
-				xyz.push(v[2]);
-				xyz.push(v[3]);
-				xyz.push(v[4]);
-				uv.push(v[0]);
-				uv.push(v[1]);
+		skin = new Skin();
+		skin.texture = new TextureSet();
+		skin.texture.setBmd(bmd,Context3DTextureFormat.BGRA );
+		skin.node = new Node3D();
+		node.add(skin.node);
+		skin.node.setRotation(-90,180, 0);
+		skin.vertexs = [];
+		skin.indexss = [];
+		skin.invBindMatrixs = new Vector();
+		skin.joints=[];
+		for (joint in joints) {
+			skin.invBindMatrixs.push(joint.matrInv);
+			var jnode = new Node3D();
+			skin.joints.push(jnode);
+			if (joint.parent!=-1) {
+				skin.joints[joint.parent].add(jnode);
 			}
+		}
+		skin.jointRoot = skin.joints[0];
+		
+		var vsCounter:Int = 0;
+		for (mesh in meshs) {
+			for (i in 0...mesh.vs.length) {
+				var md5ver = mesh.vs2[i];
+				var v = mesh.vs[i];
+				var ver = new Vertex();
+				skin.vertexs.push(ver);
+				ver.pos = new Vector3D(v[2], v[3], v[4]);
+				ver.uv = new Vector3D(v[0], v[1]);
+				ver.weights = [];
+				if (skin.maxWeightLen<md5ver.count) {
+					skin.maxWeightLen = md5ver.count;
+				}
+				if(md5ver!=null)
+				for (j in 0...md5ver.count) {
+					var md5weight = mesh.weights[md5ver.start + j];
+					var weight = new Weight();
+					weight.joint = md5weight.joint;
+					weight.bias = md5weight.bias;
+					ver.weights.push(weight);
+				}
+			}
+			var indexs = [];
+			skin.indexss.push(indexs);
 			for (i in mesh.ins) {
-				ins.push(i[0]+vsCounter);
-				ins.push(i[1]+vsCounter);
-				ins.push(i[2]+vsCounter);
+				indexs.push(i[0]+vsCounter);
+				indexs.push(i[1]+vsCounter);
+				indexs.push(i[2]+vsCounter);
 			}
 			vsCounter += mesh.vs.length;
 		}
-		var drawable:Drawable3D;
-		var node;
-		if (this.node.children.length == 0) {
-			node = new Node3D();
-			this.node.add(node);
-			drawable = new Drawable3D();
-			drawable.indexBufferSet = new IndexBufferSet(ins.length, Vector.ofArray(ins), 0);
-			drawable.xyz = new VertexBufferSet(Std.int(xyz.length/3), 3, Vector.ofArray(xyz), 0);
-			drawable.uv = new VertexBufferSet(Std.int(uv.length/2), 2, Vector.ofArray(uv), 0);
-			node.drawable = drawable;
-			node.setRotation(-90,180, 0);
-			var texture:TextureSet = new TextureSet();
-			texture.setBmd(bmd,Context3DTextureFormat.BGRA);
-			MeshUtils.computeNorm(drawable);
-			MeshUtils.computeRadius(drawable);
-			node.material = 
-			new PhongMaterial(
-				[.5, .5, .5],//AmbientColor
-				[.5,.5,.5],//DiffuseColor
-				[.8,.8,.8],//SpecularColor
-				200,
-				texture
-				);
-		}else {
-			node = this.node.children[0];
-			drawable = node.drawable;
-			drawable.xyz.data = Vector.ofArray(xyz);
-			drawable.xyz.upload();
-		}
-		
-		
+		AnimationUtils.startCache(skin);
 	}
 }
 

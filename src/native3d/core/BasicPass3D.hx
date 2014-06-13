@@ -111,7 +111,7 @@ package native3d.core ;
 			if (camera.frustumPlanes == null || node.frustumCulling == null || node.frustumCulling.culling(camera)) {
 				i3d.drawCounter++;
 				if(node.drawable.indexBufferSet!=null)
-				i3d.drawTriangleCounter += node.drawable.indexBufferSet.num;
+				i3d.drawTriangleCounter += Std.int(node.drawable.indexBufferSet.num/3);
 				m.draw(node,this);
 			}
 		}
