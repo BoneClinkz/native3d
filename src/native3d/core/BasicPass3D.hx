@@ -24,6 +24,7 @@ package native3d.core ;
 		var image2d:Image2D;
 		var doTransform:BasicDoTransform3D;
 		public var nodes:Vector<Node3D>;
+		public var drawableNodes:Vector<Node3D>;
 		public var cnodes:Vector<Node3D>;
 		public var camera:Camera3D;
 		public var rootIndex:Int = 0;
@@ -41,9 +42,11 @@ package native3d.core ;
 		public function new() 
 		{
 			camera = Instance3D.current.camera;
+			drawableNodes = new Vector();
 		}
 		
 		public function pass(nodes:Vector<Node3D>):Void {
+			drawableNodes.length = 0;
 			this.nodes = nodes;
 			var i3d = Instance3D.current;
 			if (target != null) {
@@ -112,7 +115,8 @@ package native3d.core ;
 				i3d.drawCounter++;
 				if(node.drawable.indexBufferSet!=null)
 				i3d.drawTriangleCounter += Std.int(node.drawable.indexBufferSet.num/3);
-				m.draw(node,this);
+				m.draw(node, this);
+				drawableNodes.push(node);
 			}
 		}
 	}

@@ -12,6 +12,7 @@ import native3d.core.Drawable3D;
 import native3d.core.IndexBufferSet;
 import native3d.core.Instance3D;
 import native3d.core.Node3D;
+import native3d.core.Vertex;
 import native3d.core.VertexBufferSet;
 import native3d.materials.PhongMaterial;
 import native3d.meshs.MeshUtils;

@@ -355,5 +355,91 @@ package native3d.core ;
 				c.setAttribValueDepth(name, value);
 			}
 		}
+		
+		public function pickMouse(mouseX:Float,mouseY:Float):Node3D {
+			var x =  (mouseX - Instance3D.current.width *.5) / Instance3D.current.width *2;
+			var y = -(mouseY - Instance3D.current.height * .5) / Instance3D.current.height * 2;
+			return pick(x, y);
+		}
+		
+		private static var _rayOrigin:Vector3D = new Vector3D();
+		private static var _rayDirection:Vector3D = new Vector3D();
+		public function pick(x:Float, y:Float):Node3D {
+			
+			computePickRayDirection( x, y, _rayOrigin, _rayDirection );
+			_distMin = 1e10;
+			return pickNode( _rayOrigin, _rayDirection ); 
+		}
+		
+		public static var _distMin:Float = 1e10;
+		private static var _prjPos:Vector3D = new Vector3D( 0, 0, 0, 1 );
+		public function computePickRayDirection( x:Float, y:Float, rayOrigin:Vector3D, rayDirection:Vector3D, pixelPos:Vector3D=null ):Void
+		{
+			// unproject
+			var cam = Instance3D.current.camera;
+			// screen -> camera -> world
+			_prjPos.setTo( x, y, 0 ); // clip space
+			var unprjMatrix:Matrix3D = cam.perspectiveProjection.clone();
+			unprjMatrix.invert();
+			
+			// screen -> camera -> world
+			var pos:Vector3D = cam.matrix.transformVector( unprjMatrix.transformVector( _prjPos ) );
+			
+			
+			if ( pixelPos!=null )
+				pixelPos.setTo( pos.x, pos.y, pos.z );
+			
+			rayOrigin.setTo( cam.x, cam.y, cam.z );
+			
+			// compute ray
+			rayDirection.setTo(	pos.x - cam.x,
+				pos.y - cam.y,
+				pos.z - cam.z );
+			rayDirection.normalize();
+		}
+		private static var _tmpRN_:Vector3D = new Vector3D();
+		public function pickNode( rayOrigin:Vector3D, rayDirection:Vector3D ):Node3D
+		{
+			var node = null;
+			
+			if ( radius>0 )
+			{
+				if ( raySphereTest( rayOrigin, rayDirection ) )
+				{
+					_tmpRN_.x = position.x - rayOrigin.x;
+					_tmpRN_.y = position.y - rayOrigin.y;
+					_tmpRN_.z = position.z - rayOrigin.z;
+					
+					var d = rayDirection.dotProduct( _tmpRN_ );
+					
+					if ( d > 0 && d < _distMin )
+					{
+						node = this;
+						_distMin = d;
+					}
+				}
+			}
+			
+			for( child in children ) {
+				var rayNode = child.pickNode( rayOrigin, rayDirection );
+				if ( rayNode != null)
+					node = rayNode; 					
+			}
+			
+			return node;
+		}
+		
+		public function raySphereTest( rayOrigin:Vector3D, rayDirection:Vector3D ):Bool
+		{
+			var qx = worldMatrix.position.x - rayOrigin.x;
+			var qy = worldMatrix.position.y - rayOrigin.y;
+			var qz = worldMatrix.position.z - rayOrigin.z;
+			
+			var qr = qx*rayDirection.x + qy*rayDirection.y + qz*rayDirection.z;
+			
+			var d2 = qx*qx + qy*qy + qz*qz - ( qr > 0 ? qr*qr : 0 );
+			
+			return d2 < radius*radius;
+		}
 	}
 
