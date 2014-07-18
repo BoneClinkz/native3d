@@ -406,9 +406,9 @@ package native3d.core ;
 			{
 				if ( raySphereTest( rayOrigin, rayDirection ) )
 				{
-					_tmpRN_.x = position.x - rayOrigin.x;
-					_tmpRN_.y = position.y - rayOrigin.y;
-					_tmpRN_.z = position.z - rayOrigin.z;
+					_tmpRN_.x = worldMatrix.position.x - rayOrigin.x;
+					_tmpRN_.y = worldMatrix.position.y - rayOrigin.y;
+					_tmpRN_.z = worldMatrix.position.z - rayOrigin.z;
 					
 					var d = rayDirection.dotProduct( _tmpRN_ );
 					
