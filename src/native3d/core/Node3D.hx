@@ -404,7 +404,7 @@ package native3d.core ;
 			
 			if ( radius>0 )
 			{
-				if ( raySphereTest( rayOrigin, rayDirection ) )
+				if ( raySphereTest( rayOrigin, rayDirection )&&rayMeshTest(rayOrigin,rayDirection) )
 				{
 					_tmpRN_.x = worldMatrix.position.x - rayOrigin.x;
 					_tmpRN_.y = worldMatrix.position.y - rayOrigin.y;
@@ -427,6 +427,87 @@ package native3d.core ;
 			}
 			
 			return node;
+		}
+		
+		//http://www.cnblogs.com/graphics/archive/2010/08/09/1795348.html
+		public function rayMeshTest( rayOrigin:Vector3D, rayDirection:Vector3D ):Bool
+		{
+			if (drawable!=null) {
+				var inv:Matrix3D = worldMatrix.clone();
+				inv.invert();
+				var localRayOrigin:Vector3D = inv.transformVector(rayOrigin);
+				var localRayDirection:Vector3D = inv.transformVector(rayOrigin.add(rayDirection)).subtract(localRayOrigin);
+				localRayDirection.normalize();
+				var ins = drawable.indexBufferSet.data;
+				var i = 0;
+				var len = ins.length;
+				var xyz = drawable.xyz.data;
+				while (i < len) {
+					var i0:Int = ins[i++]*3;
+					var i1:Int = ins[i++]*3;
+					var i2:Int = ins[i++]*3;
+					var x0 = xyz[i0];
+					var y0 = xyz[i0+1];
+					var z0 = xyz[i0+2];
+					var x1 = xyz[i1];
+					var y1 = xyz[i1+1];
+					var z1 = xyz[i1+2];
+					var x2 = xyz[i2];
+					var y2 = xyz[i2 + 1];
+					var z2 = xyz[i2 + 2];
+					
+					var e1 = new Vector3D(x1-x0,y1-y0,z1-z0);
+					var e2 = new Vector3D(x2-x0,y2-y0,z2-z0);
+					var p = localRayDirection.crossProduct(e2);
+					// determinant
+					var det = e1.dotProduct(p);
+
+					// keep det > 0, modify T accordingly
+					var t;
+					if( det >0 )
+					{
+						t = localRayOrigin.subtract(new Vector3D(x0, y0, z0));
+					}
+					else
+					{
+						t = new Vector3D(x0,y0,z0).subtract(localRayOrigin);
+						det = -det;
+					}
+
+					// If determinant is near zero, ray lies in plane of triangle
+					if ( det < 0.0001 ) {
+						continue;
+						//return false;
+					}
+
+					// Calculate u and make sure u <= 1
+					var u = t.dotProduct(p);
+					if ( u < 0.0 || u > det ) {
+						continue;
+						//return false;
+					}
+
+					// Q
+					var q = t.crossProduct(e1);
+
+					// Calculate v and make sure u + v <= 1
+					var v = localRayDirection.dotProduct(q);
+					if ( v < 0.0 || u + v > det ) {
+						continue;
+						//return false;
+					}
+
+					// Calculate t, scale parameters, ray intersects triangle
+					var t2 = e2.dotProduct(q);
+
+					var fInvDet = 1.0 / det;
+					t2 *= fInvDet;
+					u *= fInvDet;
+					v *= fInvDet;
+					return true;
+				}
+			}
+			return false;
 		}
 		
 		public function raySphereTest( rayOrigin:Vector3D, rayDirection:Vector3D ):Bool
