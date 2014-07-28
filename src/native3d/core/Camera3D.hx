@@ -279,25 +279,24 @@ package native3d.core;
 		public function computePickRayDirection( x:Float, y:Float, rayOrigin:Vector3D, rayDirection:Vector3D, pixelPos:Vector3D=null ):Void
 		{
 			// unproject
-			var cam = Instance3D.current.camera;
 			// screen -> camera -> world
 			_prjPos.setTo( x, y, 0 ); // clip space
-			var unprjMatrix:Matrix3D = cam.perspectiveProjection.clone();
+			var unprjMatrix:Matrix3D = perspectiveProjection.clone();
 			unprjMatrix.invert();
 			
 			// screen -> camera -> world
-			var pos:Vector3D = cam.matrix.transformVector( unprjMatrix.transformVector( _prjPos ) );
+			var pos:Vector3D = matrix.transformVector( unprjMatrix.transformVector( _prjPos ) );
 			
 			
 			if ( pixelPos!=null )
 				pixelPos.setTo( pos.x, pos.y, pos.z );
 			
-			rayOrigin.setTo( cam.x, cam.y, cam.z );
+			rayOrigin.setTo( this.x, this.y, this.z );
 			
 			// compute ray
-			rayDirection.setTo(	pos.x - cam.x,
-				pos.y - cam.y,
-				pos.z - cam.z );
+			rayDirection.setTo(	pos.x - this.x,
+				pos.y - this.y,
+				pos.z - this.z );
 			rayDirection.normalize();
 		}
 	}
