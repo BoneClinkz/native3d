@@ -24,6 +24,7 @@ package native3d.core;
 		public var cscale:Vector3D;
 		public var cpos:Vector3D;
 		public var frustumVertices:Vector<Vector3D>;
+		private static var _prjPos:Vector3D = new Vector3D( 0, 0, 0, 1 );
 		public function new(width:Int,height:Int,is2d:Bool=false,index2d:Float=0) 
 		{
 			super();
@@ -266,6 +267,38 @@ package native3d.core;
 				}
 			}
 			return true;
+		}
+		
+		public function computePickRayDirectionMouse( mouseX:Float, mouseY:Float, rayOrigin:Vector3D, rayDirection:Vector3D, pixelPos:Vector3D=null ):Void
+		{
+			var x =  (mouseX - Instance3D.current.width *.5) / Instance3D.current.width *2;
+			var y = -(mouseY - Instance3D.current.height * .5) / Instance3D.current.height * 2;
+			return computePickRayDirection(x, y, rayOrigin, rayDirection, pixelPos);
+		}
+		
+		public function computePickRayDirection( x:Float, y:Float, rayOrigin:Vector3D, rayDirection:Vector3D, pixelPos:Vector3D=null ):Void
+		{
+			// unproject
+			var cam = Instance3D.current.camera;
+			// screen -> camera -> world
+			_prjPos.setTo( x, y, 0 ); // clip space
+			var unprjMatrix:Matrix3D = cam.perspectiveProjection.clone();
+			unprjMatrix.invert();
+			
+			// screen -> camera -> world
+			var pos:Vector3D = cam.matrix.transformVector( unprjMatrix.transformVector( _prjPos ) );
+			
+			
+			if ( pixelPos!=null )
+				pixelPos.setTo( pos.x, pos.y, pos.z );
+			
+			rayOrigin.setTo( cam.x, cam.y, cam.z );
+			
+			// compute ray
+			rayDirection.setTo(	pos.x - cam.x,
+				pos.y - cam.y,
+				pos.z - cam.z );
+			rayDirection.normalize();
 		}
 	}
 
