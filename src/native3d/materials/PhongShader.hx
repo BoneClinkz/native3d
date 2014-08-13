@@ -16,7 +16,8 @@ class PhongShader extends Shader
 			matrixIndex:Float4,
 			weight2:Float4,
 			matrixIndex2:Float4,
-			uv:Float2
+			uv:Float2,
+			barycentric:Float3
 		}
 		
 		//interpolated
@@ -26,6 +27,7 @@ class PhongShader extends Shader
 		var uv:Float2;
 		var shadowDepthZW:Float2;
 		var shadowLightPos:Float4;
+		var vBC:Float3;
 		
 		//vertex parameter
 		var modelMatrix:M44;
@@ -60,6 +62,7 @@ class PhongShader extends Shader
 		var	ambient:Float3;
 		var	diffuse:Float3;
 		var	specular:Float4;
+		var wireframe:Bool;//
 		
 		
 		var lights:Param < {
@@ -116,6 +119,9 @@ class PhongShader extends Shader
 			}
 			if (hasDiffuseMap) {
 				uv = input.uv;
+			}
+			if (wireframe) {
+				vBC = input.barycentric;
 			}
 		}
 		
@@ -192,6 +198,11 @@ class PhongShader extends Shader
 					}else {
 						color = diffuseMap.get(uv, nearest)*color;
 					}
+				}
+				if (wireframe) {
+					var temp = vBC < 0.07;
+					var temp2 = ((temp.x + temp.y + temp.z)>0);
+					color.xyz = color.xyz * (1 - temp2);
 				}
 				out =  color;
 			}else {

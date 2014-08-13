@@ -9,6 +9,7 @@ package native3d.core ;
 		
 		public var indexBufferSet:IndexBufferSet;
 		public var xyz:VertexBufferSet;
+		public var barycentric:VertexBufferSet;
 		public var norm:VertexBufferSet;
 		public var uv:VertexBufferSet;
 		public var texture:TextureSet;

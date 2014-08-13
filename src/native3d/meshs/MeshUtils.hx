@@ -108,7 +108,27 @@ package native3d.meshs ;
 			drawable.radius = Math.sqrt(r*r+r*r);
 			return drawable;
 		}
-		
+		public static function addBarycentric(drawable:Drawable3D):Void {
+			var len = drawable.indexBufferSet.data.length;
+			var i = 0;
+			var barycentric = new Vector<Float>(drawable.xyz.data.length);
+			while(i<len)
+			{
+				var i30 = drawable.indexBufferSet.data[i++] * 3;
+				var i31 = drawable.indexBufferSet.data[i++] * 3;
+				var i32 = drawable.indexBufferSet.data[i++] * 3;
+				barycentric[i30] = 1;
+				barycentric[i30+1] = 0;
+				barycentric[i30+2] = 0;
+				barycentric[i31] = 0;
+				barycentric[i31+1] = 1;
+				barycentric[i31+2] = 0;
+				barycentric[i32] = 0;
+				barycentric[i32+1] = 0;
+				barycentric[i32+2] = 1;
+			}
+			drawable.barycentric=new VertexBufferSet(untyped(barycentric.length / 3), 3, barycentric, 0);
+		}
 		public static function computeRadius(drawable:Drawable3D):Void {
 			var len = drawable.indexBufferSet.data.length;
 			var xyz = drawable.xyz.data;

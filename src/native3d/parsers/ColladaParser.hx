@@ -34,15 +34,17 @@ import xml.XPath;
 class ColladaParser extends AbsParser
 {
 	private var dae:Xml;
+	var wireframe:Bool;
 	public var skins:Array<Skin>;
 	public var id2node:Map<String,Node3D>;
 	public var sid2node:Map<String,Node3D>;
 	public var skin2jointnames:Map<Skin,Array<String>>;
 	public var jointRoot:Node3D;
 	public var texture:TextureSet;
-	public function new(data:Dynamic) 
+	public function new(data:Dynamic,wireframe:Bool=false) 
 	{
 		super(data);
+		this.wireframe = wireframe;
 		texture = new TextureSet();
 		
 	}
@@ -340,7 +342,7 @@ class ColladaParser extends AbsParser
 			}
 			time += 1 / 60;
 		}
-		AnimationUtils.startCache(skins[0]);
+		AnimationUtils.startCache(skins[0],wireframe);
 		AnimationUtils.startCacheAnim(skins[0], item);
 	}
 }

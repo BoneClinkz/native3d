@@ -43,14 +43,17 @@ class PhongMaterial extends MaterialBase
 	public var skinConstIndex2:Int;
 	private var lightIndex:Int;
 	private var lightVersions:Array<Int>;
-	public function new(ambient:Array<Float>=null,diffuse:Array<Float>=null,specular:Array<Float>=null,specularExponent:Float=200,diffuseTex:TextureSet=null,skin:Skin=null,isShadowDepth:Bool=false,useQuas:Bool=false) 
+	var wireframe:Bool;
+	public function new(ambient:Array<Float>=null,diffuse:Array<Float>=null,specular:Array<Float>=null,specularExponent:Float=200,diffuseTex:TextureSet=null,skin:Skin=null,isShadowDepth:Bool=false,useQuas:Bool=false,wireframe:Bool=false) 
 	{
 		super();
+		this.wireframe = wireframe;
 		if (!isShadowDepth) {
 			depthMaterial = new PhongMaterial(null, null, null, 200, null, skin, true,useQuas);
 			depthMaterial.culling=Context3DTriangleFace.BACK;
 		}
 		var shader = new PhongShader();
+		shader.wireframe = wireframe;
 		this.shader = shader;
 		
 		this.isShadowDepth = isShadowDepth;
@@ -111,7 +114,7 @@ class PhongMaterial extends MaterialBase
 		}
 		
 		if (!isShadowDepth) {
-			lightIndex = shaderInstance.fragmentMap[23];
+			lightIndex = shaderInstance.fragmentMap[24];
 			var i = lightIndex;
 			lightVersions = [];
 			for (ii in 0...i3d.lights.length){
@@ -260,6 +263,9 @@ class PhongMaterial extends MaterialBase
 					i3d.setVertexBufferAt(i++, uv.vertexBuff, 0, uv.format);
 					i3d.setTextureAt(ti, diffuseTex.texture);
 				}
+				if (wireframe) {
+					i3d.setVertexBufferAt(i++, drawable.barycentric.vertexBuff, 0, drawable.barycentric.format);
+				}
 			}
 			//draw
 			i3d.drawTriangles(drawable.indexBufferSet.indexBuff);
@@ -296,7 +302,10 @@ class PhongMaterial extends MaterialBase
 						i3d.setVertexBufferAt(bufi++, weightBuff2.vertexBuff, 0, weightBuff2.format);
 						i3d.setVertexBufferAt(bufi++, matrixBuff2.vertexBuff, 0, matrixBuff2.format);
 					}
-					i3d.setVertexBufferAt(bufi, uv.vertexBuff, 0, uv.format);
+					i3d.setVertexBufferAt(bufi++, uv.vertexBuff, 0, uv.format);
+					if (wireframe) {
+						i3d.setVertexBufferAt(bufi, drawable.barycentric.vertexBuff, 0, drawable.barycentric.format);
+					}
 				}else {
 					var bufi:Int = 1;
 					i3d.setVertexBufferAt(bufi++, weightBuff.vertexBuff, 0, weightBuff.format);
@@ -329,6 +338,7 @@ class PhongMaterial extends MaterialBase
 			node.drawable.norm.init();
 			if(diffuseTex!=null)
 			if(node.drawable.uv!=null)node.drawable.uv.init();
+			if(node.drawable.barycentric!=null&&wireframe)node.drawable.barycentric.init();
 			node.drawable.indexBufferSet.init();
 		}
 	}

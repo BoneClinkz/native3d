@@ -281,11 +281,11 @@ package native3d.core;
 			// unproject
 			// screen -> camera -> world
 			_prjPos.setTo( x, y, 0 ); // clip space
-			var unprjMatrix:Matrix3D = perspectiveProjection.clone();
+			var unprjMatrix:Matrix3D = perspectiveProjectionMatirx.clone();
 			unprjMatrix.invert();
 			
 			// screen -> camera -> world
-			var pos:Vector3D = matrix.transformVector( unprjMatrix.transformVector( _prjPos ) );
+			var pos:Vector3D = unprjMatrix.transformVector(_prjPos);//matrix.transformVector( unprjMatrix.transformVector( _prjPos ) );
 			
 			
 			if ( pixelPos!=null )

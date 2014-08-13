@@ -29,7 +29,7 @@ class AnimationUtils
 	{
 	}
 	
-	public static function startCache(skin:Skin):Void {
+	public static function startCache(skin:Skin,wireframe:Bool=false):Void {
 		var useQuas:Bool = skin.useQuas;
 		var maxWeightLen0:Int = 0;
 		var maxWeightLen1:Int = 0;
@@ -85,7 +85,8 @@ class AnimationUtils
 								skin.texture,
 								skin,
 								false,
-								useQuas
+								useQuas,
+								wireframe
 								);
 		for (a in 0...indexss.length) {
 			var indexs = indexss[a];
@@ -164,7 +165,6 @@ class AnimationUtils
 			}
 			while (skinDrawable.joints.length > maxn) {
 				skinDrawable.joints.pop();
-				//continue;
 			}
 			skin.draws.push(skinDrawable);
 			
@@ -182,10 +182,13 @@ class AnimationUtils
 			}
 			skinDrawable.xyz = new VertexBufferSet(Std.int(newVs.length/3), 3, newVs, 0);
 			skinDrawable.uv = new VertexBufferSet(Std.int(newUVs.length / 2), 2, newUVs, 0);
-			
 			skinDrawable.indexBufferSet = new IndexBufferSet(newIndexs.length, newIndexs, 0);
 			
 			MeshUtils.computeNorm(skinDrawable);
+			if (wireframe) {
+				MeshUtils.addBarycentric(skinDrawable);
+				skinDrawable.barycentric.init();
+			}
 			skinDrawable.xyz.init();
 			skinDrawable.uv.init();
 			skinDrawable.norm.init();
