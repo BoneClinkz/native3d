@@ -187,10 +187,10 @@ package native3d.meshs ;
 			drawable.norm = new VertexBufferSet(Std.int(norm.length / 3), 3, norm, 0);
 		}
 		
-		public static function mergePosUV(skin:Skin, uvIndexss:Vector<Vector<Int>>, uvs:Vector<Float>):Void {
+		public static function mergePosUV(skin:Skin, uvIndexss:Vector<Vector<Int>>, uvs:Vector<Float>, alwaysNewIndex:Bool = false):Void {
 			var newIndexss = [];
 			var newVers = [];
-			var map = new Map<String,Int>();
+			var map = new Map<Int,Int>();
 			for (i in 0...skin.indexss.length) {
 				var indexs = skin.indexss[i];
 				var uvIndexs = uvIndexss[i];
@@ -199,11 +199,13 @@ package native3d.meshs ;
 				for (j in 0...indexs.length) {
 					var index = indexs[j];
 					var uvIndex = uvIndexs[j];
-					var id = index + "," + uvIndex;
+					var id = (index<<25) | uvIndex;
 					var nowI;
-					if (!map.exists(id)) {
+					if (alwaysNewIndex||!map.exists(id)) {
 						nowI = newVers.length;
-						map.set(id, newVers.length);
+						if(!alwaysNewIndex){
+							map.set(id, newVers.length);
+						}
 						var ver = new Vertex();
 						newVers.push(ver);
 						var oldVer = skin.vertexs[index];

@@ -32,6 +32,7 @@ class Skin
 	public var draws:Array<SkinDrawable>;
 	public var maxWeightLen:Int = 0;
 	public var  useQuas:Bool = false;
+	public var useBytes:Bool = false;
 	public function new() 
 	{
 		anims = new Map();

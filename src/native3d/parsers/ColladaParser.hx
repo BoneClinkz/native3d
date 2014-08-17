@@ -201,7 +201,7 @@ class ColladaParser extends AbsParser
 			daeUV.push(1-daeSkin.daeUV[i*(daeSkin.maxOffset+1)+1]);
 			i++;
 		}
-		MeshUtils.mergePosUV(skin, daeSkin.daeUVIndexs, daeUV);
+		MeshUtils.mergePosUV(skin, daeSkin.daeUVIndexs, daeUV,wireframe);
 		return skin;
 	}
 	
