@@ -54,7 +54,7 @@ class World extends EventDispatcher
 				var y2 = Std.int(aabb.bottom / gridHeight);
 				for (x in x1...x2+1) {
 					for (y in y1...y2 + 1) {
-						var i = y * 10000 + x;
+						var i = (y << 32) | x;
 						var bs = grid.get(i);
 						if (bs==null) {
 							bs = [];
@@ -89,9 +89,9 @@ class World extends EventDispatcher
 					if((ba!=bb)&&ba.maskAble(bb)){
 						var pid=0;
 						if (ba.id<bb.id) {
-							pid = ba.id * 10000 + bb.id;
+							pid = (ba.id << 32) | bb.id;
 						}else {
-							pid = bb.id * 10000 + ba.id;
+							pid = (bb.id << 32) | ba.id;
 						}
 						if ((!pairMap.exists(pid))&&ba.aabb.intersects(bb.aabb)) {
 							var pair = new CollidablePair(ba, bb);

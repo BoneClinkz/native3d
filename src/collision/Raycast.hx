@@ -75,9 +75,9 @@ class Raycast
 		for (i in ix0...ix1+1 ) {
 			iny = Std.int(ny);
 			if (flag) {
-				id = iny * 10000 + i;
+				id = (iny << 32) | i;
 			}else {
-				id = i * 10000 + iny;
+				id = (i << 32) | iny;
 			}
 			raycastCell();
 			ny += ndy;
@@ -85,9 +85,9 @@ class Raycast
 			if (iny2 != iny) {
 				iny = iny2;
 				if (flag) {
-					id = iny * 10000 + i;
+					id = (iny << 32) | i;
 				}else {
-					id = i * 10000 + iny;
+					id = (i << 32) | iny;
 				}
 				raycastCell();
 			}
