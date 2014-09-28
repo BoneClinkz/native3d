@@ -27,11 +27,11 @@ class Stats extends Sprite
 		addEventListener(Event.ENTER_FRAME, enterFrame);
 		tf = new TextField();
 		tf.mouseEnabled=tf.selectable = false;
-		buttonMode = true;
-		tf.defaultTextFormat = new TextFormat("Verdana");
+		//buttonMode = true;
+		tf.defaultTextFormat = new TextFormat("Courier New Bold");
 		addChild(tf);
 		tf.autoSize = TextFieldAutoSize.LEFT;
-		tf.textColor = 0xffffff;
+		//tf.textColor = 0xffffff;
 		addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
 	}
 	
@@ -83,7 +83,7 @@ class Stats extends Sprite
 		tf.text = text;
 		
 		graphics.clear();
-		graphics.beginFill(0, .7);
+		graphics.beginFill(0xffffff, .7);
 		graphics.drawRect(0, 0, tf.width, tf.height);
 	}
 	
