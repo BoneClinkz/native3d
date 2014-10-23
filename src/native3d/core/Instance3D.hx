@@ -203,7 +203,7 @@ package native3d.core ;
 				if (maxx2 < maxx) maxx = maxx2;
 				if (maxy2 < maxy) maxy = maxy2;
 				//if (maxz2 < maxz) maxz = maxz2;
-				//shadowLightPass.camera.orthoOffCenterLH(minx, maxx, miny, maxy, -maxz, -minz);
+				shadowLightPass.camera.orthoOffCenterLH(minx, maxx, miny, maxy, -maxz, -minz);
 			}
 			for (i in 0...passs.length) {
 				var pass:BasicPass3D = passs[i];

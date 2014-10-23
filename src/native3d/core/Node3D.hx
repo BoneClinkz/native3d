@@ -359,7 +359,7 @@ package native3d.core ;
 		//http://www.cnblogs.com/graphics/archive/2010/08/09/1795348.html
 		public function rayMeshTest( rayOrigin:Vector3D, rayDirection:Vector3D ):Bool
 		{
-			if (drawable!=null&&drawable.indexBufferSet.data!=null) {
+			if (drawable!=null&&drawable.indexBufferSet!=null&&drawable.indexBufferSet.data!=null) {
 				var inv:Matrix3D = worldMatrix.clone();
 				inv.invert();
 				var localRayOrigin:Vector3D = inv.transformVector(rayOrigin);
