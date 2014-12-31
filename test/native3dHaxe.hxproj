@@ -22,10 +22,10 @@
   <build>
     <option directives="" />
     <option flashStrict="False" />
-    <option noInlineOnDebug="False" />
+    <option noInlineOnDebug="True" />
     <option mainClass="Test" />
     <option enabledebug="True" />
-    <option additional="" />
+    <option additional="-D advanced-telemetry" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

@@ -341,7 +341,7 @@ class TwoDFromSwfExample extends Sprite
 			}
 		}
 		
-		/*boundWrapper.graphics.clear();
+		boundWrapper.graphics.clear();
 		boundWrapper.graphics.lineStyle(0, 0xff0000);
 		boundWrapper.graphics.moveTo(tank.mc.x, tank.mc.y);
 		var x1 = tank.mc.x + 1000 * Math.cos((tank.turret.rotationZ-90)*Math.PI/180);
@@ -350,7 +350,7 @@ class TwoDFromSwfExample extends Sprite
 		world.ray.raycast(tank.mc.x, tank.mc.y, x1, y1,rayFilterBox);
 		for (box in world.ray.castboxs) {
 			boundWrapper.graphics.drawRect(box.aabb.left, box.aabb.top, box.aabb.width, box.aabb.height);
-		}*/
+		}
 	}
 	
 	public static function main():Void {

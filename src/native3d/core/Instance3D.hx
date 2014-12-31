@@ -54,7 +54,7 @@ package native3d.core ;
 		public var lights:Vector<BasicLight3D>;
 		public var width:Int=400;
 		public var height:Int = 400;
-		public var  antiAlias:Int = 0;
+		public var  antiAlias:Int = 16;
 		
 		//public var lastBuffs:Array<VertexBuffer3D>;
 		//public var nowBuffs:Array<VertexBuffer3D>;

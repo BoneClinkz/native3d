@@ -26,7 +26,8 @@ class SkeletonAnimationExample extends BasicTest
 	
 	override public function initScene() : Void
 	{
-		addDae();
+		addDae(Std.int(Math.sqrt(300)));
+		//root3d.setScale(.1, .1, .1);
 		#if flash
 		addSky();
 		#end	

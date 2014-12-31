@@ -28,11 +28,11 @@ package
 				for (var y:int = 0; y < h;y++ ) {
 					for (var z:int = 0; z < d;z++ ) {
 						var cube:Node3D = addCube(null, (x - w / 2) * gap, (y - h / 2) * gap, (z - d / 2) * gap, 0, 0, 0, scale, scale, scale);
-						//cube.material = new GraphicsMaterial(graphics);
+						cube.material = new GraphicsMaterial(graphics);
 					}
 				}
 			}
-			addSky();
+			//addSky();
 			
 			ctrl.position.z = -1300;
 			addChild(new Stats);

@@ -36,8 +36,11 @@ class BasicTest extends Sprite
 	private var light:BasicLight3D;
 	public var root3d:Node3D;
 	private var cubeDrawable:Drawable3D;
+	var daelineNum:Int;
 	public var ctrl:FirstPersonCtrl;
 	public var loading:TextField;
+	
+	public static var BASE_URL:String = "../";
 	public function new() 
 	{
 		super();
@@ -45,7 +48,7 @@ class BasicTest extends Sprite
 	}
 	
 	public function init():Void {
-		bv = new BasicView(100, 100, true);
+		bv = new BasicView(400, 400, true);
 		bv.instance3Ds[0].addEventListener(Event.CONTEXT3D_CREATE, context3dCreate);
 		addChild(bv);
 		//#if flash
@@ -75,6 +78,11 @@ class BasicTest extends Sprite
 		initLight();
 		initScene();
 		custom();
+		
+		bv.instance3Ds[0].passs[0].clearA = 1;
+		bv.instance3Ds[0].passs[0].clearR = 1;
+		bv.instance3Ds[0].passs[0].clearG = 1;
+		bv.instance3Ds[0].passs[0].clearB = 1;
 	}
 	
 	public function custom():Void {
@@ -112,7 +120,8 @@ class BasicTest extends Sprite
 	public function addCube(parent:Node3D=null,x:Float=0,y:Float=0,z:Float=0,rotationX:Float=0,rotationY:Float=0,rotationZ:Float=0,scaleX:Float=1,scaleY:Float=1,scaleZ:Float=1):Node3D {
 		if (parent == null) parent = root3d;
 		if (cubeDrawable==null) {
-			cubeDrawable=MeshUtils.createCube(1);
+			cubeDrawable = MeshUtils.createCube(1);
+			MeshUtils.addBarycentric(cubeDrawable);
 		}
 		var node:Node3D = new Node3D();
 		if (bv.instance3Ds[0].shadowLightPass!=null) {
@@ -128,14 +137,18 @@ class BasicTest extends Sprite
 		[Math.random()/2+.5,Math.random()/2+.5,Math.random()/2+.5],//DiffuseColor
 		[.8,.8,.8],//SpecularColor
 		200,
-		null
+		null,
+		null,
+		false,
+		false,
+		false
 		);
 		return node;
 	}
 	
 	public function addSky():Void {
 		var loader:LoaderBat = new LoaderBat();
-		var skyurl = "../assets/skybox/";
+		var skyurl = BASE_URL+"assets/skybox/";
 		loader.addImageLoader(skyurl+"px.jpg","px");
 		loader.addImageLoader(skyurl+"nx.jpg","nx");
 		loader.addImageLoader(skyurl+"py.jpg","py");
@@ -178,9 +191,9 @@ class BasicTest extends Sprite
 	
 	#if flash
 	public function addObj():Void {
-		var parser:ObjParser = new ObjParser(null,"sponza.mtl","../assets/model/sponza_texture",bv.instance3Ds[0],light);
+		var parser:ObjParser = new ObjParser(null,"sponza.mtl",BASE_URL+"assets/model/sponza_texture",bv.instance3Ds[0],light);
 		parser.addEventListener(Event.COMPLETE, obj_parser_complete);
-		parser.fromUrlZip("../assets/model/sponza_obj.zip","sponza.obj");
+		parser.fromUrlZip(BASE_URL+"assets/model/sponza_obj.zip","sponza.obj");
 		bv.instance3Ds[0].camera.frustumPlanes = null;
 		loading.text = "loading......";
 	}
@@ -192,19 +205,20 @@ class BasicTest extends Sprite
 		loading.text = "";
 	}
 	
-	public function addDae():Void {
-		var parser = new ColladaParser(null);
+	public function addDae(daelineNum:Int=5):Void {
+		this.daelineNum = daelineNum;
+		var parser = new ColladaParser(null,false);
 		parser.addEventListener(Event.COMPLETE, dae_parser_complete);
 		//parser.fromUrl("10_box_still.dae", "yellow.jpg");
 		//parser.fromUrl("42_box_rigid_member_rotate.dae", "yellow.jpg");
 		//parser.fromUrl("monster.dae", "monster.jpg");
-		parser.fromUrlZip("../assets/model/astroBoy_walk_Max.zip", "astroBoy_walk_Max.xml","boy_10.jpg");
+		parser.fromUrlZip(BASE_URL+"assets/model/astroBoy_walk_Max.zip", "astroBoy_walk_Max.xml","boy_10.jpg");
 	}
 	
 	private function dae_parser_complete(e:Event):Void 
 	{
 		var parser = untyped e.currentTarget;
-		var c:Int = 5;
+		var c:Int = daelineNum;
 		for (x in 0...c ) {
 			for(y in 0...c){
 				var clone:Node3D = parser.node.clone();
@@ -212,13 +226,14 @@ class BasicTest extends Sprite
 					clone.setAttribValueDepth( "castShadow", true);
 					
 				}
-				var d:Int = 60;
+				var d:Int = 160;
 				clone.setPosition(d * (x / c - .5), 0 , d * (y / c - .5));
 				clone.setRotation( -90);
-				//clone.setScale(.003, .003, .003);
+				clone.setScale(10, 10, 10);
 				root3d.add(clone);
 			}
 		}
+		dispatchEvent(new Event("test"));
 	}
 	#end
 	

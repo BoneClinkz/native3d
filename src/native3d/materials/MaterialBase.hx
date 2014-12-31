@@ -50,8 +50,8 @@ import flash.display3D.Context3DCompareMode;
 			shaderInstance.program.upload(shaderInstance.vertexBytes.getData(), shaderInstance.fragmentBytes.getData());
 			/*i3d.context.enableErrorChecking = true;
 			trace("\n\n"+shader);
-			trace("\n"+shader.getDebugShaderCode(true).split("\n").length);
-			trace("\n"+shader.getDebugShaderCode(true));*/
+			trace("\n"+shader.getDebugShaderCode(true).split("\n").length);*/
+			//trace("\n"+shader.getDebugShaderCode(true));
 		}
 		vertex = shaderInstance.vertexVars.toData().concat();
 		fragment = shaderInstance.fragmentVars.toData().concat();

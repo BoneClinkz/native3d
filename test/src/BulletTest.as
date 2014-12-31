@@ -12,6 +12,7 @@ package
 	import native3d.core.IndexBufferSet;
 	import native3d.core.Node3D;
 	import native3d.core.VertexBufferSet;
+	import native3d.materials.GraphicsMaterial;
 	import native3d.materials.PhongMaterial;
 	import native3d.meshs.MeshUtils;
 	import native3d.utils.BasicTest;
@@ -61,7 +62,7 @@ package
 			CModule.startAsync(this);
 			createWorld();
 			ctrl.position.setTo(-90, 107, -68);
-			ctrl.rotation.setTo(43, 55,0);
+			ctrl.rotation.setTo(43, 55, 0);
 			addSky();
 		}
 		
@@ -103,7 +104,7 @@ package
 			var s:Number = 4.0;
 			
 			var boxShape:btBoxShape = btBoxShape.create(vector(w , w, w));
-			for(var i:int=0; i<120; i++) {
+			for(var i:int=0; i<1420; i++) {
 				//spawnCube(((i%numCols)) * 10  - 30, 10.0 + ((i/numCols) * s), 0, 10, w*2, w*2, w*2)
 				spawnRigidBody(
 					boxShape,
@@ -217,6 +218,7 @@ package
 	        	//positionAndRotateMesh(meshes[i], bods[i])
 	        	positionAndRotateMesh2(meshes[i], bods[i])
 	        }
+			graphics.clear();
 			bv.instance3Ds[0].render();	
 			//trace(ctrl.position,ctrl.rotation);
 		}

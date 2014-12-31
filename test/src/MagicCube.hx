@@ -7,6 +7,7 @@ import flash.Lib;
 import flash.text.TextField;
 import flash.text.TextFieldAutoSize;
 import flash.Vector;
+import native3d.materials.PhongMaterial;
 import native3d.utils.BasicTest;
 import native3d.core.Node3D;
 
