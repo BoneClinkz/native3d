@@ -40,7 +40,8 @@ class Skin
 	
 	public function play(name:String):Void {
 		var item = anims.get(name);
-		if (item!=null) {
+		if (item != null) {
+			currentAnim = item;
 			for (i in 0...draws.length) {
 				var draw = draws[i];
 				draw.cacheBytes = item.cacheBytess[i];
