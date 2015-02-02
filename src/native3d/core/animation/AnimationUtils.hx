@@ -216,6 +216,8 @@ class AnimationUtils
 	
 	public static function startCacheAnim(skin:Skin, item:AnimationItem,isStatic:Bool=false):Void {
 		var useQuas = skin.useQuas;
+		skin.anims.set(item.name, item);
+		skin.currentAnim = item;
 		for (frame in item.frames) {
 			for (i in 0...skin.joints.length) {
 				var joint = skin.joints[i];
@@ -235,71 +237,69 @@ class AnimationUtils
 				}
 				matrixs.push(matrix);
 			}
-			skin.anims.set(item.name, item);
-			skin.currentAnim = item;
+		}
 			
-			for (skinDrawable in skin.draws) {
-				if(useQuas){
-					skinDrawable.cacheQuasBytes = [];
-					skinDrawable.cacheQuasTransBytes = [];
-					item.cacheQuasBytess.push(skinDrawable.cacheQuasBytes);
-					item.cacheQuasTransBytess.push(skinDrawable.cacheQuasTransBytes);
-					for (cmatrixs in item.cacheMatrixs) {
-						var catchQuasByte = new ByteArray();
-						catchQuasByte.endian = Endian.LITTLE_ENDIAN;
-						var catchQuasTransByte = new ByteArray();
-						catchQuasTransByte.endian = Endian.LITTLE_ENDIAN;
-						for (i in 0...skinDrawable.joints.length) {
-							var matr:Matrix3D = cmatrixs[skinDrawable.joints[i]];
-							var comp= matr.decompose(Orientation3D.QUATERNION);
-							var quas = comp[1];
-							var tran = comp[0];
-							catchQuasByte.writeFloat(quas.x);
-							catchQuasByte.writeFloat(quas.y);
-							catchQuasByte.writeFloat(quas.z);
-							catchQuasByte.writeFloat(quas.w);
-							catchQuasTransByte.writeFloat(tran.x);
-							catchQuasTransByte.writeFloat(tran.y);
-							catchQuasTransByte.writeFloat(tran.z);
-							catchQuasTransByte.writeFloat(tran.w);
-						}
-						catchQuasByte.position = 0;
-						catchQuasTransByte.position = 0;
-						
-						var byteSet = new ByteArraySet();
-						skinDrawable.cacheQuasBytes.push(byteSet);
-						byteSet.byteArrayOffset = 0;
-						byteSet.data = catchQuasByte;
-						byteSet.numRegisters = Std.int(byteSet.data.bytesAvailable / 16);
-						
-						
-						var byteSet = new ByteArraySet();
-						skinDrawable.cacheQuasTransBytes.push(byteSet);
-						byteSet.byteArrayOffset = 0;
-						byteSet.data = catchQuasTransByte;
-						byteSet.numRegisters = Std.int(byteSet.data.bytesAvailable/16);
+		for (skinDrawable in skin.draws) {
+			if(useQuas){
+				skinDrawable.cacheQuasBytes = [];
+				skinDrawable.cacheQuasTransBytes = [];
+				item.cacheQuasBytess.push(skinDrawable.cacheQuasBytes);
+				item.cacheQuasTransBytess.push(skinDrawable.cacheQuasTransBytes);
+				for (cmatrixs in item.cacheMatrixs) {
+					var catchQuasByte = new ByteArray();
+					catchQuasByte.endian = Endian.LITTLE_ENDIAN;
+					var catchQuasTransByte = new ByteArray();
+					catchQuasTransByte.endian = Endian.LITTLE_ENDIAN;
+					for (i in 0...skinDrawable.joints.length) {
+						var matr:Matrix3D = cmatrixs[skinDrawable.joints[i]];
+						var comp= matr.decompose(Orientation3D.QUATERNION);
+						var quas = comp[1];
+						var tran = comp[0];
+						catchQuasByte.writeFloat(quas.x);
+						catchQuasByte.writeFloat(quas.y);
+						catchQuasByte.writeFloat(quas.z);
+						catchQuasByte.writeFloat(quas.w);
+						catchQuasTransByte.writeFloat(tran.x);
+						catchQuasTransByte.writeFloat(tran.y);
+						catchQuasTransByte.writeFloat(tran.z);
+						catchQuasTransByte.writeFloat(tran.w);
 					}
-				}else {
-					skinDrawable.cacheBytes = [];
-					item.cacheBytess.push(skinDrawable.cacheBytes);
-					var catchVector = new Vector<Float>(16);
-					for (cmatrixs in item.cacheMatrixs) {
-						var catchByte = new ByteArray();
-						catchByte.endian = Endian.LITTLE_ENDIAN;
-						for (i in 0...skinDrawable.joints.length) {
-							cmatrixs[skinDrawable.joints[i]].copyRawDataTo(catchVector,0, true);
-							for (j in 0...12) {
-								catchByte.writeFloat(catchVector[j]);
-							}
+					catchQuasByte.position = 0;
+					catchQuasTransByte.position = 0;
+					
+					var byteSet = new ByteArraySet();
+					skinDrawable.cacheQuasBytes.push(byteSet);
+					byteSet.byteArrayOffset = 0;
+					byteSet.data = catchQuasByte;
+					byteSet.numRegisters = Std.int(byteSet.data.bytesAvailable / 16);
+					
+					
+					var byteSet = new ByteArraySet();
+					skinDrawable.cacheQuasTransBytes.push(byteSet);
+					byteSet.byteArrayOffset = 0;
+					byteSet.data = catchQuasTransByte;
+					byteSet.numRegisters = Std.int(byteSet.data.bytesAvailable/16);
+				}
+			}else {
+				skinDrawable.cacheBytes = [];
+				item.cacheBytess.push(skinDrawable.cacheBytes);
+				var catchVector = new Vector<Float>(16);
+				for (cmatrixs in item.cacheMatrixs) {
+					var catchByte = new ByteArray();
+					catchByte.endian = Endian.LITTLE_ENDIAN;
+					for (i in 0...skinDrawable.joints.length) {
+						cmatrixs[skinDrawable.joints[i]].copyRawDataTo(catchVector,0, true);
+						for (j in 0...12) {
+							catchByte.writeFloat(catchVector[j]);
 						}
-						catchByte.position = 0;
-						
-						var byteSet = new ByteArraySet();
-						skinDrawable.cacheBytes.push(byteSet);
-						byteSet.byteArrayOffset = 0;
-						byteSet.data = catchByte;
-						byteSet.numRegisters = Std.int(catchByte.bytesAvailable/16);
 					}
+					catchByte.position = 0;
+					
+					var byteSet = new ByteArraySet();
+					skinDrawable.cacheBytes.push(byteSet);
+					byteSet.byteArrayOffset = 0;
+					byteSet.data = catchByte;
+					byteSet.numRegisters = Std.int(catchByte.bytesAvailable/16);
 				}
 			}
 		}
