@@ -130,6 +130,7 @@ class MD5MeshParser extends AbsParser
 		for (joint in joints) {
 			skin.invBindMatrixs.push(joint.matrInv);
 			var jnode = new Node3D();
+			jnode.name = joint.name;
 			skin.joints.push(jnode);
 			if (joint.parent!=-1) {
 				skin.joints[joint.parent].add(jnode);

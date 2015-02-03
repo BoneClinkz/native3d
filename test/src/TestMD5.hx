@@ -1,6 +1,7 @@
 package ;
 import flash.events.MouseEvent;
 import native3d.core.animation.AnimationUtils;
+import native3d.core.Instance3D;
 import native3d.core.Node3D;
 import native3d.parsers.MD5AnimParser;
 import flash.display.Sprite;
@@ -23,9 +24,8 @@ import flash.display.BitmapData;
 class TestMD5 extends BasicTest
 {
 	var md5Parser:MD5MeshParser;
-	var md5AnmParser:native3d.parsers.MD5AnimParser;
-	var test:flash.Vector.Vector<Node3D>;
-
+	var md5AnmParser:MD5AnimParser;
+	var bindNode:Node3D;
 	public function new() 
 	{
 		super();
@@ -33,77 +33,56 @@ class TestMD5 extends BasicTest
 	
 	override public function initScene() : Void
 	{
-		//return;
-		//addSky();
+		addSky();
 		md5Parser = new MD5MeshParser(new BMD(512,512));
-		//md5Parser = new MD5MeshParser(new BitmapData(512,512));
 		md5Parser.data = new MD5Mesh();
 		md5Parser.parser();
 		
 		md5AnmParser = new MD5AnimParser("a1");
 		md5AnmParser.data = new MD5ANM();
 		md5AnmParser.parser();
-		
 		AnimationUtils.startCacheAnim(md5Parser.skin, md5AnmParser.item);
-		//return;
-		//root3d.add(md5Parser.node);
+		
 		md5Parser.node.setScale(50, 50, 50);
 		ctrl.position.setTo( -150, 180, -133);
 		ctrl.rotation.setTo(30, 50, 0);
-		//ctrl.stop();
 		bv.instance3Ds[0].antiAlias = 2;
 		bv.instance3Ds[0].resize(
 		bv.instance3Ds[0].width,
 		bv.instance3Ds[0].height);
 		
-		var c = 10;
+		var c = 3;
 		for (x in 0...c ) {
 			for(y in 0...c){
-				var clone = //addCube(root3d,0,0,0,0,0,0,3,3,3); 
-				md5Parser.node.clone();
+				var clone = md5Parser.node.clone();
 				var d:Int = 360;
 				clone.setPosition(d * (x / c - .5), 0 , d * (y / c - .5));
 				root3d.add(clone);
+				clone.children[0].startFrame = Std.random(1000);
 			}
 		}
-		test = root3d.children.concat();
-		root3d.children.length = 0;
-		addDae(10);
-		
-		addEventListener("test", testdds);
-		//stage.addEventListener(MouseEvent.CLICK, stage_click);
+		root3d.add(md5Parser.node);
+		bindNode = new Node3D();
+		root3d.add(bindNode);
+		addCube(bindNode,0,0,0,0,0,0,.1,.1,.1);
 	}
-	
-	private function testdds(e:Event):Void 
-	{
-		var test2 = root3d.children.concat();
-		root3d.children.length = 0;
-		for (i in 0 ...100) {
-			root3d.children.push(test2[i]);
-			root3d.children.push(test[i]);
-			addCube(null, Math.random() * 100, Math.random() * 100, Math.random() * 100);
-		}
-	}
-	
-	/*private var last:Node3D;
-	private function stage_click(e:MouseEvent):Void 
-	{	
-		if (last!=null) {
-			last.setScale(3,3,3);
-		}
-		var now:Node3D  = bv.instance3Ds[0].root.pickMouse(mouseX, mouseY);
-		trace(now);
-		if (now!=null) {
-			last = now;
-			last.setScale(6, 6, 6);
-		}
-	}*/
 	
 	override public function enterFrame(e:Event):Void 
 	{
 		bv.instance3Ds[0].render();
-		//root3d.rotationY += .2;
-		//bv.instance3Ds[0].camera.rotationY+=.2;
+		
+		var frame = md5Parser.skin.currentAnim.frames[md5Parser.skin.node.frame];
+		for (i in 0...md5Parser.skin.joints.length) {
+			var joint = md5Parser.skin.joints[i];
+			joint.matrix.copyFrom(frame[i]); 
+			joint.matrixVersion++;
+		}
+		Instance3D.getInstance().doTransform.doTransformNodes(md5Parser.skin.jointRoot.children, false);
+		bindNode.matrix = md5Parser.skin.joints[33].worldMatrix.clone();
+		bindNode.matrix.append(md5Parser.skin.node.worldMatrix.clone());
+		
+		bindNode.matrixVersion++;
+		
 	}
 	
 	public static function main():Void {
@@ -113,20 +92,8 @@ class TestMD5 extends BasicTest
 }
 
 @:file("src/wuji01/a_daiji.MD5ANIM") 
-//@:file("src/kuangzhanshi/a_daiji.md5anim") 
-//@:file("src/wuji01/hurt.MD5ANIM") 
-//@:file("src/wuji01/wudao01.MD5ANIM") 
-//@:file("src/headpain.md5anim") 
-//@:file("src/a2jianduenshi/b_daiji.MD5ANIM") 
 class MD5ANM extends ByteArray { } 
-//@:file("src/hellknight.md5mesh") 
 @:file("src/wuji01/wuji01.MD5MESH") 
-//@:file("src/kuangzhanshi/wp110.MD5MESH") 
-//@:file("src/888.md5mesh") 
-//@:file("src/a2jianduenshi/shen02.MD5MESH") 
 class MD5Mesh extends ByteArray { } 
-//@:bitmap("src/hellknight_diffuse.jpg")
 @:bitmap("src/wuji01/wuji01.png")
-//@:bitmap("src/kuangzhanshi/test.png")
-//@:bitmap("src/a2jianduenshi/shen202_p.png")
 class BMD extends BitmapData{}

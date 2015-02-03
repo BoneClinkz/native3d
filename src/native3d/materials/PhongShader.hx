@@ -129,10 +129,10 @@ class PhongShader extends Shader
 		//t = 2 * cross(q.xyz, v)
 		//v' = v + q.w * t + cross(q.xyz, t)
 		function transformVectorByQuas(pos:Float3, quas:Float4, tran:Float3, weight:Float):Float3 {
-			/*var t = 2 * cross(quas.xyz, pos);
+			var t = 2 * cross(quas.xyz, pos);
 			var v1 = tran+ pos + quas.w * t + cross(quas.xyz, t);
-			return v1 * weight;*/
-			var t2 = quas.wxy;
+			return v1 * weight;
+			/*var t2 = quas.wxy;
 			t2.z = -t2.z;
 			var z1 = dot(t2,pos.zyx);
 			var t = [0, 0, 0, 0];
@@ -153,7 +153,7 @@ class PhongShader extends Shader
 			t3 = quas.zyxw;
 			t3.y = -t3.y;
 			tran.z += dot(t.wxyz, t3);
-			return tran*weight;
+			return tran*weight;*/
 		}
 		
 		function fragment() {
